@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 
 import { KpiCard } from './kpi-card';
 
-jest.mock('@/components/charts', () => ({
+jest.mock('@/components/charts/sparkline-chart', () => ({
   SparklineChart: ({ value, previousValue }: { value: number; previousValue: number }) => (
     <div data-testid="sparkline" data-value={value} data-previous={previousValue} />
   ),

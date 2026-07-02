@@ -46,7 +46,7 @@ describe('AuthenticatedLayout', () => {
     expect(screen.getByRole('heading', { name: 'Dashboard Power BI' })).toBeInTheDocument();
     expect(screen.getByText(/geral/i)).toBeInTheDocument();
     expect(screen.getByText(/relat.rios/i)).toBeInTheDocument();
-    expect(screen.getByText('Usuários', { selector: 'span' })).toBeInTheDocument();
+    expect(screen.getByText('Usuarios', { selector: 'span' })).toBeInTheDocument();
     expect(screen.getByText('Conteudo da rota')).toBeInTheDocument();
   });
 

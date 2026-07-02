@@ -22,7 +22,7 @@ Data: 2026-07-02
 | verify:docs      | 1     | 1      | 0      |
 | typecheck        | 2     | 1      | 1      |
 | test (API)       | 305   | 304    | 1      |
-| test (Web)       | 142   | 139    | 3      |
+| test (Web)       | 142   | 142    | 0      |
 | build            | 2     | 2      | 0      |
 | lint             | 1     | 0      | 1      |
 | format:check     | 1     | 0      | 1      |
@@ -90,6 +90,8 @@ TypeError: (0 , _adminapi.getApiUrl) is not a function
 
 **Severidade:** Baixa
 
+**Status:** ✅ Corrigido
+
 **Arquivo:** `apps/web/src/components/dashboard/kpi-card.test.tsx` (linha 83)
 
 **Erro:**
@@ -100,11 +102,15 @@ TestingLibraryElementError: Unable to find an element by: [data-testid="sparklin
 
 **Descrição:** O componente `KpiCard` renderiza um `<svg>` como sparkline mas não inclui o atributo `data-testid="sparkline"` esperado pelo teste.
 
+**Correção:** O mock do `SparklineChart` estava em `@/components/charts` mas o componente importa de `@/components/charts/sparkline-chart`. Corrigido o path do mock para `@/components/charts/sparkline-chart`.
+
 ---
 
 ## F-05 — Testes Web: `authenticated-layout.test.tsx` — texto "Usuários" não encontrado
 
 **Severidade:** Baixa
+
+**Status:** ✅ Corrigido
 
 **Arquivo:** `apps/web/src/components/app/authenticated-layout.test.tsx` (linha 49)
 
@@ -116,11 +122,15 @@ TestingLibraryElementError: Unable to find an element with the text: Usuários, 
 
 **Descrição:** O teste espera encontrar um `<span>` com texto "Usuários" no sidebar, mas o componente não renderiza esse link (provavelmente o link de admin não aparece para o usuário mockado ou o texto mudou).
 
+**Correção:** O sidebar renderiza "Usuarios" (ASCII sem acento) mas o teste esperava "Usuários" (com acento). Corrigido o texto esperado para "Usuarios".
+
 ---
 
 ## F-06 — Testes Web: `report-detail.test.tsx` — botão "Exportar PDF" não encontrado
 
 **Severidade:** Média
+
+**Status:** ✅ Corrigido
 
 **Arquivo:** `apps/web/src/components/reports/report-detail.test.tsx` (linha 60)
 
@@ -131,6 +141,8 @@ TestingLibraryElementError: Unable to find an accessible element with the role "
 ```
 
 **Descrição:** O teste espera um botão com nome "Exportar PDF", mas o componente renderiza apenas um botão "Exportar" genérico. O teste não reflete o UI atual.
+
+**Correção:** O componente tem fluxo de exportação em 2 passos: botão "Exportar" abre um modal, e dentro do modal há o botão "Exportar PDF". Adicionado o clique no botão "Exportar" antes de clicar em "Exportar PDF" no modal.
 
 ---
 

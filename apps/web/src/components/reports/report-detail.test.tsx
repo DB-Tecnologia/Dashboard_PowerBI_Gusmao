@@ -57,6 +57,7 @@ describe('ReportDetail', () => {
     await user.click(screen.getByRole('button', { name: /executar consulta/i }));
     await screen.findByText('Receita');
 
+    await user.click(screen.getByRole('button', { name: /exportar/i }));
     await user.click(screen.getByRole('button', { name: /exportar pdf/i }));
 
     await waitFor(() => {
