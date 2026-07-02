@@ -1,7 +1,7 @@
 # RELATORIO.md — Registro Diário de Desenvolvimento
 
 **Projeto:** Dashboard Power BI
-**Atualizado em:** 2026-06-28
+**Atualizado em:** 2026-07-02
 
 ---
 
@@ -21,6 +21,89 @@ Cada entrada deve conter:
 - Decisões tomadas.
 - Bloqueios.
 - Próximos passos.
+
+---
+
+## 2026-07-02 — Registro do Dia (Sessão 1)
+
+### 1. Resumo
+
+Correção de 7 testes web falhos (F-03 a F-09), auditoria completa do projeto e avaliação de infraestrutura Docker Compose para testes locais. Testes web agora 142/142 passando.
+
+### 2. Tarefas Executadas
+
+- **F-03:** Adicionado `getApiUrl` ao mock de `./admin-api` em `platform-api.test.ts`.
+- **F-04:** Corrigido path do mock de `@/components/charts` para `@/components/charts/sparkline-chart` em `kpi-card.test.tsx`.
+- **F-05:** Corrigido texto esperado de "Usuários" para "Usuarios" em `authenticated-layout.test.tsx`.
+- **F-06:** Adicionado clique em "Exportar" antes de "Exportar PDF" em `report-detail.test.tsx` (fluxo modal 2 passos).
+- **F-07:** Trocado mock de `@/lib/platform-api` por `@/lib/app-data` em `notifications-list.test.tsx`.
+- **F-08:** Mesma correção em `exports-list.test.tsx` + teste de download reescrito para `<a>` em vez de `<button>`.
+- **F-09:** Mesma correção em `admin-settings.test.tsx` + mock de `@/lib/admin-api` para retention.
+- **Auditoria completa:** typecheck API, testes API, testes web, build, Docker Compose.
+
+### 3. Arquivos Modificados
+
+- `apps/web/src/lib/platform-api.test.ts`
+- `apps/web/src/components/dashboard/kpi-card.test.tsx`
+- `apps/web/src/components/app/authenticated-layout.test.tsx`
+- `apps/web/src/components/reports/report-detail.test.tsx`
+- `apps/web/src/components/notifications/notifications-list.test.tsx`
+- `apps/web/src/components/exports/exports-list.test.tsx`
+- `apps/web/src/components/admin/admin-settings.test.tsx`
+- `FALHAS.md`
+- `docs/CONTEXTO.md`
+- `docs/ROADMAP.md`
+- `docs/RELATORIO.md`
+
+### 4. Testes Executados
+
+| Comando                       | Resultado        | Observações                                 |
+| ----------------------------- | ---------------- | ------------------------------------------- |
+| `pnpm --filter web exec jest` | 142/142 passando | 43 suites, zero falhas                      |
+| `pnpm --filter api exec jest` | 304/305 passando | 1 falha: report-definitions.repository.spec |
+| `pnpm --filter api exec tsc`  | 2 erros TS       | retention.service.spec.ts mock incompleto   |
+| `pnpm build`                  | OK               | Ambos API e Web compilam com sucesso        |
+
+### 5. Commits Realizados
+
+1. `test: corrigir 4 testes falhos da web (F-03, F-07, F-08, F-09)` — `5385cd6`
+2. `test: corrigir 3 testes falhos restantes da web (F-04, F-05, F-06)` — `359600b`
+
+### 6. Auditoria — Novas Falhas Identificadas
+
+Nenhuma nova falha de lógica encontrada nos controllers e services auditados. Falhas remanescentes conhecidas:
+
+- **F-01:** Typecheck API — `retention.service.spec.ts` usa `ExportsServiceLike` que não implementa todos os membros de `ExportsService`.
+- **F-02:** Teste API — `report-definitions.repository.spec.ts` passa `ConfigService` sem método `get()` para o construtor do repositório.
+- **F-10:** Lint — 1129 erros, 426 warnings (principalmente `@typescript-eslint/no-explicit-any`).
+- **F-11:** Format — 187 arquivos com formatação Prettier incorreta.
+- **F-12:** Redis — spam de `ECONNREFUSED` no console sem Redis local.
+
+### 7. Avaliação Docker Compose
+
+| Compose                   | Serviços                      | Status    | Pronto para uso                |
+| ------------------------- | ----------------------------- | --------- | ------------------------------ |
+| `docker-compose.dev.yml`  | api + web + redis             | Funcional | Sim                            |
+| `docker-compose.demo.yml` | sqlserver + api + web + redis | Funcional | Sim (requer `.env.demo`)       |
+| `docker-compose.prod.yml` | api + web + redis + nginx     | Funcional | Sim (requer `.env.production`) |
+
+**Conclusão:** O projeto está pronto para subir via Docker Compose. O compose de dev (`docker-compose.dev.yml`) sobe api, web e redis sem dependências externas. O compose demo adiciona SQL Server com seed de dados demo. O compose prod inclui nginx como reverse proxy.
+
+### 8. Débitos Técnicos Remanescentes
+
+- F-01: Completar mock de `ExportsService` em `retention.service.spec.ts`.
+- F-02: Adicionar mock de `get()` em `ConfigService` do `report-definitions.repository.spec.ts`.
+- F-10: Corrigir warnings de lint progressivamente.
+- F-11: Executar `pnpm format` para corrigir formatação.
+- F-12: Silenciar erros de conexão Redis quando não configurado.
+
+### 9. Próximos Passos Recomendados
+
+1. Corrigir F-01 e F-02 (typecheck e teste API) — quick wins.
+2. Executar `pnpm format` para resolver F-11.
+3. Silenciar erros de Redis para resolver F-12.
+4. Subir Docker Compose dev para validação local completa.
+5. Corrigir lint progressivamente (F-10).
 
 ---
 

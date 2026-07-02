@@ -245,6 +245,40 @@ Error: Supabase nao configurado para este ambiente.
 
 ---
 
+## F-13 — Docker Compose demo sem `.env.demo` versionado
+
+**Severidade:** Baixa
+
+**Descrição:** O `docker-compose.demo.yml` referencia `../env/.env.demo` em `env_file`, mas esse arquivo não existe no repositório (apenas `.env.example` e `.env.production.example` são versionados). Para usar o compose demo, é necessário criar `infra/env/.env.demo` manualmente com as variáveis apropriadas (incluindo `MSSQL_SA_PASSWORD`, `ACCEPT_EULA`, `SQLSERVER_DATABASE`, etc.).
+
+**Solução sugerida:** Criar `infra/env/.env.demo.example` como referência versionada.
+
+---
+
+## F-14 — README.md: 2FA marcado como "opcional, obrigatório pendente"
+
+**Severidade:** Baixa
+
+**Status:** ✅ Corrigido
+
+**Descrição:** O README.md dizia "2FA/TOTP implementado e opcional; obrigatório para admins pendente (DT-001)", mas o `TwoFactorGuard` já força 2FA para admins e o DT-001 está concluído no ROADMAP.
+
+**Correção:** Atualizado para "2FA/TOTP implementado e obrigatório para admins".
+
+---
+
+## F-15 — CONTEXTO.md: pendências desatualizadas
+
+**Severidade:** Baixa
+
+**Status:** ✅ Corrigido
+
+**Descrição:** A seção de pendências do CONTEXTO.md listava itens já concluídos (editor visual, 2FA obrigatório, hardening de sessão, herança de permissões, cache SQL, BullMQ, retenção LGPD) como pendentes.
+
+**Correção:** Pendências atualizadas para refletir apenas itens remanescentes: F-01, F-02, F-10, F-11, F-12, drill-down, Playwright.
+
+---
+
 ## Observações (não são falhas)
 
 - **403 em rotas admin:** Comportamento esperado. O `TwoFactorGuard` exige 2FA ativo para admins. O usuário demo (`admin@example.com`) não tem 2FA habilitado, então rotas `/admin/*` retornam 403.
@@ -252,3 +286,5 @@ Error: Supabase nao configurado para este ambiente.
 - **API endpoints funcionais:** `/health`, `/auth/login`, `/auth/me`, `/dashboard/home`, `/reports`, `/notifications`, `/exports`, `/dashboards`, `/health/sql` todos respondem 200.
 - **Web páginas funcionais:** `/` e `/login` respondem 200 em runtime.
 - **Swagger disponível:** `/docs` responde 200 em desenvolvimento.
+- **Docker Compose pronto:** 3 compose files (dev, demo, prod) funcionais. Dev sobe sem dependências externas. Demo requer `.env.demo`. Prod requer `.env.production`.
+- **Auditoria de lógica (2026-07-02):** Controllers e services auditados (reports, auth, sql-server, supabase, audit, exports, dashboards). Nenhuma falha de lógica nova encontrada. Guards, DTOs, validação e autorização estão consistentes.

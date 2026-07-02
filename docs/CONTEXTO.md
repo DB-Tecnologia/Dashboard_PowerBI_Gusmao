@@ -1,7 +1,7 @@
 # CONTEXTO.md — Contexto Vivo do Projeto
 
 **Projeto:** Dashboard Power BI
-**Atualizado em:** 2026-06-29
+**Atualizado em:** 2026-07-02
 **Responsável pela atualização:** Agente IA / Desenvolvedor
 
 ---
@@ -14,20 +14,46 @@ O Dashboard Power BI é uma plataforma web interna de relatórios e BI em estado
 
 ## 2. Estado Atual do Projeto
 
-| Área           | Status             | Observações                                                                            |
-| -------------- | ------------------ | -------------------------------------------------------------------------------------- |
-| Backend        | Funcional avançado | NestJS com módulos ativos; repositórios híbridos (Supabase + memória); 113 testes      |
-| Frontend       | Funcional avançado | Next.js 14 com 18 telas implementadas (18 concluídas, 0 parciais, 0 pendentes)         |
-| Banco de dados | Funcional parcial  | 8 migrations Supabase aplicadas; SQL Server/Oracle externo para relatórios             |
-| Testes         | Estável            | `pnpm test`, `pnpm typecheck`, `pnpm build` passando; E2E (Playwright) não configurado |
-| Infraestrutura | Funcional          | Docker Compose dev/prod; GitHub Actions para deploy VPS                                |
-| Documentação   | Atualizada         | Governança consolidada; auditoria de runtime em 2026-06-29                             |
-| Segurança      | Avançado           | JWT, bcrypt 12, CSRF, helmet, 2FA obrigatório para admins, token blacklist, versioning |
-| BI             | Avançado           | KPIs, charts Recharts, drill-down, editor visual completo, cache de queries, retenção  |
+| Área           | Status             | Observações                                                                                             |
+| -------------- | ------------------ | ------------------------------------------------------------------------------------------------------- |
+| Backend        | Funcional avançado | NestJS com módulos ativos; repositórios híbridos (Supabase + memória); 305 testes (304 passam, 1 falha) |
+| Frontend       | Funcional avançado | Next.js 14 com 18 telas implementadas (18 concluídas, 0 parciais, 0 pendentes); 142 testes (142 passam) |
+| Banco de dados | Funcional parcial  | 8 migrations Supabase aplicadas; SQL Server/Oracle externo para relatórios                              |
+| Testes         | Estável            | `pnpm test` web 142/142; API 304/305; typecheck API com 2 erros TS em spec; build OK                    |
+| Infraestrutura | Funcional          | Docker Compose dev/prod; GitHub Actions para deploy VPS                                                 |
+| Documentação   | Atualizada         | Governança consolidada; auditoria de runtime em 2026-06-29                                              |
+| Segurança      | Avançado           | JWT, bcrypt 12, CSRF, helmet, 2FA obrigatório para admins, token blacklist, versioning                  |
+| BI             | Avançado           | KPIs, charts Recharts, drill-down, editor visual completo, cache de queries, retenção                   |
 
 ---
 
 ## 3. Histórico de Desenvolvimento
+
+### 2026-07-02 — Correção de Testes Web e Auditoria Completa
+
+- **O que foi analisado:** Suite completa de testes web (142 testes), typecheck API, testes API (305), build, infraestrutura Docker.
+- **O que foi decidido:**
+  - Corrigir 7 falhas de testes web (F-03 a F-09) identificadas no FALHAS.md.
+  - Auditar projeto completo para identificar novas falhas.
+  - Avaliar viabilidade de Docker Compose para testes locais.
+- **O que foi corrigido:**
+  - F-03: `getApiUrl` não mockada em `platform-api.test.ts`.
+  - F-04: Path do mock incorreto em `kpi-card.test.tsx` (`@/components/charts` → `@/components/charts/sparkline-chart`).
+  - F-05: Texto "Usuários" (acentuado) → "Usuarios" (ASCII) em `authenticated-layout.test.tsx`.
+  - F-06: Fluxo de exportação em 2 passos não coberto em `report-detail.test.tsx`.
+  - F-07: Mock de Supabase browser inadequado em `notifications-list.test.tsx`.
+  - F-08: Mesmo problema em `exports-list.test.tsx`.
+  - F-09: Mesmo problema em `admin-settings.test.tsx`.
+- **Estado final dos testes:**
+  - Web: 142/142 passando (43 suites).
+  - API: 304/305 passando (1 falha: `report-definitions.repository.spec.ts`).
+  - Typecheck API: 2 erros TS em `retention.service.spec.ts` (mock incompleto).
+  - Build: passa para ambos API e Web.
+- **Docker Compose avaliado:**
+  - `docker-compose.dev.yml`: api + web + redis, funcional para dev local.
+  - `docker-compose.demo.yml`: sqlserver + api + web + redis, requer `.env.demo` (não versionado).
+  - `docker-compose.prod.yml`: api + web + redis + nginx, requer `.env.production`.
+  - Dockerfiles dev e prod estão corretos e prontos para uso.
 
 ### 2026-06-28 — Consolidação de Governança do Repositório
 
@@ -164,18 +190,15 @@ O Dashboard Power BI é uma plataforma web interna de relatórios e BI em estado
 
 ## 6. Pendências Atuais
 
-| Pendência                                                  | Área           | Prioridade | Próxima ação                                          |
-| ---------------------------------------------------------- | -------------- | ---------- | ----------------------------------------------------- |
-| Editor visual completo (redimensionamento, paleta, canvas) | BI             | Alta       | Especificar T16b com SDD                              |
-| Drill-down multi-dimensão                                  | BI             | Média      | Adicionar dimensões de tempo, produto, região         |
-| 2FA obrigatório para admins                                | Segurança      | Alta       | 2FA/TOTP opcional já implementado; forçar para admins |
-| Hardening final de sessão                                  | Segurança      | Alta       | Blacklist de tokens + invalidação em massa            |
-| Herança de permissões via grupos                           | Permissões     | Média      | Implementar agregação de permissões                   |
-| Cache de queries SQL Server                                | SQL Server     | Média      | Implementar cache com TTL                             |
-| BullMQ + Redis para exports                                | Exports        | Concluído  | Implementado com fallback em memória                  |
-| Testes E2E (Playwright)                                    | Qualidade      | Média      | Configurar Playwright para fluxos críticos            |
-| Política de retenção de logs (LGPD)                        | Segurança/LGPD | Alta       | Definir retenção e job de limpeza                     |
-| Storage S3 para exports                                    | Exports        | Baixa      | Avaliar necessidade de storage externo                |
+| Pendência                                                | Área      | Prioridade | Próxima ação                                            |
+| -------------------------------------------------------- | --------- | ---------- | ------------------------------------------------------- |
+| F-01: Typecheck API — mock incompleto em retention.spec  | Qualidade | Média      | Completar mock de ExportsService no spec                |
+| F-02: Teste API — ConfigService sem método get() no mock | Qualidade | Média      | Adicionar mock de get() no ConfigService do spec        |
+| F-10: Lint — 1129 erros e 426 warnings                   | Qualidade | Média      | Corrigir progressivamente @typescript-eslint warnings   |
+| F-11: Format — 187 arquivos com formatação incorreta     | Qualidade | Baixa      | Executar `pnpm format`                                  |
+| F-12: Redis — spam de erros ECONNREFUSED sem Redis local | Infra     | Média      | Silenciar erros de conexão Redis quando não configurado |
+| Drill-down multi-dimensão                                | BI        | Média      | Já implementado mas dimensão pode ser mais flexível     |
+| Testes E2E (Playwright)                                  | Qualidade | Média      | Configurar Playwright para fluxos críticos              |
 
 ---
 

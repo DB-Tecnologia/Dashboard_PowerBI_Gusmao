@@ -1,7 +1,7 @@
 # ROADMAP.md — Roadmap de Desenvolvimento
 
 **Projeto:** Dashboard Power BI
-**Atualizado em:** 2026-06-29
+**Atualizado em:** 2026-07-02
 **Metodologia:** Specification-Driven Development (SDD) + Test-Driven Development (TDD)
 
 **Fonte única de verdade para acompanhamento do projeto com base no escopo V1.**
@@ -174,8 +174,9 @@ Uma tarefa só é considerada pronta quando:
 5. **Concluído:** Dashboard admin com gráficos de tendência (T12b) — 2026-06-29
 6. **Concluído:** Drill-down multi-dimensão (T07b) — 2026-06-29 (seletor de dimensão, breadcrumb, 3-5 dimensões por KPI)
 7. **Concluído:** Testes E2E com Playwright (DT-005) — 2026-06-29 (6 testes: auth, dashboard, drill-down)
-8. **Pendências remanescentes:** Nenhuma — todas as tarefas técnicas concluídas
-9. **Verificação antes de cada commit:** `pnpm verify:docs`, `pnpm typecheck`, `pnpm test`, `pnpm build`
+8. **Concluído:** Correção de 7 testes web (F-03 a F-09) — 2026-07-02 (web 142/142 passando)
+9. **Pendências remanescentes:** F-01 (typecheck API), F-02 (teste API), F-10 (lint), F-11 (format), F-12 (Redis noise)
+10. **Verificação antes de cada commit:** `pnpm verify:docs`, `pnpm typecheck`, `pnpm test`, `pnpm build`
 
 ---
 
