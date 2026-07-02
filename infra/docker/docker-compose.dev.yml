@@ -13,10 +13,12 @@ services:
       REDIS_HOST: redis
       REDIS_PORT: ${REDIS_PORT:-6379}
     ports:
-      - "${API_PORT:-3001}:3001"
+      - '${API_PORT:-3001}:3001'
     volumes:
       - ../..:/workspace
-      - api_node_modules:/workspace/node_modules
+      - /workspace/node_modules
+      - api_app_node_modules:/workspace/apps/api/node_modules
+      - web_app_node_modules:/workspace/apps/web/node_modules
     working_dir: /workspace
     depends_on:
       redis:
@@ -36,10 +38,12 @@ services:
       NODE_ENV: development
       NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:3001}
     ports:
-      - "${WEB_PORT:-3000}:3000"
+      - '${WEB_PORT:-3000}:3000'
     volumes:
       - ../..:/workspace
-      - web_node_modules:/workspace/node_modules
+      - /workspace/node_modules
+      - api_app_node_modules:/workspace/apps/api/node_modules
+      - web_app_node_modules:/workspace/apps/web/node_modules
     working_dir: /workspace
     depends_on:
       - api
@@ -50,11 +54,11 @@ services:
     image: redis:7.4-alpine
     container_name: dashboard-power-bi-redis-dev
     ports:
-      - "${REDIS_PORT:-6379}:6379"
+      - '${REDIS_PORT:-6379}:6379'
     volumes:
       - redis_data:/data
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ['CMD', 'redis-cli', 'ping']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -66,6 +70,6 @@ networks:
     driver: bridge
 
 volumes:
-  api_node_modules:
-  web_node_modules:
+  api_app_node_modules:
+  web_app_node_modules:
   redis_data:
