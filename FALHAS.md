@@ -20,8 +20,8 @@ Data: 2026-07-02
 | verify:workspace | 1     | 1      | 0      |
 | verify:docker    | 1     | 1      | 0      |
 | verify:docs      | 1     | 1      | 0      |
-| typecheck        | 2     | 1      | 1      |
-| test (API)       | 305   | 304    | 1      |
+| typecheck        | 2     | 2      | 0      |
+| test (API)       | 304   | 304    | 0      |
 | test (Web)       | 142   | 142    | 0      |
 | build            | 2     | 2      | 0      |
 | lint             | 1     | 0      | 1      |
@@ -35,6 +35,8 @@ Data: 2026-07-02
 
 **Severidade:** Média
 
+**Status:** ✅ Corrigido
+
 **Arquivo:** `apps/api/src/audit/services/retention.service.spec.ts` (linhas 48 e 141)
 
 **Erro:**
@@ -46,11 +48,15 @@ error TS2345: Argument of type 'Mocked<ExportsServiceLike>' is not assignable to
 
 **Descrição:** O mock `ExportsServiceLike` não implementa todos os membros de `ExportsService`, causando erro de tipo em 2 locais do spec.
 
+**Correção:** Removido o tipo `ExportsServiceLike` e importado `ExportsService` real. Variável tipada como `jest.Mocked<ExportsService>` com cast `as unknown as jest.Mocked<ExportsService>` no mock.
+
 ---
 
 ## F-02 — Teste API: `report-definitions.repository.spec.ts` falha
 
 **Severidade:** Média
+
+**Status:** ✅ Corrigido
 
 **Arquivo:** `apps/api/src/reports/repositories/report-definitions.repository.spec.ts`
 
@@ -61,7 +67,9 @@ TypeError: configService.get is not a function
   at isDemoMode (reports/repositories/report-definitions.repository.ts:150:24)
 ```
 
-**Descrição:** O mock de `ConfigService` no teste não implementa o método `get()`, causando falha quando o repositório chama `configService.get<string>('APP_MODE')` no construtor.
+**Descrição:** O teste de persistência Supabase passava `supabaseService` como argumento do construtor, mas o repositório aceita `ConfigService`. O mock não tinha método `get()`, causando crash em `isDemoMode()`.
+
+**Correção:** Removido o teste inválido de persistência Supabase (o repositório é em memória, não usa Supabase). O teste de demo seed com `new ConfigService({ APP_MODE: 'demo' })` funciona corretamente.
 
 ---
 
@@ -249,9 +257,11 @@ Error: Supabase nao configurado para este ambiente.
 
 **Severidade:** Baixa
 
+**Status:** ✅ Corrigido
+
 **Descrição:** O `docker-compose.demo.yml` referencia `../env/.env.demo` em `env_file`, mas esse arquivo não existe no repositório (apenas `.env.example` e `.env.production.example` são versionados). Para usar o compose demo, é necessário criar `infra/env/.env.demo` manualmente com as variáveis apropriadas (incluindo `MSSQL_SA_PASSWORD`, `ACCEPT_EULA`, `SQLSERVER_DATABASE`, etc.).
 
-**Solução sugerida:** Criar `infra/env/.env.demo.example` como referência versionada.
+**Correção:** Criado `infra/env/.env.demo.example` como referência versionada e adicionada exceção no `.gitignore`.
 
 ---
 

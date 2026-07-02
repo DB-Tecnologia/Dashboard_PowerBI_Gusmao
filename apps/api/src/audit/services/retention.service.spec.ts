@@ -2,11 +2,8 @@ import { ConfigService } from '@nestjs/config';
 
 import { AuditLogsRepository } from '../repositories/audit-logs.repository';
 import { RefreshTokenRepository } from '../../auth/repositories/refresh-token.repository';
+import { ExportsService } from '../../platform/exports/exports.service';
 import { RetentionService } from './retention.service';
-
-type ExportsServiceLike = {
-  deleteExpiredExports(cutoffDate: Date): Promise<number>;
-};
 
 function createConfigService(overrides: Record<string, unknown> = {}): jest.Mocked<ConfigService> {
   return {
@@ -25,7 +22,7 @@ function createConfigService(overrides: Record<string, unknown> = {}): jest.Mock
 describe('RetentionService', () => {
   let auditLogsRepository: jest.Mocked<AuditLogsRepository>;
   let refreshTokenRepository: jest.Mocked<RefreshTokenRepository>;
-  let exportsService: jest.Mocked<ExportsServiceLike>;
+  let exportsService: jest.Mocked<ExportsService>;
   let service: RetentionService;
 
   beforeEach(() => {
@@ -39,7 +36,7 @@ describe('RetentionService', () => {
 
     exportsService = {
       deleteExpiredExports: jest.fn().mockResolvedValue(2),
-    } as unknown as jest.Mocked<ExportsServiceLike>;
+    } as unknown as jest.Mocked<ExportsService>;
 
     service = new RetentionService(
       createConfigService(),

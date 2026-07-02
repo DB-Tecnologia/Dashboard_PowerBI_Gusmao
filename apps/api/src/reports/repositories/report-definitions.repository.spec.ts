@@ -80,30 +80,6 @@ describe('ReportDefinitionsRepository', () => {
     ).resolves.toBe(false);
   });
 
-  it('deve persistir definicoes no Supabase quando o servico estiver habilitado', async () => {
-    const insert = jest.fn().mockResolvedValue({ error: null });
-    const from = jest.fn().mockReturnValue({ insert });
-    const supabaseService = {
-      isEnabled: () => true,
-      getClient: () => ({ from }),
-    };
-
-    const repository = new ReportDefinitionsRepository(supabaseService as never);
-
-    await repository.create(createInput);
-
-    expect(from).toHaveBeenCalledWith('api_report_definitions');
-    expect(insert).toHaveBeenCalledWith(
-      expect.objectContaining({
-        name: createInput.name,
-        sector: createInput.sector,
-        source_type: createInput.sourceType,
-        source_name: createInput.sourceName,
-        is_active: true,
-      }),
-    );
-  });
-
   it('deve semear relatorios de demo quando APP_MODE=demo', async () => {
     const repository = new ReportDefinitionsRepository(
       new ConfigService({
@@ -115,9 +91,18 @@ describe('ReportDefinitionsRepository', () => {
 
     expect(reports).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ sourceName: 'reports.vw_financeiro_resumo', sector: 'financeiro' }),
-        expect.objectContaining({ sourceName: 'reports.vw_comercial_pipeline', sector: 'comercial' }),
-        expect.objectContaining({ sourceName: 'reports.sp_operacoes_status', sourceType: 'stored_procedure' }),
+        expect.objectContaining({
+          sourceName: 'reports.vw_financeiro_resumo',
+          sector: 'financeiro',
+        }),
+        expect.objectContaining({
+          sourceName: 'reports.vw_comercial_pipeline',
+          sector: 'comercial',
+        }),
+        expect.objectContaining({
+          sourceName: 'reports.sp_operacoes_status',
+          sourceType: 'stored_procedure',
+        }),
       ]),
     );
   });
