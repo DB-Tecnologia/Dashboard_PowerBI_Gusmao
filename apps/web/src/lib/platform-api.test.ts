@@ -24,6 +24,7 @@ jest.mock('./admin-api', () => ({
   apiPatch: jest.fn(),
   apiPost: jest.fn(),
   apiDelete: jest.fn(),
+  getApiUrl: jest.fn(() => 'http://localhost:3001'),
 }));
 
 describe('platform-api', () => {
