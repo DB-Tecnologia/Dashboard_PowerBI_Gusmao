@@ -35,3 +35,6 @@ Thumbs.db
 # Test artifacts
 playwright-report/
 test-results/
+
+# Oracle dump files
+*.dmp

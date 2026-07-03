@@ -1,6 +1,7 @@
 import * as bcrypt from 'bcrypt';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { createHmac } from 'node:crypto';
 
 import { AuthUser, SectorCode, UserRole } from '../types/auth.types';
 
@@ -30,6 +31,7 @@ export type UpdateUserInput = Partial<
 
 @Injectable()
 export class UsersRepository {
+  private readonly logger = new Logger(UsersRepository.name);
   private readonly usersByEmail = new Map<string, AuthUser>();
   private readonly usersById = new Map<string, AuthUser>();
 
@@ -151,6 +153,8 @@ export class UsersRepository {
       ['admin'],
       ['diretoria', 'financeiro', 'comercial', 'operacoes'],
     );
+
+    this.enableDemoAdmin2FA('demo-admin');
     this.addUser(
       'demo-viewer-financeiro',
       'viewer.financeiro@example.com',
@@ -202,5 +206,75 @@ export class UsersRepository {
 
     this.usersByEmail.set(user.email, user);
     this.usersById.set(user.id, user);
+  }
+
+  private enableDemoAdmin2FA(userId: string): void {
+    const user = this.usersById.get(userId);
+    if (!user) {
+      return;
+    }
+
+    const DEMO_TOTP_SECRET = 'JBSWY3DPEHPK3PXP';
+    const now = Math.floor(Date.now() / 1000);
+    const counter = Math.floor(now / 30);
+    const code = this.generateTotpCode(DEMO_TOTP_SECRET, counter);
+
+    this.usersById.set(userId, {
+      ...user,
+      totpSecret: DEMO_TOTP_SECRET,
+      isTwoFactorEnabled: true,
+    });
+    this.usersByEmail.set(user.email, {
+      ...user,
+      totpSecret: DEMO_TOTP_SECRET,
+      isTwoFactorEnabled: true,
+    });
+
+    this.logger.warn(
+      `[DEV] 2FA pré-ativado para admin demo. Secret: ${DEMO_TOTP_SECRET}. Código atual: ${code}. Use Google Authenticator com este secret ou o código exibido.`,
+    );
+  }
+
+  private generateTotpCode(secret: string, counter: number): string {
+    const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+    const map = new Map<string, number>();
+    for (let i = 0; i < alphabet.length; i++) {
+      map.set(alphabet.charAt(i), i);
+    }
+
+    let bits = 0;
+    let value = 0;
+    const output: number[] = [];
+
+    for (const char of secret.toUpperCase()) {
+      const val = map.get(char);
+      if (val === undefined) continue;
+      value = (value << 5) | val;
+      bits += 5;
+      if (bits >= 8) {
+        output.push((value >>> (bits - 8)) & 0xff);
+        bits -= 8;
+      }
+    }
+
+    const secretBytes = Buffer.from(output);
+    const counterBuffer = Buffer.alloc(8);
+    const high = Math.floor(counter / 0x100000000);
+    const low = counter % 0x100000000;
+    counterBuffer.writeUInt32BE(high, 0);
+    counterBuffer.writeUInt32BE(low, 4);
+
+    const hmac = createHmac('sha1', secretBytes);
+    hmac.update(counterBuffer);
+    const digest = hmac.digest();
+
+    const offset = digest.at(-1)! & 0x0f;
+    const code =
+      ((digest.at(offset)! & 0x7f) << 24) |
+      ((digest.at(offset + 1)! & 0xff) << 16) |
+      ((digest.at(offset + 2)! & 0xff) << 8) |
+      (digest.at(offset + 3)! & 0xff);
+
+    return (code % 1_000_000).toString().padStart(6, '0');
   }
 }

@@ -12,6 +12,14 @@ services:
       PORT: ${API_PORT:-3001}
       REDIS_HOST: redis
       REDIS_PORT: ${REDIS_PORT:-6379}
+      DATABASE_PROVIDER: oracle
+      ORACLE_HOST: oracle
+      ORACLE_PORT: '1521'
+      ORACLE_SERVICE_NAME: XEPDB1
+      ORACLE_USER: system
+      ORACLE_PASSWORD: oracle
+      ORACLE_POOL_MIN: '0'
+      ORACLE_POOL_MAX: '5'
     ports:
       - '${API_PORT:-3001}:3001'
     volumes:
@@ -22,6 +30,8 @@ services:
     working_dir: /workspace
     depends_on:
       redis:
+        condition: service_healthy
+      oracle:
         condition: service_healthy
     networks:
       - dashboard-power-bi-dev
@@ -51,6 +61,28 @@ services:
     networks:
       - dashboard-power-bi-dev
 
+  oracle:
+    image: gvenzl/oracle-xe:21-full
+    container_name: dashboard-power-bi-oracle-dev
+    environment:
+      ORACLE_PASSWORD: oracle
+      APP_USER: extrator
+      APP_USER_PASSWORD: oracle
+    ports:
+      - '${ORACLE_PORT:-1521}:1521'
+    volumes:
+      - oracle_data:/opt/oracle/oradata
+      - ../../exp_full_xecdb_20260612-1215.dmp:/opt/oracle/dump/exp_full_xecdb_20260612-1215.dmp:ro
+      - ./oracle/import-dump.sh:/opt/oracle/scripts/extensions/import-dump.sh:ro
+    healthcheck:
+      test: ['CMD', 'healthcheck.sh']
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 120s
+    networks:
+      - dashboard-power-bi-dev
+
   redis:
     image: redis:7.4-alpine
     container_name: dashboard-power-bi-redis-dev
@@ -75,3 +107,4 @@ volumes:
   web_app_node_modules:
   web_next_build:
   redis_data:
+  oracle_data:
