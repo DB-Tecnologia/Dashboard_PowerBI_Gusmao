@@ -5,6 +5,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { AdminModule } from './admin/admin.module';
 import { AuditModule } from './audit/audit.module';
 import { AuthModule } from './auth/auth.module';
+import { BiModule } from './bi/bi.module';
 import { CommonModule } from './common/common.module';
 import { HealthModule } from './health/health.module';
 import { PermissionsModule } from './permissions/permissions.module';
@@ -22,6 +23,7 @@ import { ValidationTestModule } from './validation-test/validation-test.module';
     AdminModule,
     AuditModule,
     AuthModule,
+    BiModule,
     CommonModule,
     HealthModule,
     PermissionsModule,

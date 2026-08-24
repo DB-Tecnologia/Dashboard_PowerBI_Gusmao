@@ -1,7 +1,23 @@
 # RELATORIO.md — Registro Diário de Desenvolvimento
 
 **Projeto:** Dashboard Power BI
-**Atualizado em:** 2026-07-02
+**Atualizado em:** 2026-08-24
+
+## 2026-08-24 — Docker e integração BI
+
+- Instaladas as dependências com `pnpm install --frozen-lockfile` usando Node compatível e pnpm do monorepo.
+- Criado `.env.demo` local ignorado pelo Git a partir de `.env.demo.example`.
+- Corrigida a execução do entrypoint SQL Server em checkout Windows com normalização de EOL no Dockerfile e `.gitattributes`.
+- Validado o Compose demo: SQL Server e Redis saudáveis; API em `3001`; Web em `3000`; Swagger disponível.
+- Criado o contrato `/api/v1/bi/*`, com distinção entre SQL Server demo e Oracle/COMPASS.
+- Implementados testes para resumo Oracle, `not_configured` no demo, idempotência, indisponibilidade e ausência de snapshot escrito.
+- Ajustado o Playwright para usar a porta real da Web.
+
+## Pendências externas
+
+- Fornecer rede, host, porta, service name e usuário Oracle 19c somente leitura.
+- Executar smoke queries e reconciliação dos KPIs antes de habilitar produção.
+- Persistir o ledger de refresh em armazenamento durável após a escolha da persistência operacional.
 
 ---
 

@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
-const E2E_EMAIL = process.env.E2E_EMAIL ?? 'demo@dashboard.com';
-const E2E_PASSWORD = process.env.E2E_PASSWORD ?? 'Demo@123456';
+const E2E_EMAIL = process.env.E2E_EMAIL ?? 'viewer.financeiro@example.com';
+const E2E_PASSWORD = process.env.E2E_PASSWORD ?? 'Admin123!';
 
 test.describe('Autenticação', () => {
   test('login com credenciais válidas redireciona para dashboard', async ({ page }) => {
@@ -54,7 +54,7 @@ test.describe('Dashboard Home', () => {
 
     await expect(page).toHaveURL(/\/app/, { timeout: 15_000 });
 
-    await expect(page.locator('h1, h2, h3').filter({ hasText: /dashboard/i })).toBeVisible({
+    await expect(page.getByRole('heading', { name: 'Dashboard Home' })).toBeVisible({
       timeout: 15_000,
     });
   });
@@ -91,5 +91,19 @@ test.describe('Dashboard Home', () => {
       await drilldownButton.click();
       await expect(page.getByRole('tablist')).toBeVisible({ timeout: 10_000 });
     }
+  });
+});
+
+test.describe('Relatórios', () => {
+  test('abre o catálogo de relatórios após login', async ({ page }) => {
+    await page.goto('/login');
+
+    await page.fill('input[name="email"], input[type="email"]', E2E_EMAIL);
+    await page.fill('input[name="password"], input[type="password"]', E2E_PASSWORD);
+    await page.click('button[type="submit"]');
+
+    await expect(page).toHaveURL(/\/app/, { timeout: 15_000 });
+    await page.goto('/app/reports');
+    await expect(page.getByText('Catálogo de dashboards')).toBeVisible({ timeout: 15_000 });
   });
 });

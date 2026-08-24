@@ -68,6 +68,7 @@ pnpm quality
 Arquivos de ambiente versionados de referência:
 
 - `infra/env/.env.example`
+- `infra/env/.env.demo.example` — SQL Server demo local
 - `infra/env/.env.production.example`
 
 ## Checklist de setup local
@@ -119,6 +120,19 @@ pnpm docker:dev
 pnpm docker:dev:logs
 pnpm docker:dev:down
 ```
+
+### Ambiente demo reproduzivel
+
+O ambiente demo sobe SQL Server, API NestJS, Web Next.js e Redis sem credenciais reais:
+
+```bash
+Copy-Item infra/env/.env.demo.example infra/env/.env.demo
+docker compose --env-file infra/env/.env.demo -f infra/docker/docker-compose.demo.yml up -d --build
+```
+
+URLs: Web `http://localhost:3000`, API `http://localhost:3001`, Swagger `http://localhost:3001/docs`, health `http://localhost:3001/health` e fonte de dados `http://localhost:3001/health/sql`.
+
+Os endpoints versionados de BI exigem JWT em `/api/v1/bi/*`. No demo, `/api/v1/bi/production/summary` informa explicitamente `not_configured`, pois o SQL Server local possui somente tabelas de demonstracao; nao ha fallback sinteticamente oculto nesse contrato.
 
 ## Produção / VPS
 
@@ -189,6 +203,8 @@ pnpm docker:prod
 ## Variáveis de ambiente
 
 A referência de variáveis está em `infra/env/.env.example` e `infra/env/.env.production.example`.
+
+Para a integração real, use `DATABASE_PROVIDER=oracle` e forneça `ORACLE_HOST`, `ORACLE_PORT`, `ORACLE_SERVICE_NAME`, `ORACLE_USER` e `ORACLE_PASSWORD` somente por segredo do ambiente. A aplicação não cria credenciais nem versiona esses valores.
 
 ## Documentação complementar
 

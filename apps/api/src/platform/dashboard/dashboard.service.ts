@@ -1,4 +1,11 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  NotFoundException,
+  Optional,
+  ServiceUnavailableException,
+} from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
 import { SectorCode } from '../../auth/types/auth.types';
 import { DatabaseProviderService } from '../../sql-server/database-provider.service';
@@ -220,6 +227,7 @@ export class DashboardService {
   constructor(
     private readonly sqlQueryService: SqlQueryService,
     private readonly databaseProviderService: DatabaseProviderService,
+    @Optional() private readonly configService?: ConfigService,
   ) {}
 
   async getHome(sectors: SectorCode[] = []): Promise<DashboardHomeResponse> {
@@ -327,8 +335,14 @@ export class DashboardService {
 
   private async loadDataset(): Promise<OracleDashboardDataset> {
     const provider = this.databaseProviderService?.getProvider?.();
-    if (provider !== 'oracle' || !this.sqlQueryService?.executeView) {
+    if (!provider || this.isSyntheticFallbackAllowed()) {
       return this.getFallbackDataset();
+    }
+
+    if (provider !== 'oracle' || !this.sqlQueryService?.executeView) {
+      throw new ServiceUnavailableException(
+        'Dados agricolas indisponiveis: configure Oracle/COMPASS ou habilite DATA_MODE=mock apenas no demo.',
+      );
     }
 
     try {
@@ -408,16 +422,31 @@ export class DashboardService {
         contratos.length === 0 &&
         embarques.length === 0
       ) {
-        return this.getFallbackDataset();
+        throw new ServiceUnavailableException(
+          'Oracle/COMPASS nao retornou um snapshot agricola valido.',
+        );
       }
 
       return this.limitDatasetToLastTwelveMonths({ plantio, colheita, contratos, embarques });
     } catch (error) {
+      if (error instanceof ServiceUnavailableException) {
+        throw error;
+      }
+
       this.logger.warn(
         `Falha ao consultar Oracle para dashboard: ${error instanceof Error ? error.message : 'erro desconhecido'}`,
       );
-      return this.getFallbackDataset();
+      throw new ServiceUnavailableException(
+        'Falha ao consultar os dados agricolas na fonte Oracle/COMPASS.',
+      );
     }
+  }
+
+  private isSyntheticFallbackAllowed(): boolean {
+    const mode = this.configService?.get<string>('DATA_MODE')?.trim().toLowerCase();
+    const appMode = this.configService?.get<string>('APP_MODE')?.trim().toLowerCase();
+
+    return mode === 'mock' || appMode === 'demo';
   }
 
   private getFallbackDataset(): OracleDashboardDataset {

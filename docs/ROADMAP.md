@@ -1,7 +1,7 @@
 # ROADMAP.md — Roadmap de Desenvolvimento
 
 **Projeto:** Dashboard Power BI
-**Atualizado em:** 2026-07-02
+**Atualizado em:** 2026-08-24
 **Metodologia:** Specification-Driven Development (SDD) + Test-Driven Development (TDD)
 
 **Fonte única de verdade para acompanhamento do projeto com base no escopo V1.**
@@ -177,6 +177,15 @@ Uma tarefa só é considerada pronta quando:
 8. **Concluído:** Correção de 7 testes web (F-03 a F-09) — 2026-07-02 (web 142/142 passando)
 9. **Pendências remanescentes:** F-01 (typecheck API), F-02 (teste API), F-10 (lint), F-11 (format), F-12 (Redis noise)
 10. **Verificação antes de cada commit:** `pnpm verify:docs`, `pnpm typecheck`, `pnpm test`, `pnpm build`
+
+### Onda 2026-08 — Docker e integração BI
+
+- ✅ Repositório `main` clonado em `Dashboard_PowerBI_Gusmao` sem alterar os documentos do diretório pai.
+- ✅ Ambiente demo reproduzível com SQL Server, API, Web e Redis; normalização de EOL corrigida no entrypoint Linux.
+- ✅ Playwright apontado para a porta da Web (`3000`).
+- ✅ Contrato BI v1 com fonte, frescor, filtros, resumo de produção Oracle e refresh idempotente.
+- ⏳ Oracle/COMPASS bloqueado até receber rede, host, service name e credencial somente leitura.
+- ⏳ Smoke queries de algodão, algodoeira e romaneios, reconciliação de KPIs e persistência durável do ledger de refresh.
 
 ---
 

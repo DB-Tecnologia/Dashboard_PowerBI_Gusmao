@@ -15,7 +15,8 @@ RUN apt-get update \
 COPY infra/docker/sqlserver/entrypoint.sh /usr/local/bin/demo-sql-entrypoint.sh
 COPY infra/docker/sqlserver/init-demo.sql /docker-entrypoint-initdb.d/init-demo.sql
 
-RUN chmod +x /usr/local/bin/demo-sql-entrypoint.sh
+RUN sed -i 's/\r$//' /usr/local/bin/demo-sql-entrypoint.sh \
+  && chmod +x /usr/local/bin/demo-sql-entrypoint.sh
 
 USER mssql
 

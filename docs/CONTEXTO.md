@@ -2,7 +2,16 @@
 
 **Projeto:** Dashboard Power BI
 **Atualizado em:** 2026-07-02
-**Responsável pela atualização:** Agente IA / Desenvolvedor
+
+## 2026-08-24 — Docker demo e contrato BI v1
+
+- O repositório foi clonado em `Dashboard_PowerBI_Gusmao`, preservando os documentos existentes no diretório pai.
+- O Compose demo está operacional com SQL Server, API NestJS, Next.js e Redis.
+- O entrypoint do SQL Server passou a normalizar CRLF para LF durante o build, evitando falha de shebang em checkout Windows.
+- A API ganhou `apps/api/src/bi`, com contrato versionado, fonte substituível, frescor, filtros, resumo de produção Oracle e refresh idempotente.
+- O dashboard legado só usa números sintéticos quando `DATA_MODE=mock`; BI v1 não mascara indisponibilidade.
+- Oracle/COMPASS permanece aguardando rede, host, service name e usuário somente leitura do cliente.
+  **Responsável pela atualização:** Agente IA / Desenvolvedor
 
 ---
 

@@ -1,7 +1,7 @@
 # ARQUITETURA.md — Arquitetura do Sistema
 
 **Projeto:** Dashboard Power BI
-**Atualizado em:** 2026-06-28
+**Atualizado em:** 2026-08-24
 **Status:** Desenvolvimento (funcional parcial, abaixo do escopo V1)
 
 ---
@@ -115,7 +115,15 @@ apps/web -> apps/api -> SQL Server
                     \-> memoria em partes do dominio
 ```
 
-A API NestJS é a fonte oficial de todos os fluxos autenticados. O frontend não acessa Supabase diretamente. Quando `SUPABASE_URL` e `SUPABASE_SERVICE_ROLE_KEY` não estão configurados, a API usa fallback em memória para parte do domínio.
+A API NestJS é a fonte oficial de todos os fluxos autenticados. O frontend não acessa Supabase diretamente. O fallback sintético do dashboard legado só pode ser usado com `DATA_MODE=mock`; os contratos BI v1 não fazem fallback silencioso.
+
+### BI e fontes substituíveis
+
+- **Responsabilidade:** expor um contrato único para SQL Server demo e Oracle 19c/COMPASS.
+- **Principais arquivos:** `apps/api/src/bi/*`, `apps/api/src/sql-server/database-provider.service.ts`, `apps/api/src/sql-server/sql-query.service.ts`.
+- **Rotas:** `/api/v1/bi/source`, `/freshness`, `/filters`, domínios agrícolas e `/refresh`.
+- **Regra:** somente leitura; ausência de credencial, timeout, consulta vazia ou erro de origem produz status explícito e `warnings`.
+- **Estado:** resumo de produção implementado para as views Oracle já mapeadas; grãos, algodão, algodoeira e romaneios aguardam smoke queries de produção.
 
 ---
 

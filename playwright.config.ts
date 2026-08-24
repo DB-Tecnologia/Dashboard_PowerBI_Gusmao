@@ -2,13 +2,14 @@ import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
   testDir: './tests/e2e',
-  fullyParallel: true,
+  // O ambiente demo usa repositórios em memória; a sequência evita concorrência entre logins.
+  fullyParallel: false,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
   reporter: 'html',
   use: {
-    baseURL: process.env.E2E_BASE_URL ?? 'http://localhost:3001',
+    baseURL: process.env.E2E_BASE_URL ?? 'http://localhost:3000',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
   },
@@ -22,7 +23,7 @@ export default defineConfig({
     ? undefined
     : {
         command: 'pnpm dev:web',
-        url: 'http://localhost:3001',
+        url: 'http://localhost:3000',
         reuseExistingServer: !process.env.CI,
         timeout: 120_000,
       },

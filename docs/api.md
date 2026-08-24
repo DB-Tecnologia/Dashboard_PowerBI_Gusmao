@@ -46,6 +46,20 @@
 - LGPD direitos do titular: `POST /admin/users/:id/anonymize` (anonimização irreversível), `GET /admin/users/:id/data-export` (portabilidade JSON)
 - healthchecks da API e do SQL Server
 
+## Contrato BI v1
+
+As rotas autenticadas abaixo compartilham `source`, `status`, `dataAsOf`, `lastSyncedAt`, `definitionVersion` e `warnings` quando retornam dados de BI:
+
+- `GET /api/v1/bi/source` — fonte ativa, ambiente e healthcheck sanitizado
+- `GET /api/v1/bi/freshness` — data de corte, watermark e último snapshot válido
+- `GET /api/v1/bi/filters` — dimensões de filtro versionadas
+- `GET /api/v1/bi/production/summary` — resumo de plantio/colheita quando Oracle/COMPASS estiver disponível
+- `GET /api/v1/bi/grains`, `GET /api/v1/bi/cotton`, `GET /api/v1/bi/ginning`, `GET /api/v1/bi/romaneios` — contratos preparados, com `not_configured` explícito até a validação das views correspondentes
+- `POST /api/v1/bi/refresh` — smoke check idempotente da fonte; recebe `{ "idempotencyKey": "..." }`
+- `GET /api/v1/bi/refresh/:runId` — status, contagens, erros, watermark e último snapshot válido do job
+
+No SQL Server demo, os domínios agrícolas não são preenchidos com dados sintéticos. A carga efetiva Oracle/COMPASS será habilitada após receber host, service name, rede e usuário somente leitura.
+
 ## Padrões importantes
 
 - validação por DTOs
