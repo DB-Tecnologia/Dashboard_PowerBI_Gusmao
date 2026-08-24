@@ -1,56 +1,101 @@
-# Dashboard Power BI
+# Dashboard Gusmão
 
-Monorepo da plataforma Dashboard Power BI em estado funcional parcial.
+## Inteligência operacional para transformar dados agrícolas em decisões melhores
 
-## Visão geral
+O Dashboard Gusmão é uma plataforma de BI e relatórios criada para dar à gestão uma visão clara da operação do Grupo Franciosi, conectando produção, colheita, grãos, algodão, algodoeira e romaneios em uma experiência web segura e rastreável.
 
-Este repositório já entrega uma base real de:
+> **Status do produto:** ambiente demo reproduzível em Docker, primeira fatia de BI em validação local e integração Oracle 19c/COMPASS preparada para a próxima etapa.
 
-- autenticação com API NestJS;
-- dashboard inicial;
-- dashboard home com payload consolidado de BI e charts reais;
-- catálogo e execução de relatórios;
-- administração básica de usuários e grupos;
-- rotas centralizadas de dashboard, notificações, exportações, settings e perfil via API;
-- atualização de settings via API com trilha de auditoria;
-- mutações de permissões com trilha de auditoria no backend;
-- infraestrutura de desenvolvimento em Docker Compose;
-- infraestrutura de produção com Docker Compose e deploy para VPS via GitHub Actions.
+## Por que este produto existe
 
-Funcionalidades recentemente entregues:
+Operações agrícolas geram dados valiosos em muitas telas, relatórios e sistemas. Quando esses dados ficam dispersos, a gestão perde tempo para encontrar respostas, comparar períodos e entender se um indicador está atualizado.
 
-- tela de perfil do usuário (`/app/profile`) com dados pessoais, roles, setores e alteração de senha;
-- gestão de permissões granulares (`/app/admin/permissions`) com CRUD completo via API;
-- logs de auditoria administrativos (`/app/admin/audit`) com filtragem por usuário, ação e recurso;
-- React Query (`@tanstack/react-query`) para gerenciamento de estado no frontend;
-- headers de segurança (CSP, HSTS, X-Frame-Options, X-Content-Type-Options, Referrer-Policy);
-- proteção CSRF com middleware customizado;
-- Recharts instalado para gráficos no dashboard.
+O Dashboard Gusmão organiza essa informação em uma camada única de consulta para que cada área consiga acompanhar o que importa:
 
-Ele ainda não representa a plataforma V1 completa descrita no PDF de escopo.
+- **Gestão:** visão consolidada, tendências e frescor dos dados.
+- **Produção:** colheita, volume, área, produtividade e evolução da safra.
+- **Grãos e algodão:** indicadores operacionais por cultura, período e unidade.
+- **Algodoeira:** recebimento, beneficiamento e qualidade.
+- **Armazenagem e comercial:** romaneios, saldos e movimentações nas fases seguintes.
+- **Administração:** usuários, permissões, auditoria e saúde das integrações.
 
-Documentos de entrada do estado atual:
+## O valor para o negócio
 
-- `PRD.md` — produto, requisitos, KPIs e critérios de aceite
-- `AGENTS.md` — regras para agentes e colaboradores
-- `ROADMAP.md` — roadmap vigente de desenvolvimento
-- `README.md` — setup, comandos e visão operacional
-- `docs/INDEX.md` — índice único da documentação vigente e histórica
+| Desafio                                       | Como o Dashboard Gusmão ajuda                                                 |
+| --------------------------------------------- | ----------------------------------------------------------------------------- |
+| Informação espalhada em sistemas e relatórios | Centraliza os principais indicadores em uma experiência web única.            |
+| Dificuldade para comparar produção e períodos | Estrutura filtros, dimensões e visões para análise operacional.               |
+| Dúvida sobre a atualidade de um número        | Exibe origem, data de corte, última sincronização, status e alertas.          |
+| Acesso sem governança                         | Usa autenticação, perfis, permissões por setor e trilha de auditoria.         |
+| Integração dependente de uma única fonte      | Mantém um contrato de BI substituível entre SQL Server demo e Oracle/COMPASS. |
 
-## Stack
+## Uma visão única da operação
 
-- Node.js 20+
-- pnpm 9+
-- TypeScript
-- NestJS para API
-- Next.js 14 para Web
-- Tailwind CSS
-- SQL Server externo
-- Supabase consumido pela API em fluxos de platform
-- Docker Compose para desenvolvimento e produção
-- GitHub Actions para deploy na VPS
+O produto foi organizado para acompanhar o fluxo de decisão do negócio:
 
-## Setup rápido
+```text
+Visão Grupo -> Colheita -> Grãos / Algodão -> Algodoeira
+                                      -> Romaneios
+```
+
+### Primeira frente de BI
+
+- Resumo da produção.
+- Produção de grãos.
+- Produção de algodão.
+- Indicadores da algodoeira.
+- Romaneios e filtros relacionados.
+- Frescor, data de corte e origem de cada informação.
+
+Armazenamento, comercial, embarques, resultados e custos permanecem no roadmap para as próximas fases de evolução.
+
+## Confiança no dado desde a origem
+
+O Dashboard Gusmão foi desenhado para deixar a qualidade do dado visível, não escondê-la. As respostas de BI carregam metadados como:
+
+```text
+value | unit | dataAsOf | lastSyncedAt | source
+status | definitionVersion | warnings
+```
+
+Na prática, isso significa:
+
+- indisponibilidade da origem aparece como indisponibilidade;
+- dados demo e mock são identificados explicitamente;
+- não existe fallback sintético silencioso para mascarar falhas;
+- atualizações podem ser idempotentes e auditáveis;
+- o último snapshot válido e o watermark podem ser preservados;
+- a reconciliação com o sistema de origem faz parte do aceite da integração real.
+
+## Integração preparada para Oracle e COMPASS
+
+O ambiente inicial usa SQL Server demo para validar a plataforma sem depender da infraestrutura do cliente. A arquitetura de dados foi preparada para receber Oracle 19c/COMPASS como fonte real, em modo somente leitura.
+
+A etapa de integração será concluída quando estiverem disponíveis rede, host, porta, service name e usuário de leitura. O processo previsto inclui smoke queries, consultas parametrizadas, controle de timeout, registro de execução, contagens, erros, watermark e reconciliação dos KPIs.
+
+Nenhuma credencial real é criada, exposta ou versionada neste repositório.
+
+## O que já está disponível
+
+- Autenticação, sessão e autorização por perfil, setor e permissão.
+- Dashboard inicial e home com KPIs e gráficos.
+- Catálogo, filtros, visualização e execução de relatórios.
+- Exportações controladas e auditadas.
+- Administração de usuários, grupos, permissões e configurações.
+- Auditoria administrativa.
+- API versionada para a primeira fatia de BI.
+- Ambiente Docker com SQL Server, API NestJS, Web Next.js e Redis.
+- Healthchecks, Swagger e validações automatizadas do workspace.
+
+O produto ainda está em evolução e não representa toda a plataforma V1 descrita no escopo original. O estado real, os limites e as próximas entregas estão registrados no [PRD](PRD.md) e no [ROADMAP](ROADMAP.md).
+
+## Desenvolvimento com Docker
+
+O ambiente demo é a forma recomendada de conhecer a plataforma localmente.
+
+### Setup rápido
+
+Requisitos: Node.js `>=20.11`, pnpm `9.x` e Docker Desktop.
 
 ```bash
 git clone https://github.com/DB-Tecnologia/Dashboard_PowerBI_Gusmao.git
@@ -59,126 +104,66 @@ pnpm install
 pnpm verify:workspace
 pnpm verify:docker
 pnpm verify:docs
-pnpm quality
 ```
 
-Arquivos de ambiente versionados de referência:
+### Ambiente demo reproduzível
 
-- `infra/env/.env.example`
-- `infra/env/.env.demo.example` — SQL Server demo local
-- `infra/env/.env.production.example`
+O demo sobe todos os serviços necessários sem credenciais reais:
 
-## Checklist de setup local
-
-- [ ] Instalar Node.js 20 ou superior
-- [ ] Instalar pnpm 9 ou superior
-- [ ] Instalar Docker e Docker Compose, se usar ambiente containerizado
-- [ ] Clonar o repositório
-- [ ] Rodar `pnpm install`
-- [ ] Rodar `pnpm verify:workspace`
-- [ ] Rodar `pnpm verify:docker`
-- [ ] Rodar `pnpm verify:docs`
-- [ ] Rodar `pnpm quality`
-- [ ] Subir API com `pnpm dev:api`
-- [ ] Subir Web com `pnpm dev:web`
-- [ ] Validar `http://localhost:3000`
-- [ ] Validar `http://localhost:3001/health`
-- [ ] Validar `http://localhost:3001/docs`
-- [ ] Opcionalmente usar `pnpm docker:dev`
-
-## Desenvolvimento sem Docker
-
-Terminal 1:
-
-```bash
-pnpm dev:api
-```
-
-Terminal 2:
-
-```bash
-pnpm dev:web
-```
-
-URLs locais:
-
-```text
-Web: http://localhost:3000
-Design system: http://localhost:3000/design-system
-API: http://localhost:3001
-Healthcheck: http://localhost:3001/health
-Swagger: http://localhost:3001/docs
-```
-
-## Desenvolvimento com Docker
-
-```bash
-pnpm docker:dev
-pnpm docker:dev:logs
-pnpm docker:dev:down
-```
-
-### Ambiente demo reproduzivel
-
-O ambiente demo sobe SQL Server, API NestJS, Web Next.js e Redis sem credenciais reais:
-
-```bash
+```powershell
 Copy-Item infra/env/.env.demo.example infra/env/.env.demo
 docker compose --env-file infra/env/.env.demo -f infra/docker/docker-compose.demo.yml up -d --build
 ```
 
-URLs: Web `http://localhost:3000`, API `http://localhost:3001`, Swagger `http://localhost:3001/docs`, health `http://localhost:3001/health` e fonte de dados `http://localhost:3001/health/sql`.
+Acesse:
 
-Os endpoints versionados de BI exigem JWT em `/api/v1/bi/*`. No demo, `/api/v1/bi/production/summary` informa explicitamente `not_configured`, pois o SQL Server local possui somente tabelas de demonstracao; nao ha fallback sinteticamente oculto nesse contrato.
+- Web: `http://localhost:3000`
+- API: `http://localhost:3001`
+- Swagger: `http://localhost:3001/docs`
+- Healthcheck: `http://localhost:3001/health`
+- Fonte de dados: `http://localhost:3001/health/sql`
 
-## Produção / VPS
+No ambiente demo, `/api/v1/bi/production/summary` informa `not_configured` quando a base local não possui dados de produção. O contrato não mascara essa condição com números sintéticos.
 
-Artefatos de produção:
+### Checklist de setup local
 
-```text
-infra/docker/docker-compose.prod.yml
-infra/docker/api.prod.Dockerfile
-infra/docker/web.prod.Dockerfile
-.github/workflows/deploy-vps.yml
-```
-
-O deploy automatizado está descrito em `docs/architecture/ARQUITETURA.md` (seção de infraestrutura) e `.github/workflows/deploy-vps.yml`.
+- [ ] Instalar Node.js 20 ou superior.
+- [ ] Instalar pnpm 9 ou superior.
+- [ ] Instalar Docker Desktop.
+- [ ] Clonar o repositório.
+- [ ] Rodar `pnpm install`.
+- [ ] Rodar as verificações do workspace.
+- [ ] Subir o ambiente demo.
+- [ ] Validar Web, API, Swagger e healthchecks.
 
 ## Arquitetura e monorepo
 
+O monorepo separa a experiência Web, a API, os contratos compartilhados, a infraestrutura Docker e a documentação operacional.
+
+## Para equipes técnicas
+
+### Stack
+
+- Node.js 20+ e pnpm 9+.
+- TypeScript strict.
+- NestJS para a API.
+- Next.js 14 com App Router para a Web.
+- Tailwind CSS e Recharts.
+- SQL Server demo e Oracle/COMPASS como fontes substituíveis.
+- Redis para serviços de apoio e jobs.
+- Docker Compose para desenvolvimento, demo e produção.
+- GitHub Actions para automação de deploy.
+
+### Arquitetura resumida
+
 ```text
-apps/
-  api/      # API NestJS
-  web/      # Web Next.js
-packages/
-  shared/   # reservado para contratos/utilitários compartilhados
-  ui/       # reservado para componentes compartilhados
-docs/       # documentação técnica e análise de escopo
-infra/      # Dockerfiles, Compose e env examples
-scripts/    # validações estruturais
-supabase/   # migrations e políticas
+Web Next.js -> API NestJS -> Fonte de dados
+                         -> SQL Server demo
+                         -> Oracle 19c / COMPASS
+                         -> Redis e serviços de plataforma
 ```
 
-Fluxo real atual:
-
-```text
-Web Next.js -> API NestJS -> SQL Server externo
-                        \-> Supabase
-                        \-> fallbacks em memória em partes do domínio
-```
-
-## Decisões arquiteturais
-
-As ADRs ficam em `docs/decisions`:
-
-- ADR-0001 - Monorepo
-- ADR-0002 - Tooling de qualidade
-- ADR-0003 - API NestJS
-- ADR-0004 - Web Next.js
-- ADR-0005 - Design system base
-- ADR-0006 - Docker Compose dev
-
-## Comandos principais
+### Comandos principais
 
 ```bash
 pnpm verify:workspace
@@ -194,68 +179,72 @@ pnpm quality
 pnpm dev:api
 pnpm dev:web
 pnpm docker:dev
-pnpm docker:prod
+pnpm docker:demo
 ```
 
-## Variáveis de ambiente
-
-A referência de variáveis está em `infra/env/.env.example` e `infra/env/.env.production.example`.
-
-Para a integração real, use `DATABASE_PROVIDER=oracle` e forneça `ORACLE_HOST`, `ORACLE_PORT`, `ORACLE_SERVICE_NAME`, `ORACLE_USER` e `ORACLE_PASSWORD` somente por segredo do ambiente. A aplicação não cria credenciais nem versiona esses valores.
-
-## Documentação complementar
-
-Consulte `docs/INDEX.md` para a documentação completa, organizada por produto, integração, arquitetura, auditoria, operação, referência, governança e histórico.
-
-Documentos técnicos principais:
-
-- `docs/product/`: produto, escopo e KPIs
-- `docs/integration/`: integração BI e Oracle/COMPASS
-- `docs/architecture/`: arquitetura e banco de dados
-- `docs/reference/`: API e Web
-- `docs/governance/`: contexto vivo e relatório diário
-- `docs/decisions/`: decisões arquiteturais curtas
-- `docs/roadmap/`: roadmap detalhado por telas, módulos e tarefas
-- `docs/specs/`: especificações SDD por módulo
-
-## Troubleshooting
-
-### Porta em uso
-
-Ajuste `API_PORT`, `WEB_PORT`, `REDIS_PORT` ou `NGINX_PORT` conforme o ambiente.
-
-### Dependências inconsistentes
+## Desenvolvimento sem Docker
 
 ```bash
-rm -rf node_modules apps/*/node_modules packages/*/node_modules
-pnpm install
+pnpm dev:api
+pnpm dev:web
 ```
 
-### Docker falhando por ambiente incorreto
+URLs locais:
 
-Valide se o arquivo de ambiente usado corresponde ao contexto:
+```text
+Web: http://localhost:3000
+API: http://localhost:3001
+Healthcheck: http://localhost:3001/health
+Swagger: http://localhost:3001/docs
+```
 
-- `infra/env/.env.example` para desenvolvimento
-- `infra/env/.env.production` na VPS
+## Decisões arquiteturais
 
-### SQL Server indisponível
-
-Valide:
-
-- credenciais `SQLSERVER_*`;
-- conectividade da instância externa;
-- `GET http://localhost:3001/health/sql`.
-
-### Supabase indisponível
-
-Os fluxos de dashboard, notificações, exportações e settings agora passam pela API, mas continuam dependendo do Supabase no backend atual. Sem essa integração, essas rotas podem responder vazias ou degradadas. A home de BI depende dessa base para montar `GET /dashboard/home`, e o drill-down inicial de KPI já usa `GET /dashboard/kpis/:kpiId/drilldown`.
+As principais decisões técnicas estão registradas em [`docs/decisions/`](docs/decisions/), incluindo a escolha do monorepo, NestJS, Next.js, design system e Docker Compose.
 
 ## Segurança
 
-- Nunca versionar `.env` real.
-- Nunca commitar tokens, senhas ou strings de conexão.
-- A API usa JWT, `bcrypt` e consultas parametrizadas ao SQL Server.
-- A Web agora persiste a sessão em `sessionStorage`, migra sessões legadas do `localStorage` e tenta um refresh automático único em respostas `401`.
-- Headers de segurança ativos: CSP, HSTS (produção), X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy.
-- Proteção CSRF implementada via middleware customizado com token em cookie + header `x-csrf-token`.
-- 2FA/TOTP implementado e obrigatório para admins (setup, verify, disable, login).
+Segurança e governança fazem parte do produto desde a autenticação até a integração de dados:
+
+- Nunca versionar `.env` real, tokens, senhas ou strings de conexão.
+- Oracle deve ser acessado somente com usuário de leitura.
+- Consultas SQL devem ser parametrizadas e ter identificadores validados.
+- A API aplica JWT, bcrypt, autorização, CSRF e headers de segurança.
+- A plataforma mantém trilha de auditoria para ações administrativas.
+- Dados demo, mock, indisponíveis ou desatualizados devem ser identificados no contrato.
+
+## Troubleshooting
+
+- **Porta em uso:** ajuste `API_PORT`, `WEB_PORT`, `REDIS_PORT` ou `NGINX_PORT`.
+- **Dependências inconsistentes:** remova os diretórios `node_modules` e rode `pnpm install` novamente.
+- **SQL Server indisponível:** valide as variáveis `SQLSERVER_*` e `http://localhost:3001/health/sql`.
+- **Oracle não configurado:** a integração real depende de rede, host, service name e usuário de leitura fornecidos pelo cliente.
+
+## Documentação
+
+Comece pelo [índice da documentação](docs/INDEX.md):
+
+- [PRD](PRD.md): produto, público, requisitos e critérios de aceite.
+- [ROADMAP](ROADMAP.md): fases, prioridades e próximos marcos.
+- [Arquitetura](docs/architecture/ARQUITETURA.md): topologia e módulos.
+- [Integração BI](docs/integration/relatorio-integracao-bi-gusmao-2026-08-24.md): fontes, atualização e Oracle.
+- [Produto e KPIs](docs/product/): escopo, mapeamento e indicadores.
+- [API e Web](docs/reference/): contratos e fluxos disponíveis.
+- [Decisões](docs/decisions/): ADRs arquiteturais.
+
+## Produção e suporte operacional
+
+Os artefatos de produção estão em:
+
+```text
+infra/docker/docker-compose.prod.yml
+infra/docker/api.prod.Dockerfile
+infra/docker/web.prod.Dockerfile
+.github/workflows/deploy-vps.yml
+```
+
+O deploy automatizado e os limites operacionais estão descritos em [Arquitetura](docs/architecture/ARQUITETURA.md). Variáveis de produção devem ser fornecidas exclusivamente pelo ambiente seguro de execução.
+
+## Licença
+
+Uso interno e controlado. Consulte a equipe responsável pelo projeto para informações sobre distribuição, operação e acesso aos dados.
