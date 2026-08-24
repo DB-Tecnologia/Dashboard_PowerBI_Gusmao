@@ -92,15 +92,17 @@ apps/web -> apps/api -> SQL Server
 Leia primeiro:
 
 - `README.md`
-- `docs/CONTEXTO.md`
-- `docs/ARQUITETURA.md`
-- `docs/BANCO_DADOS.md`
-- `docs/ESCOPO.md`
-- `docs/ROADMAP.md`
-- `docs/RELATORIO.md`
-- `docs/ANALISE_ESCOPO_V1.md`
-- `docs/api.md`
-- `docs/web.md`
+- `PRD.md`
+- `ROADMAP.md`
+- `docs/INDEX.md`
+- `docs/governance/CONTEXTO.md`
+- `docs/architecture/ARQUITETURA.md`
+- `docs/architecture/BANCO_DADOS.md`
+- `docs/product/ESCOPO.md`
+- `docs/governance/RELATORIO.md`
+- `docs/audits/ANALISE_ESCOPO_V1.md`
+- `docs/reference/api.md`
+- `docs/reference/web.md`
 - `docs/specs/` — especificacoes SDD por modulo
 
 ## Modulos reais do sistema
@@ -261,15 +263,16 @@ Atualize documentacao quando a mudanca alterar:
 Arquivos mais provaveis de ajuste:
 
 - `README.md`
-- `docs/ARQUITETURA.md`
-- `docs/BANCO_DADOS.md`
-- `docs/ESCOPO.md`
-- `docs/ROADMAP.md`
-- `docs/CONTEXTO.md`
-- `docs/RELATORIO.md`
-- `docs/ANALISE_ESCOPO_V1.md`
-- `docs/api.md`
-- `docs/web.md`
+- `PRD.md`
+- `ROADMAP.md`
+- `docs/architecture/ARQUITETURA.md`
+- `docs/architecture/BANCO_DADOS.md`
+- `docs/product/ESCOPO.md`
+- `docs/governance/CONTEXTO.md`
+- `docs/governance/RELATORIO.md`
+- `docs/audits/ANALISE_ESCOPO_V1.md`
+- `docs/reference/api.md`
+- `docs/reference/web.md`
 
 ## Padrao de commits
 
@@ -331,22 +334,22 @@ Exemplos:
 - `feat: adicionar React Query ao frontend`
 - `security: implementar CSRF middleware e headers CSP/HSTS/X-Frame-Options`
 - `chore: instalar recharts para gráficos no dashboard`
-- `docs: atualizar docs/ROADMAP.md e README.md com estado atual`
+- `docs: atualizar ROADMAP.md e README.md com estado atual`
 
 ### Regra de documentação
 
 **Toda tarefa deve atualizar documentação.** Nunca finalize uma tarefa sem:
 
 1. Atualizar `README.md` se o escopo mudar funcionalidades visíveis;
-2. Atualizar `docs/ROADMAP.md` com marcos alcançados;
-3. Atualizar `docs/api.md` se novos endpoints foram criados;
-4. Atualizar `docs/web.md` se novas telas foram criadas;
-5. Registrar em `docs/CONTEXTO.md` qualquer decisão técnica, bloqueio ou mudança importante;
-6. Atualizar `docs/RELATORIO.md` ao final da sessão com o que foi feito no dia.
+2. Atualizar `ROADMAP.md` com marcos alcançados;
+3. Atualizar `docs/reference/api.md` se novos endpoints foram criados;
+4. Atualizar `docs/reference/web.md` se novas telas foram criadas;
+5. Registrar em `docs/governance/CONTEXTO.md` qualquer decisão técnica, bloqueio ou mudança importante;
+6. Atualizar `docs/governance/RELATORIO.md` ao final da sessão com o que foi feito no dia.
 
-### Regra de docs/RELATORIO.md
+### Regra de docs/governance/RELATORIO.md
 
-**Ao final de cada sessão de implementação, atualize o `docs/RELATORIO.md`** com o que foi feito naquele dia:
+**Ao final de cada sessão de implementação, atualize o `docs/governance/RELATORIO.md`** com o que foi feito naquele dia:
 
 - Commits realizados (hash, mensagem, tarefa associada);
 - Funcionalidades entregues (backend e frontend);
@@ -356,11 +359,11 @@ Exemplos:
 - Débitos técnicos remanescentes;
 - Próximos passos recomendados.
 
-Se o arquivo `docs/RELATORIO.md` ainda não existir para o dia atual, crie-o. Se já existir, apende ou atualize a seção correspondente. Use-o como fonte de acompanhamento diário do projeto.
+Se o arquivo `docs/governance/RELATORIO.md` ainda não existir para o dia atual, crie-o. Se já existir, apende ou atualize a seção correspondente. Use-o como fonte de acompanhamento diário do projeto.
 
-### Regra de docs/ROADMAP.md
+### Regra de ROADMAP.md
 
-O arquivo `docs/ROADMAP.md` deve ser mantido como fonte única da direção do projeto. A cada tarefa:
+O arquivo `ROADMAP.md` deve ser mantido como fonte única da direção do projeto. A cada tarefa:
 
 - Mova o item de `## Em andamento / Pendente` para `## Concluído`;
 - Adicione data de conclusão;
@@ -400,8 +403,8 @@ Antes de codificar, o agente deve:
    - testes
    - infraestrutura
    - seguranca
-6. Registrar decisoes relevantes em `docs/CONTEXTO.md`.
-7. Atualizar `docs/ROADMAP.md` se a tarefa fizer parte de fase, epico ou historia.
+6. Registrar decisoes relevantes em `docs/governance/CONTEXTO.md`.
+7. Atualizar `ROADMAP.md` se a tarefa fizer parte de fase, epico ou historia.
 
 Toda especificacao deve conter:
 
@@ -429,7 +432,7 @@ Regras:
 - Todo bug corrigido precisa de teste de regressao.
 - Toda regra de negocio critica precisa de teste.
 - Toda migration relevante precisa ser validada.
-- Nao reduzir cobertura sem justificativa em `docs/RELATORIO.md`.
+- Nao reduzir cobertura sem justificativa em `docs/governance/RELATORIO.md`.
 - Se a stack nao tiver testes configurados, registrar isso e propor configuracao inicial.
 
 Comandos de teste do projeto:
@@ -467,7 +470,7 @@ Regras adicionais de seguranca:
 - Nao criar backdoors, bypass de autenticacao ou desativar validacoes sem autorizacao.
 - Validar entradas de usuario.
 - Documentar riscos de seguranca encontrados.
-- Registrar pendencias criticas em `docs/CONTEXTO.md`.
+- Registrar pendencias criticas em `docs/governance/CONTEXTO.md`.
 
 ## Conduta para agentes
 
@@ -487,7 +490,7 @@ Uma tarefa esta pronta quando:
 - o escopo pedido foi cumprido;
 - os testes aplicaveis foram criados ou atualizados;
 - os comandos relevantes passaram, ou a limitacao ficou explicitada;
-- a documentacao relevante foi ajustada (README, docs/ROADMAP, docs/ARQUITETURA, docs/BANCO_DADOS, docs/ESCOPO, docs/CONTEXTO, docs/RELATORIO, docs/api.md, docs/web.md);
+- a documentacao relevante foi ajustada (README, PRD, ROADMAP, docs/INDEX, docs/architecture, docs/product, docs/governance, docs/reference);
 - o commit foi feito com mensagem em pt-BR no padrão Conventional Commits;
 - nao ha segredo no diff;
 - nada importante foi descrito como pronto sem estar no runtime real.

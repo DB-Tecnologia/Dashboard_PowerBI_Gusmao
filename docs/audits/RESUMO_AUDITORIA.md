@@ -66,11 +66,11 @@
 
 ## Estimativa Geral de Esforço Restante
 
-| Cenário | Esforço | Condição |
-|---------|---------|----------|
-| Mínimo (MVP interno) | ~10h | Supabase + SQL Server configurados |
-| Recomendado (cliente real) | ~75h | + TLS, SMTP, logs, backup |
-| Completo (escopo total) | ~204.5h | + S3, métricas, escala, alertas |
+| Cenário                    | Esforço | Condição                           |
+| -------------------------- | ------- | ---------------------------------- |
+| Mínimo (MVP interno)       | ~10h    | Supabase + SQL Server configurados |
+| Recomendado (cliente real) | ~75h    | + TLS, SMTP, logs, backup          |
+| Completo (escopo total)    | ~204.5h | + S3, métricas, escala, alertas    |
 
 ---
 
@@ -84,10 +84,10 @@ O projeto entrega valor real com todos os fluxos principais funcionando, mas **p
 
 ## Arquivos de Auditoria Criados
 
-| Arquivo | Conteúdo |
-|---------|----------|
-| `AUDITORIA_PROJETO.md` | Auditoria completa (25 seções) |
-| `TAREFAS_PARA_CONCLUSAO.md` | Plano de execução (26 tarefas P0-P3) |
-| `ROADMAP_ATUALIZADO.md` | Roadmap com 6 fases e 3 cenários |
-| `MATRIZ_REQUISITOS.md` | Matriz de 72 requisitos com evidências |
-| `RESUMO_AUDITORIA.md` | Este resumo executivo |
+| Arquivo                     | Conteúdo                               |
+| --------------------------- | -------------------------------------- |
+| `AUDITORIA_PROJETO.md`      | Auditoria completa (25 seções)         |
+| `TAREFAS_PARA_CONCLUSAO.md` | Plano de execução (26 tarefas P0-P3)   |
+| `ROADMAP_ATUALIZADO.md`     | Roadmap com 6 fases e 3 cenários       |
+| `MATRIZ_REQUISITOS.md`      | Matriz de 72 requisitos com evidências |
+| `RESUMO_AUDITORIA.md`       | Este resumo executivo                  |

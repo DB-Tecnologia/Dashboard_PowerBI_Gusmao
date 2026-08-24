@@ -3,7 +3,7 @@
 **Fonte:** `Conversa do WhatsApp com Projeto gusmao 010239 dashboard.txt`  
 **Cliente identificado na conversa:** Anderson Gusmão  
 **Última confirmação de escopo:** 24/08/2026  
-**Base de análise:** [mapeamento do sistema BI](mapeamento_sistema_bi_grupo_franciosi.md) e [relatório de KPIs](relatorio_kpis_producao_graos_algodao.md)
+**Base de análise:** [mapeamento do sistema BI](bi-grupo-franciosi-mapeamento.md) e [relatório de KPIs](kpis-producao-graos-algodao-2026-08-24.md)
 
 > Este documento organiza as solicitações e decisões registradas na conversa. Não interpreta as ocorrências marcadas como `<Mídia oculta>` e não reproduz credenciais, links privados ou dados de acesso.
 

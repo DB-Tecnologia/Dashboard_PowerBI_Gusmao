@@ -121,4 +121,4 @@ O Nginx encaminhará `/` para Web e as rotas da API para NestJS. A API acessará
 
 ## Evidências e documentação de entrega
 
-A entrega atualizará `README.md`, `docs/ROADMAP.md`, `docs/CONTEXTO.md`, `docs/RELATORIO.md`, `docs/ARQUITETURA.md`, `docs/BANCO_DADOS.md`, `docs/api.md` e os runbooks de deploy/rollback pertinentes. Senhas e chaves não serão registradas nesses arquivos.
+A entrega atualizará `README.md`, `ROADMAP.md`, `docs/governance/CONTEXTO.md`, `docs/governance/RELATORIO.md`, `docs/architecture/ARQUITETURA.md`, `docs/architecture/BANCO_DADOS.md`, `docs/reference/api.md` e os runbooks de deploy/rollback pertinentes. Senhas e chaves não serão registradas nesses arquivos.

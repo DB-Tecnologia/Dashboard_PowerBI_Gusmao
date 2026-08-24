@@ -6,9 +6,9 @@
 
 **Fonte única de verdade para acompanhamento do projeto com base no escopo V1.**
 
-- **Base do escopo:** `ESCOPO_DASHBOARD_Plataforma_BI_V1.md`
-- **Análise de aderência:** `ANALISE_ESCOPO_V1.md`
-- **Escopo consolidado:** `ESCOPO.md`
+- **Base do escopo:** `docs/product/ESCOPO_DASHBOARD_Plataforma_BI_V1.md`
+- **Análise de aderência:** `docs/audits/ANALISE_ESCOPO_V1.md`
+- **Escopo consolidado:** `docs/product/ESCOPO.md`
 
 ---
 

@@ -3,6 +3,8 @@
 **Projeto:** Dashboard Power BI
 **Atualizado em:** 2026-08-24
 
+> As entradas anteriores a 24/08/2026 preservam os caminhos da estrutura documental vigente na data de cada registro. A estrutura atual e mantida em `docs/INDEX.md`; referencias historicas abaixo nao representam arquivos ausentes.
+
 ## 2026-08-24 — Docker e integração BI
 
 - Instaladas as dependências com `pnpm install --frozen-lockfile` usando Node compatível e pnpm do monorepo.

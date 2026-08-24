@@ -37,9 +37,9 @@ O repositório pode ser aproveitado como plataforma de apresentação, autentica
 Foram cruzadas quatro fontes de evidência:
 
 1. código do repositório, principalmente `apps/api`, `apps/web`, `infra` e `supabase`;
-2. documentação do próprio projeto, incluindo `README.md`, `AUDITORIA_PROJETO.md`, `MATRIZ_REQUISITOS.md`, `docs/ARQUITETURA.md`, `docs/DB_ORACLE.md`, `docs/BANCO_DADOS.md` e `docs/KPIS.md`;
-3. última análise do BI Grupo Franciosi, registrada em `mapeamento_sistema_bi_grupo_franciosi.md` e `relatorio_kpis_producao_graos_algodao.md`;
-4. solicitações do cliente, organizadas em `solicitacoes_cliente_projeto_gusmao.md`.
+2. documentação do próprio projeto, incluindo `README.md`, `docs/audits/AUDITORIA_PROJETO.md`, `docs/audits/MATRIZ_REQUISITOS.md`, `docs/architecture/ARQUITETURA.md`, `docs/integration/DB_ORACLE.md`, `docs/architecture/BANCO_DADOS.md` e `docs/product/KPIS.md`;
+3. última análise do BI Grupo Franciosi, registrada em `docs/product/bi-grupo-franciosi-mapeamento.md` e `docs/product/kpis-producao-graos-algodao-2026-08-24.md`;
+4. solicitações do cliente, organizadas em `docs/product/solicitacoes-cliente-gusmao-2026-08-24.md`.
 
 ### Estado verificado no repositório
 
@@ -519,11 +519,11 @@ O trabalho deve ser considerado integrado somente quando todos os itens abaixo f
 
 ## 11. Referências internas
 
-- `mapeamento_sistema_bi_grupo_franciosi.md` — estrutura e rotas do BI analisado.
-- `relatorio_kpis_producao_graos_algodao.md` — linha de base dos KPIs, limitações e confiabilidade.
-- `solicitacoes_cliente_projeto_gusmao.md` — solicitações funcionais e técnicas do cliente.
+- `docs/product/bi-grupo-franciosi-mapeamento.md` — estrutura e rotas do BI analisado.
+- `docs/product/kpis-producao-graos-algodao-2026-08-24.md` — linha de base dos KPIs, limitações e confiabilidade.
+- `docs/product/solicitacoes-cliente-gusmao-2026-08-24.md` — solicitações funcionais e técnicas do cliente.
 - Repositório: [Dashboard_PowerBI_Gusmao](https://github.com/DB-Tecnologia/Dashboard_PowerBI_Gusmao).
-- No repositório: `apps/api/src/platform/dashboard/dashboard.service.ts`, `apps/api/src/sql-server/oracle.service.ts`, `apps/api/src/sql-server/database-provider.service.ts`, `docs/DB_ORACLE.md`, `docs/KPIS.md`, `docs/ARQUITETURA.md`, `docs/BANCO_DADOS.md`, `AUDITORIA_PROJETO.md`, `infra/docker/nginx/default.conf`, `infra/docker/docker-compose.prod.yml`, `.github/workflows/ci.yml` e `playwright.config.ts`.
+- No repositório: `apps/api/src/platform/dashboard/dashboard.service.ts`, `apps/api/src/sql-server/oracle.service.ts`, `apps/api/src/sql-server/database-provider.service.ts`, `docs/integration/DB_ORACLE.md`, `docs/product/KPIS.md`, `docs/architecture/ARQUITETURA.md`, `docs/architecture/BANCO_DADOS.md`, `docs/audits/AUDITORIA_PROJETO.md`, `infra/docker/nginx/default.conf`, `infra/docker/docker-compose.prod.yml`, `.github/workflows/ci.yml` e `playwright.config.ts`.
 
 ## Síntese final
 

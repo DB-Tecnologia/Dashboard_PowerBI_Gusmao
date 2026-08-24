@@ -42,7 +42,7 @@ O Dashboard Power BI é uma plataforma web interna de relatórios e BI em estado
 
 - **O que foi analisado:** Suite completa de testes web (142 testes), typecheck API, testes API (305), build, infraestrutura Docker.
 - **O que foi decidido:**
-  - Corrigir 7 falhas de testes web (F-03 a F-09) identificadas no FALHAS.md.
+  - Corrigir 7 falhas de testes web (F-03 a F-09) identificadas em `docs/audits/FALHAS.md`.
   - Auditar projeto completo para identificar novas falhas.
   - Avaliar viabilidade de Docker Compose para testes locais.
 - **O que foi corrigido:**

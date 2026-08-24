@@ -29,16 +29,13 @@ Funcionalidades recentemente entregues:
 
 Ele ainda não representa a plataforma V1 completa descrita no PDF de escopo.
 
-Documentos canônicos do estado atual:
+Documentos de entrada do estado atual:
 
+- `PRD.md` — produto, requisitos, KPIs e critérios de aceite
 - `AGENTS.md` — regras para agentes e colaboradores
-- `docs/ARQUITETURA.md` — arquitetura completa do sistema
-- `docs/BANCO_DADOS.md` — arquitetura de banco de dados
-- `docs/ESCOPO.md` — escopo consolidado do projeto
-- `docs/ROADMAP.md` — roadmap de desenvolvimento
-- `docs/CONTEXTO.md` — contexto vivo do projeto
-- `docs/RELATORIO.md` — registro diário de desenvolvimento
-- `docs/ANALISE_ESCOPO_V1.md` — análise de aderência ao escopo V1
+- `ROADMAP.md` — roadmap vigente de desenvolvimento
+- `README.md` — setup, comandos e visão operacional
+- `docs/INDEX.md` — índice único da documentação vigente e histórica
 
 ## Stack
 
@@ -56,8 +53,8 @@ Documentos canônicos do estado atual:
 ## Setup rápido
 
 ```bash
-git clone https://github.com/Dev-RuiDiniz/Dashboard_Power_BI.git
-cd Dashboard_Power_BI
+git clone https://github.com/DB-Tecnologia/Dashboard_PowerBI_Gusmao.git
+cd Dashboard_PowerBI_Gusmao
 pnpm install
 pnpm verify:workspace
 pnpm verify:docker
@@ -145,7 +142,7 @@ infra/docker/web.prod.Dockerfile
 .github/workflows/deploy-vps.yml
 ```
 
-O deploy automatizado está descrito em `docs/ARQUITETURA.md` (seção de infraestrutura) e `.github/workflows/deploy-vps.yml`.
+O deploy automatizado está descrito em `docs/architecture/ARQUITETURA.md` (seção de infraestrutura) e `.github/workflows/deploy-vps.yml`.
 
 ## Arquitetura e monorepo
 
@@ -208,19 +205,18 @@ Para a integração real, use `DATABASE_PROVIDER=oracle` e forneça `ORACLE_HOST
 
 ## Documentação complementar
 
-- `docs/ARQUITETURA.md`: arquitetura completa do sistema
-- `docs/BANCO_DADOS.md`: arquitetura de banco de dados
-- `docs/ESCOPO.md`: escopo consolidado do projeto
-- `docs/ROADMAP.md`: roadmap de desenvolvimento
-- `docs/CONTEXTO.md`: contexto vivo do projeto (histórico, decisões, pendências)
-- `docs/RELATORIO.md`: registro diário de desenvolvimento
-- `docs/ANALISE_ESCOPO_V1.md`: análise de aderência ao escopo V1
-- `docs/KPIS.md`: KPIs sugeridos para o dashboard
-- `docs/api.md`: API realmente implementada
-- `docs/web.md`: visão da aplicação web
+Consulte `docs/INDEX.md` para a documentação completa, organizada por produto, integração, arquitetura, auditoria, operação, referência, governança e histórico.
+
+Documentos técnicos principais:
+
+- `docs/product/`: produto, escopo e KPIs
+- `docs/integration/`: integração BI e Oracle/COMPASS
+- `docs/architecture/`: arquitetura e banco de dados
+- `docs/reference/`: API e Web
+- `docs/governance/`: contexto vivo e relatório diário
 - `docs/decisions/`: decisões arquiteturais curtas
 - `docs/roadmap/`: roadmap detalhado por telas, módulos e tarefas
-- `docs/specs/`: especificações SDD (Specification-Driven Development) por módulo
+- `docs/specs/`: especificações SDD por módulo
 
 ## Troubleshooting
 
