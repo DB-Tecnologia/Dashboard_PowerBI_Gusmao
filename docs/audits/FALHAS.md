@@ -2,6 +2,8 @@
 
 Data: 2026-07-02
 
+> **Atualização em 2026-08-25:** F-10 foi resolvido com zero erros e zero avisos no `pnpm lint`. F-11 foi resolvido anteriormente com a normalização de 387 arquivos e `pnpm format:check` aprovado. Os números abaixo preservam o diagnóstico original da auditoria.
+
 ## Ambiente de teste
 
 - Node.js v22.22.3
@@ -24,8 +26,8 @@ Data: 2026-07-02
 | test (API)       | 304   | 304    | 0      |
 | test (Web)       | 142   | 142    | 0      |
 | build            | 2     | 2      | 0      |
-| lint             | 1     | 0      | 1      |
-| format:check     | 1     | 0      | 1      |
+| lint             | 1     | 1      | 0      |
+| format:check     | 1     | 1      | 0      |
 | API runtime      | —     | OK     | —      |
 | Web runtime      | —     | OK     | —      |
 
@@ -224,24 +226,23 @@ Error: Supabase nao configurado para este ambiente.
 
 ---
 
-## F-10 — Lint: 1555 problemas (1129 erros, 426 warnings)
+## F-10 — Lint: resolvido em 2026-08-25
 
 **Severidade:** Média
 
-**Descrição:** `pnpm lint` falha com 1129 erros e 426 warnings. Principais categorias:
+**Descrição histórica:** a auditoria original registrou 1129 erros e 426 warnings. Após a exclusão recursiva dos artefatos gerados e a correção dos 25 achados reais, `pnpm lint` passa com zero erros e zero avisos.
 
-- `@typescript-eslint/no-explicit-any` — uso extensivo de `any`
-- `@typescript-eslint/no-unsafe-function-type` — uso de `Function` como tipo
-- `@typescript-eslint/no-unused-vars` — imports não utilizados
-- `@typescript-eslint/no-empty-object-type` — tipos `{}` vazios
+- Os dois casts `any` dos testes de guards foram substituídos por `ExecutionContext`.
+- Imports, estados e parâmetros sem uso foram removidos.
+- Scripts CLI mantêm apenas a exceção de `no-console` restrita no `eslint.config.mjs`.
 
 ---
 
-## F-11 — Format:check: 187 arquivos com formatação incorreta
+## F-11 — Format:check: resolvido em 2026-08-25
 
 **Severidade:** Baixa
 
-**Descrição:** `pnpm format:check` falha com 187 arquivos que não seguem o padrão Prettier. Executar `pnpm format` para corrigir.
+**Descrição histórica:** `pnpm format:check` apontava arquivos fora do padrão. A normalização foi concluída em 387 arquivos e a verificação atual passa.
 
 ---
 

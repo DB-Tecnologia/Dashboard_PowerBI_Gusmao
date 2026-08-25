@@ -6,7 +6,6 @@ import { useState } from 'react';
 import { DashboardDetail } from '@/components/dashboard/dashboard-detail';
 import { AddWidgetModal } from '@/components/dashboard/add-widget-modal';
 import { EditDashboardModal } from '@/components/dashboard/edit-dashboard-modal';
-import type { UserDashboard } from '@/lib/platform-api';
 
 export default function DashboardDetailPage({ params }: { params: { id: string } }) {
   const router = useRouter();

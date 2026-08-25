@@ -14,7 +14,6 @@ import {
 import {
   Activity,
   FileDown,
-  Loader2,
   Settings,
   TriangleAlert,
   Users,

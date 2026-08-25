@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 
 import { AdminSettings } from './admin-settings';
 import { getAppDataClient } from '@/lib/app-data';
-import { getRetentionStatus, runRetention } from '@/lib/admin-api';
+import { getRetentionStatus } from '@/lib/admin-api';
 
 jest.mock('@/lib/app-data', () => ({
   getAppDataClient: jest.fn(),

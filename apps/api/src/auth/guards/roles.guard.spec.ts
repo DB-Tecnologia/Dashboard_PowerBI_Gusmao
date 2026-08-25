@@ -1,9 +1,9 @@
-import { ForbiddenException } from '@nestjs/common';
+import { ExecutionContext, ForbiddenException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 
 import { RolesGuard } from './roles.guard';
 
-const createContext = (roles: string[] | undefined, userRoles: string[] = []) =>
+const createContext = (roles: string[] | undefined, userRoles: string[] = []): ExecutionContext =>
   ({
     getHandler: () => 'handler',
     getClass: () => 'class',
@@ -17,7 +17,7 @@ const createContext = (roles: string[] | undefined, userRoles: string[] = []) =>
         },
       }),
     }),
-  }) as any;
+  }) as unknown as ExecutionContext;
 
 describe('RolesGuard', () => {
   it('deve permitir acesso quando não houver metadata de role', () => {

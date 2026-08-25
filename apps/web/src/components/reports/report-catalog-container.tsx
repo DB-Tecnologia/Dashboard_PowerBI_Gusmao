@@ -18,7 +18,10 @@ type ReportCatalogContainerProps = {
 const INITIAL_PAGE = 1;
 const INITIAL_PAGE_SIZE = 20;
 
-export function ReportCatalogContainer({ token, onSelectReport }: ReportCatalogContainerProps) {
+export function ReportCatalogContainer({
+  token: _token,
+  onSelectReport,
+}: ReportCatalogContainerProps) {
   const [reportsResponse, setReportsResponse] = useState<PaginatedReports | null>(null);
   const [filters, setFilters] = useState<ReportFilters>({ parameters: undefined });
   const [isLoading, setIsLoading] = useState(true);

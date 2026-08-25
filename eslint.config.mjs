@@ -6,12 +6,13 @@ export default [
   {
     ignores: [
       'node_modules/**',
-      'dist/**',
-      'build/**',
-      '.next/**',
-      'coverage/**',
-      'playwright-report/**',
-      'test-results/**',
+      '**/dist/**',
+      '**/build/**',
+      '**/.next/**',
+      '**/out/**',
+      '**/coverage/**',
+      '**/playwright-report/**',
+      '**/test-results/**',
     ],
   },
   js.configs.recommended,
@@ -37,6 +38,12 @@ export default [
           caughtErrorsIgnorePattern: '^_',
         },
       ],
+    },
+  },
+  {
+    files: ['scripts/**/*.mjs'],
+    rules: {
+      'no-console': 'off',
     },
   },
 ];

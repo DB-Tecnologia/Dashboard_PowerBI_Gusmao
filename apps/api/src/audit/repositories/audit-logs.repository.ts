@@ -42,7 +42,7 @@ export class AuditLogsRepository {
     }
 
     // In-memory fallback for development
-    console.log('[Audit Log]', auditLog);
+    console.warn('[Audit Log]', auditLog);
     return auditLog;
   }
 

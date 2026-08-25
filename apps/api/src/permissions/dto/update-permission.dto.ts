@@ -1,5 +1,5 @@
 import { IsString, IsBoolean, IsOptional, IsNotEmpty } from 'class-validator';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class UpdatePermissionDto {
   @ApiPropertyOptional({ example: 'reports:financeiro:read' })

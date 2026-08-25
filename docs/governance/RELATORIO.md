@@ -5,16 +5,24 @@
 
 > As entradas anteriores a 24/08/2026 preservam os caminhos da estrutura documental vigente na data de cada registro. A estrutura atual e mantida em `docs/INDEX.md`; referencias historicas abaixo nao representam arquivos ausentes.
 
+## 2026-08-25 — Correção da dívida de lint P1-01
+
+- O diagnóstico inicial aparente registrava 7.920 erros e 683 avisos porque o ESLint analisava `apps/api/dist` e `apps/web/.next`; os padrões de exclusão foram corrigidos para serem recursivos.
+- Após a correção da configuração, restaram 25 achados reais: 2 erros e 23 avisos em 19 arquivos de código/configuração.
+- Foram removidos imports e estados mortos, substituídos os dois casts `any` dos testes de guards por `ExecutionContext`, corrigido o log de fallback de auditoria e mantida uma exceção restrita de `no-console` para scripts CLI.
+- `pnpm lint` passou com zero erros e zero avisos. Não foram usados `eslint-disable` globais nem alterações de API, banco, Docker, telas ou contratos.
+- `pnpm typecheck`, `pnpm test`, `pnpm build`, `pnpm test:e2e:playwright`, os verificadores do workspace e `pnpm quality` passaram.
+- P1-01 está concluída; o próximo foco recomendado é P0-04 por segurança, seguido de P1-03 ou P1-04 conforme a prioridade de lançamento.
+
 ## 2026-08-25 — Padronização de formatação P1-02
 
 - Aplicado o Prettier com a configuração existente aos 387 arquivos identificados pelo diagnóstico inicial, abrangendo código, documentação e configurações.
 - `pnpm format:check` passou com todos os arquivos compatíveis usando o padrão vigente.
 - A regra global `* text=auto eol=lf` foi adicionada ao `.gitattributes`; isso torna a validação reproduzível em Windows mesmo com `core.autocrlf=true`.
 - A auditoria do diff confirmou que a alteração é de estilo; não foram alterados API, banco, Docker, telas ou contratos.
-- `pnpm lint` permanece fora do escopo e continua registrado como P1-01; não foi executado `eslint --fix`.
-- O diagnóstico de `pnpm lint` e `pnpm quality` continua bloqueado por P1-01, com 7.920 erros e 683 avisos no estado atual; nenhum desses problemas foi misturado ao commit de formatação.
+- Naquele registro, `pnpm lint` permaneceu fora do escopo e foi encaminhado para P1-01; a dívida foi corrigida na entrada posterior desta data.
 - Validações da tarefa: `pnpm format:check`, verificadores de ambiente/workspace/Docker/docs, typecheck, testes, build, E2E e `git diff --check`.
-- P1-02 foi encerrada; o próximo foco recomendado é P0-04 ou P1-01, conforme a prioridade de segurança e qualidade.
+- P1-02 foi encerrada; o próximo foco recomendado é P0-04 ou P1-03, conforme a prioridade de segurança e qualidade.
 
 ## 2026-08-25 — Configuração P0-03 de produção
 
@@ -128,8 +136,8 @@ Nenhuma nova falha de lógica encontrada nos controllers e services auditados. F
 
 - **F-01:** Typecheck API — `retention.service.spec.ts` usa `ExportsServiceLike` que não implementa todos os membros de `ExportsService`.
 - **F-02:** Teste API — `report-definitions.repository.spec.ts` passa `ConfigService` sem método `get()` para o construtor do repositório.
-- **F-10:** Lint — 1129 erros, 426 warnings (principalmente `@typescript-eslint/no-explicit-any`).
-- **F-11:** Format — 187 arquivos com formatação Prettier incorreta.
+- **F-10:** Lint — registro histórico de 1129 erros e 426 warnings; resolvido em 2026-08-25 com zero erros e zero avisos.
+- **F-11:** Format — registro histórico de 187 arquivos; resolvido em 2026-08-25.
 - **F-12:** Redis — spam de `ECONNREFUSED` no console sem Redis local.
 
 ### 7. Avaliação Docker Compose
@@ -146,8 +154,8 @@ Nenhuma nova falha de lógica encontrada nos controllers e services auditados. F
 
 - F-01: Completar mock de `ExportsService` em `retention.service.spec.ts`.
 - F-02: Adicionar mock de `get()` em `ConfigService` do `report-definitions.repository.spec.ts`.
-- F-10: Corrigir warnings de lint progressivamente.
-- F-11: Executar `pnpm format` para corrigir formatação.
+- F-10: **Resolvido em 2026-08-25**; `pnpm lint` passa sem erros e sem avisos.
+- F-11: **Resolvido em 2026-08-25**; `pnpm format:check` passa.
 - F-12: Silenciar erros de conexão Redis quando não configurado.
 
 ### 9. Próximos Passos Recomendados
@@ -156,7 +164,7 @@ Nenhuma nova falha de lógica encontrada nos controllers e services auditados. F
 2. Executar `pnpm format` para resolver F-11.
 3. Silenciar erros de Redis para resolver F-12.
 4. Subir Docker Compose dev para validação local completa.
-5. Corrigir lint progressivamente (F-10).
+5. Manter `pnpm lint` e `pnpm quality` no gate de cada mudança.
 
 ---
 

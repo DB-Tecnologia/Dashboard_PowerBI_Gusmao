@@ -3,7 +3,7 @@
 import { X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
-import { Button, Card, CardContent, CardHeader, CardTitle, Input } from '@/components/ui';
+import { Button, Input } from '@/components/ui';
 import type { UserDashboard } from '@/lib/platform-api';
 
 type WidgetConfig = {

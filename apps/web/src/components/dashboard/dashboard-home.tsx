@@ -76,9 +76,7 @@ export function DashboardHome({ kpis: initialKpis }: DashboardHomeProps) {
   const [activeDrilldown, setActiveDrilldown] = useState<DashboardDrilldownResponse | null>(null);
   const [isDrilldownLoading, setIsDrilldownLoading] = useState(false);
   const [activeKpiId, setActiveKpiId] = useState<string | null>(null);
-  const [selectedDimension, setSelectedDimension] = useState<DrilldownDimension | undefined>(
-    undefined,
-  );
+  const [, setSelectedDimension] = useState<DrilldownDimension | undefined>(undefined);
   const [activeTab, setActiveTab] = useState<DashboardTab>('executiva');
   const [featuredHistory, setFeaturedHistory] = useState<KpiHistoryResponse | null>(null);
 

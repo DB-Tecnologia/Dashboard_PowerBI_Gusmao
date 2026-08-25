@@ -7,6 +7,8 @@
 
 > **Atualização P0-03 em 2026-08-25:** o `.env.production.example` já versionado foi completado com todas as variáveis do contrato geral, Oracle como fonte padrão e nenhum valor de demonstração. `pnpm verify:env` passou; P0-04 ainda precisa exigir `TOTP_ENCRYPTION_KEY` no boot.
 
+> **Atualização P1-01/P1-02 em 2026-08-25:** a configuração do ESLint passou a ignorar artefatos gerados em subdiretórios, os 25 achados reais foram corrigidos e `pnpm lint` passou com zero erros e zero avisos. A formatação também foi normalizada em 387 arquivos.
+
 ---
 
 ## Resultado Geral
@@ -37,7 +39,7 @@
 ## O que falta
 
 - **P0 (Bloqueadores):** TLS/HTTPS no nginx, TOTP_ENCRYPTION_KEY em produção
-- **P1 (Lançamento):** Lint (1129 erros), formatação (187 arquivos), testes E2E expandidos, build no CI, SMTP real, logs estruturados, backup/rollback documentados
+- **P1 (Lançamento):** Testes E2E expandidos, build no CI, SMTP real, logs estruturados, backup/rollback documentados; lint e formatação concluídos
 - **P2 (Estabilização):** Remover Supabase browser do frontend, testes de segurança, métricas, bloqueio por inatividade no frontend, silenciar Redis noise, remover código órfão, atualizar docs divergentes, cron de refresh
 - **P3 (Evoluções):** Storage S3, export dashboard como imagem, compartilhamento de dashboards, alertas em tempo real, monitoramento, escala horizontal
 
@@ -48,7 +50,7 @@
 1. **Sem TLS/HTTPS em produção** — tráfego não criptografado (Alto)
 2. **Fallback em memória perde dados ao reiniciar** — se Supabase não configurado (Alto)
 3. **Sem observabilidade estruturada** — sem métricas, tracing ou alertas (Alto)
-4. **Lint com 1129 erros** — qualidade de código abaixo do padrão (Médio)
+4. **Lint concluído** — `pnpm lint` passa com zero erros e zero avisos; permanecem os gates de qualidade (Baixo)
 5. **Testes E2E insuficientes** — 7 testes de baseline; ainda faltam exportação, CRUD administrativo e 2FA (Médio)
 
 ---
@@ -56,13 +58,11 @@
 ## Próximas Dez Ações
 
 1. **P0-04:** Documentar e validar TOTP_ENCRYPTION_KEY em produção — 1h
-2. **P1-02:** Executar `pnpm format` para corrigir 187 arquivos — 2h
-3. **P1-04:** Adicionar step `pnpm build` no `ci.yml` — 1h
-4. **P1-01:** Corrigir 1129 erros de lint progressivamente — 16h
-5. **P1-03:** Expandir testes E2E para 15+ testes — 12h
-6. **P0-01:** Configurar TLS/HTTPS no nginx com certificado — 4h
-7. **P1-05:** Configurar SMTP real para produção — 4h
-8. **P1-06:** Implementar logs estruturados (pino/winston) — 8h
+2. **P1-04:** Adicionar step `pnpm build` no `ci.yml` — 1h
+3. **P1-03:** Expandir testes E2E para 15+ testes — 12h
+4. **P0-01:** Configurar TLS/HTTPS no nginx com certificado — 4h
+5. **P1-05:** Configurar SMTP real para produção — 4h
+6. **P1-06:** Implementar logs estruturados (pino/winston) — 8h
 
 ---
 
@@ -80,7 +80,7 @@
 
 **Pode ser usado como MVP controlado em ambiente interno.**
 
-O projeto entrega valor real com todos os fluxos principais funcionando, mas **precisa de correções antes de produção** — especificamente TLS/HTTPS, logs estruturados, lint limpo, testes E2E expandidos e backup documentado.
+O projeto entrega valor real com todos os fluxos principais funcionando, mas **precisa de correções antes de produção** — especificamente TLS/HTTPS, logs estruturados, testes E2E expandidos e backup documentado.
 
 ---
 

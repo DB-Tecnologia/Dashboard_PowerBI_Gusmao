@@ -3,7 +3,7 @@
 **Projeto:** Dashboard Power BI
 **Data:** 2026-08-25
 
-> **Atualizações P0-02/P0-03/P1-02 (2026-08-25):** Playwright foi validado em ambiente demo com 7 cenários. O `.env.production.example` foi completado com todas as variáveis do contrato geral, Oracle/COMPASS como fonte padrão e validação automatizada, sem credenciais reais. A formatação foi padronizada em 387 arquivos e `pnpm format:check` passou. P0-04 continua responsável pela exigência da chave TOTP no boot; P1-01 continua responsável pelo lint.
+> **Atualizações P0-02/P0-03/P1-02/P1-01 (2026-08-25):** Playwright foi validado em ambiente demo com 7 cenários. O `.env.production.example` foi completado com todas as variáveis do contrato geral, Oracle/COMPASS como fonte padrão e validação automatizada, sem credenciais reais. A formatação foi padronizada em 387 arquivos e o lint foi corrigido com zero erros e zero avisos. P0-04 continua responsável pela exigência da chave TOTP no boot.
 
 ---
 
@@ -22,7 +22,7 @@
 
 | ID    | Área            | Tarefa                                            | Problema resolvido                      | Arquivos envolvidos                                     | Dependências | Complexidade | Estimativa | Critério de aceite                                              | Risco |
 | ----- | --------------- | ------------------------------------------------- | --------------------------------------- | ------------------------------------------------------- | ------------ | ------------ | ---------- | --------------------------------------------------------------- | ----- |
-| P1-01 | Qualidade       | Corrigir erros de lint (1129 erros)               | Qualidade de código abaixo do padrão    | `apps/api/src/*`, `apps/web/src/*`                      | —            | Alta         | 16h        | `pnpm lint` passa sem erros                                     | Médio |
+| P1-01 | Qualidade       | Corrigir dívida de lint (25 achados reais)        | Qualidade de código abaixo do padrão    | `eslint.config.mjs`, `apps/api/src/*`, `apps/web/src/*` | —            | Alta         | 24-40h     | **Concluído:** `pnpm lint` passa com zero erros e zero avisos   | Médio |
 | P1-02 | Qualidade       | Corrigir formatação Prettier (387 arquivos)       | Formatação inconsistente                | Todo o repositório                                      | —            | Baixa        | 3-5h       | **Concluído:** `pnpm format:check` passa sem arquivos pendentes | Baixo |
 | P1-03 | Testes          | Expandir testes E2E (exportação, admin CRUD, 2FA) | Cobertura E2E insuficiente              | `tests/e2e/`                                            | P0-02        | Alta         | 12h        | Mínimo 15 testes E2E cobrindo fluxos críticos                   | Médio |
 | P1-04 | Infra           | Adicionar step de build no CI                     | CI não valida build                     | `.github/workflows/ci.yml`                              | —            | Baixa        | 1h         | CI executa `pnpm build` e falha se build quebrar                | Baixo |
@@ -66,9 +66,9 @@
 - P0-03: Completar `.env.production.example` — concluído em 2026-08-25
 - P0-04: Garantir TOTP_ENCRYPTION_KEY em produção
 
-### P1 — Obrigatório para Lançamento (8 tarefas, ~49h)
+### P1 — Obrigatório para Lançamento (8 tarefas, ~57-73h)
 
-- P1-01: Corrigir lint
+- P1-01: Corrigir lint — concluído em 2026-08-25
 - P1-02: Corrigir formatação — concluído em 2026-08-25
 - P1-03: Expandir testes E2E
 - P1-04: Build no CI
@@ -129,7 +129,7 @@ Cada tarefa tem critérios de aceite específicos na tabela acima. Adicionalment
 3. **P0-04:** Garantir TOTP_ENCRYPTION_KEY em produção
 4. **P1-02:** Corrigir formatação Prettier (concluído em 2026-08-25; 387 arquivos padronizados)
 5. **P1-04:** Adicionar build no CI
-6. **P1-01:** Corrigir erros de lint (trabalho extenso)
+6. **P1-01:** Corrigir erros de lint — concluído em 2026-08-25; zero erros e zero avisos
 7. **P1-03:** Expandir testes E2E
 8. **P0-01:** Configurar TLS/HTTPS no nginx
 9. **P1-05:** Configurar SMTP real
@@ -168,7 +168,7 @@ Cada tarefa tem critérios de aceite específicos na tabela acima. Adicionalment
 
 - [ ] Todos os itens do checklist MVP
 - [ ] P0-01: TLS/HTTPS configurado no nginx
-- [ ] P1-01: Lint sem erros
+- [x] P1-01: Lint sem erros e sem avisos em 2026-08-25
 - [ ] P1-03: Testes E2E expandidos (mínimo 15)
 - [ ] P1-05: SMTP real configurado
 - [ ] P1-06: Logs estruturados implementados
@@ -203,8 +203,8 @@ O projeto é considerado totalmente concluído quando:
 - [ ] Documentação operacional atualizada
 - [ ] Backup e restore documentados
 - [ ] Ambiente de produção preparado
-- [ ] `pnpm lint` passa
+- [x] `pnpm lint` passa sem erros e sem avisos
 - [ ] `pnpm format:check` passa
-- [ ] `pnpm quality` passa
+- [x] `pnpm quality` passa
 - [ ] HTTPS/TLS ativo em produção
 - [ ] Projeto operável sem depender exclusivamente de conhecimento informal

@@ -1,6 +1,6 @@
 'use client';
 
-import { BarChart3, FileText, Globe, LayoutGrid, PieChart, Table } from 'lucide-react';
+import { BarChart3, FileText, Globe, LayoutGrid, Table } from 'lucide-react';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
 

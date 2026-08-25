@@ -26,7 +26,7 @@ import {
   TableRow,
   TableEmpty,
 } from '@/components/ui';
-import { apiGet, apiPost, apiPatch, apiDelete } from '@/lib/admin-api';
+import { apiGet, apiPost, apiDelete } from '@/lib/admin-api';
 
 type Permission = {
   id: string;

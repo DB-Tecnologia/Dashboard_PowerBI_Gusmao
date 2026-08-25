@@ -16,7 +16,7 @@ O Dashboard Power BI é uma plataforma web interna de relatórios e BI que centr
 
 A auditoria baseada em evidências de código confirma que **58 dos 72 requisitos identificados estão concluídos**, 8 são parciais e 6 não foram iniciados. O projeto entrega autenticação completa com JWT, 2FA/TOTP obrigatório para admins, dashboard com KPIs e gráficos Recharts, drill-down multi-dimensão, dashboards personalizados com editor visual drag-and-drop, catálogo e execução de relatórios, pipeline de exportação com BullMQ+Redis, administração completa de usuários/grupos/permissões, auditoria com retenção LGPD, e infraestrutura Docker para dev e prod.
 
-As principais lacunas são: lint com 1129 erros, formatação incorreta em 187 arquivos, testes E2E limitados, ausência de observabilidade estruturada, HTTPS/TLS não configurado no nginx, e funcionalidades de menor prioridade como export de dashboard como imagem e compartilhamento entre usuários.
+As principais lacunas são: testes E2E ainda limitados, ausência de observabilidade estruturada, HTTPS/TLS não configurado no nginx, e funcionalidades de menor prioridade como export de dashboard como imagem e compartilhamento de dashboards. Lint e formatação foram concluídos em 2026-08-25.
 
 ---
 
@@ -163,7 +163,7 @@ O MVP (funcionalidades críticas: auth, relatórios, dashboard básico, admin b�
 
 O backend é modular, bem estruturado, com guards, DTOs, validação e separação de camadas. O frontend tem 18 telas com estados de loading/erro/vazio. O banco tem 12 migrations coerentes. A infraestrutura tem Docker Compose para 3 ambientes e CI/CD.
 
-Lacunas técnicas: lint (1129 erros), formatação (187 arquivos), testes E2E limitados (6 testes), sem observabilidade estruturada, sem TLS no nginx.
+Lacunas técnicas: testes E2E limitados, sem observabilidade estruturada, sem TLS no nginx; lint e formatação estão aprovados em 2026-08-25.
 
 ---
 
@@ -181,7 +181,7 @@ Todos os fluxos principais (login, dashboard, relatórios, exportação, admin) 
 
 Bloqueadores para produção:
 
-- Lint com 1129 erros (qualidade de código)
+- Lint concluído com zero erros e zero avisos em 2026-08-25
 - TLS/HTTPS não configurado no nginx
 - Sem observabilidade estruturada (logs, métricas, alertas)
 - Sem backup configurado para Supabase
@@ -287,17 +287,17 @@ Ver arquivo `docs/audits/MATRIZ_REQUISITOS.md` para a tabela completa de 72 requ
 
 ## 16. Funcionalidades Parciais
 
-| Funcionalidade                       | %   | Pendência                                                                                     |
-| ------------------------------------ | --- | --------------------------------------------------------------------------------------------- |
-| SMTP envio real de e-mails           | 50% | `SMTP_MODE=mock` no env example; envio real não confirmado                                    |
-| Testes E2E (Playwright)              | 70% | 7 testes de baseline (auth, dashboard, drill-down e relatórios); cobertura adicional pendente |
-| Lint                                 | 25% | 1129 erros, 426 warnings                                                                      |
-| Formatação Prettier                  | 10% | 187 arquivos com formatação incorreta                                                         |
-| Observabilidade                      | 10% | Apenas logs NestJS nativos; sem métricas/tracing/alertas                                      |
-| HTTPS/TLS produção                   | 50% | Nginx configurado mas sem SSL/TLS                                                             |
-| Monitoramento de queries             | 25% | Timeout configurável, sem logs estruturados de performance                                    |
-| Bloqueio por inatividade no frontend | 50% | Timeout no refresh, sem bloqueio proativo no frontend                                         |
-| Governança completa                  | 50% | Auditoria, permissões, settings, retenção ativos, mas cobertura incompleta                    |
+| Funcionalidade                       | %    | Pendência                                                                                     |
+| ------------------------------------ | ---- | --------------------------------------------------------------------------------------------- |
+| SMTP envio real de e-mails           | 50%  | `SMTP_MODE=mock` no env example; envio real não confirmado                                    |
+| Testes E2E (Playwright)              | 70%  | 7 testes de baseline (auth, dashboard, drill-down e relatórios); cobertura adicional pendente |
+| Lint                                 | 100% | `pnpm lint` passa com zero erros e zero avisos em 2026-08-25                                  |
+| Formatação Prettier                  | 100% | `pnpm format:check` passa após 387 arquivos normalizados                                      |
+| Observabilidade                      | 10%  | Apenas logs NestJS nativos; sem métricas/tracing/alertas                                      |
+| HTTPS/TLS produção                   | 50%  | Nginx configurado mas sem SSL/TLS                                                             |
+| Monitoramento de queries             | 25%  | Timeout configurável, sem logs estruturados de performance                                    |
+| Bloqueio por inatividade no frontend | 50%  | Timeout no refresh, sem bloqueio proativo no frontend                                         |
+| Governança completa                  | 50%  | Auditoria, permissões, settings, retenção ativos, mas cobertura incompleta                    |
 
 ---
 
@@ -343,7 +343,7 @@ Ver arquivo `docs/audits/MATRIZ_REQUISITOS.md` para a tabela completa de 72 requ
 | ------------------------------------------- | -------------------------- | ----------------------------------------------------------------------------------------------------------- |
 | ROADMAP marca 18/18 telas como "Concluído"  | ROADMAP.md:49              | 6 módulos marcados como "Parcial" — telas existem mas funcionalidades avançadas pendentes                   |
 | Testes E2E marcados como CONCLUÍDO (DT-005) | ROADMAP.md:123             | Baseline validado com 7 testes; cobertura adicional de exportação, admin CRUD e 2FA permanece pendente      |
-| `pnpm quality` como comando de validação    | README.md:66               | Inclui lint e format:check que falham (1129 erros, 187 arquivos)                                            |
+| `pnpm quality` como comando de validação    | README.md:66               | Inclui lint e format:check, ambos aprovados em 2026-08-25                                                   |
 | CI/CD pipeline                              | `.github/workflows/ci.yml` | CI executa `pnpm quality` (que falha) e `pnpm test:e2e` (API e2e, não Playwright); não executa `pnpm build` |
 
 ### Código órfão ou não utilizado
@@ -370,7 +370,7 @@ Ver arquivo `docs/audits/MATRIZ_REQUISITOS.md` para a tabela completa de 72 requ
 | ------------------------------------------------------ | ---------------------------------------------------------------------- |
 | ROADMAP marca todas as 18 telas como "✅ Concluído"    | Pode levar a crer que o V1 está completo, mas 6 módulos são "Parcial"  |
 | DT-005 (Testes E2E) marcado como CONCLUÍDO             | Baseline validado com 7 testes; cobertura adicional permanece pendente |
-| `pnpm build` passa                                     | Lint e format:check falham; qualidade de código abaixo do ideal        |
+| `pnpm build` passa                                     | Build, lint e format:check aprovados em 2026-08-25                     |
 | F-01 e F-02 marcados como "✅ Corrigido" em FALHAS.md  | CONTEXTO.md ainda lista F-01 e F-02 como pendências                    |
 | ARQUITETURA.md diz "Redis não é dependência funcional" | BullMQ e token blacklist usam Redis com fallback em memória            |
 
@@ -394,12 +394,12 @@ Ver arquivo `docs/audits/MATRIZ_REQUISITOS.md` para a tabela completa de 72 requ
 
 **Problemas encontrados:**
 
-| Arquivo                        | Local           | Problema                                                                            | Severidade | Correção                                     |
-| ------------------------------ | --------------- | ----------------------------------------------------------------------------------- | ---------- | -------------------------------------------- |
-| `exports.processor.ts:41`      | onModuleInit    | Cria conexão Redis sem tratamento de erro assíncrono                                | Média      | Try/catch no `onModuleInit`                  |
-| `playwright.config.ts`         | webServer.url   | Validado em `http://localhost:3000` para a Web; API demo em `http://localhost:3001` | —          | Manter baseline e ampliar cobertura em P1-03 |
-| `apps/web/src/lib/supabase.ts` | Cliente browser | Frontend ainda tem cliente Supabase browser                                         | Média      | Remover se não usado                         |
-| Lint geral                     | 1129 erros      | `@typescript-eslint/no-explicit-any` extensivo                                      | Média      | Refatorar tipos                              |
+| Arquivo                        | Local             | Problema                                                                            | Severidade | Correção                                     |
+| ------------------------------ | ----------------- | ----------------------------------------------------------------------------------- | ---------- | -------------------------------------------- |
+| `exports.processor.ts:41`      | onModuleInit      | Cria conexão Redis sem tratamento de erro assíncrono                                | Média      | Try/catch no `onModuleInit`                  |
+| `playwright.config.ts`         | webServer.url     | Validado em `http://localhost:3000` para a Web; API demo em `http://localhost:3001` | —          | Manter baseline e ampliar cobertura em P1-03 |
+| `apps/web/src/lib/supabase.ts` | Cliente browser   | Frontend ainda tem cliente Supabase browser                                         | Média      | Remover se não usado                         |
+| Lint geral                     | 0 erros, 0 avisos | Regras ESLint aprovadas em 2026-08-25                                               | Baixa      | Manter no gate de qualidade                  |
 
 ### Frontend
 
@@ -490,15 +490,15 @@ Ver arquivo `docs/audits/MATRIZ_REQUISITOS.md` para a tabela completa de 72 requ
 
 ## 22. Auditoria de Testes
 
-| Categoria               | Quantidade               | Status                                                      |
-| ----------------------- | ------------------------ | ----------------------------------------------------------- |
-| Testes API (spec)       | 37 arquivos, ~304 testes | ✅ Passando                                                 |
-| Testes Web (test)       | 37 arquivos, ~142 testes | ✅ Passando                                                 |
-| Testes E2E (Playwright) | 1 arquivo, 7 testes      | ⚠️ Parcial: baseline validado; cobertura adicional pendente |
-| Lint                    | 1129 erros, 426 warnings | ❌ Falhando                                                 |
-| Format                  | 187 arquivos             | ❌ Falhando                                                 |
-| Typecheck               | API + Web                | ✅ Passando                                                 |
-| Build                   | API + Web                | ✅ Passando                                                 |
+| Categoria               | Quantidade                | Status                                                      |
+| ----------------------- | ------------------------- | ----------------------------------------------------------- |
+| Testes API (spec)       | 37 arquivos, ~304 testes  | ✅ Passando                                                 |
+| Testes Web (test)       | 37 arquivos, ~142 testes  | ✅ Passando                                                 |
+| Testes E2E (Playwright) | 1 arquivo, 7 testes       | ⚠️ Parcial: baseline validado; cobertura adicional pendente |
+| Lint                    | 0 erros, 0 avisos         | ✅ Passando em 2026-08-25                                   |
+| Format                  | 387 arquivos normalizados | ✅ Passando em 2026-08-25                                   |
+| Typecheck               | API + Web                 | ✅ Passando                                                 |
+| Build                   | API + Web                 | ✅ Passando                                                 |
 
 **Fluxos críticos sem teste E2E:**
 
@@ -538,7 +538,6 @@ Ver arquivo `docs/audits/MATRIZ_REQUISITOS.md` para a tabela completa de 72 requ
 | -------------------------------------------- | ---------- | ------------- | ------------------------------------------------- |
 | Fallback em memória perde dados ao reiniciar | Alto       | Média         | Garantir Supabase configurado em produção         |
 | Sem TLS/HTTPS em produção                    | Alto       | Alta          | Configurar certificado SSL no nginx               |
-| Lint com 1129 erros                          | Médio      | Alta          | Corrigir progressivamente                         |
 | Testes E2E insuficientes                     | Médio      | Alta          | Expandir cobertura Playwright                     |
 | Sem observabilidade estruturada              | Alto       | Alta          | Implementar logs estruturados + métricas          |
 | TOTP_ENCRYPTION_KEY não definida em dev      | Médio      | Alta          | Definir em produção                               |
@@ -551,7 +550,7 @@ Ver arquivo `docs/audits/MATRIZ_REQUISITOS.md` para a tabela completa de 72 requ
 
 ## 25. Conclusão Final
 
-O Dashboard Power BI está em estado **funcional avançado**, com **84% do escopo total concluído** e **90% do MVP entregue**. O projeto entrega valor real com todos os fluxos principais funcionando, mas **não está pronto para produção** devido a bloqueadores como ausência de TLS, observabilidade insuficiente, lint falhando e testes E2E limitados.
+O Dashboard Power BI está em estado **funcional avançado**, com **84% do escopo total concluído** e **90% do MVP entregue**. O projeto entrega valor real com todos os fluxos principais funcionando, mas **não está pronto para produção** devido a bloqueadores como ausência de TLS, observabilidade insuficiente e testes E2E ainda limitados.
 
 **Classificação atual:** MVP funcional com pendências de hardening
 

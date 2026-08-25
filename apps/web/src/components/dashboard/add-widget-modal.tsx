@@ -33,7 +33,6 @@ export function AddWidgetModal({ dashboardId, onClose, onSuccess }: AddWidgetMod
   const [chartType, setChartType] = useState('bar');
   const [kpiId, setKpiId] = useState('');
   const [kpis, setKpis] = useState<KpiItem[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 

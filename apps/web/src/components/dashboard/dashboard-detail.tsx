@@ -14,7 +14,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 import type { Layout } from 'react-grid-layout';
 
-import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui';
+import { Button, Card, CardDescription, CardHeader, CardTitle } from '@/components/ui';
 import {
   addDashboardWidget,
   batchUpdateDashboardWidgets,

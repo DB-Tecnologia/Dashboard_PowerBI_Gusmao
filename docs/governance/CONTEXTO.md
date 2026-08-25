@@ -3,12 +3,19 @@
 **Projeto:** Dashboard Power BI
 **Atualizado em:** 2026-08-25
 
+## 2026-08-25 — Correção da dívida de lint P1-01
+
+- O ESLint passou de 7.920 erros e 683 avisos aparentes para o diagnóstico real de 25 achados após a exclusão recursiva de `dist`, `.next`, `build`, `out`, cobertura e relatórios gerados.
+- Foram corrigidos os 2 erros e 23 avisos reais em API, Web, testes e scripts; `pnpm lint` agora passa com zero erros e zero avisos.
+- A configuração mantém exceção restrita de `no-console` apenas para scripts CLI de validação. O código de aplicação usa `console.warn` somente para o fallback de auditoria já existente.
+- Typecheck, testes e build permaneceram aprovados; não houve alteração de contrato, banco, Docker ou fluxo de tela.
+
 ## 2026-08-25 — Padronização de formatação P1-02
 
 - O Prettier foi aplicado aos 387 arquivos que estavam fora do padrão, usando a configuração vigente do projeto.
 - `pnpm format:check` passou sem arquivos pendentes; não foram alterados contratos, comportamento funcional, banco, Docker ou telas.
 - A política global de texto foi fixada em `LF` no `.gitattributes` para impedir que `core.autocrlf` reintroduza falsos desvios de formatação em novos checkouts Windows.
-- A correção de lint permanece separada como P1-01 para evitar misturar mudanças semânticas com a normalização de estilo.
+- A correção de lint P1-01 foi concluída separadamente da normalização de estilo P1-02.
 
 ## 2026-08-25 — Validação P0-02 do Playwright
 
@@ -222,7 +229,7 @@ O Dashboard Power BI é uma plataforma web interna de relatórios e BI em estado
 | -------------------------------------------------------- | --------- | ---------- | ------------------------------------------------------- |
 | F-01: Typecheck API — mock incompleto em retention.spec  | Qualidade | Média      | Completar mock de ExportsService no spec                |
 | F-02: Teste API — ConfigService sem método get() no mock | Qualidade | Média      | Adicionar mock de get() no ConfigService do spec        |
-| F-10: Lint — 1129 erros e 426 warnings                   | Qualidade | Média      | Corrigir progressivamente @typescript-eslint warnings   |
+| F-10: Lint — 25 achados reais                            | Qualidade | Média      | **Resolvido em 2026-08-25** com `pnpm lint`             |
 | F-11: Format — 387 arquivos com formatação incorreta     | Qualidade | Baixa      | **Resolvido em 2026-08-25** com `pnpm format`           |
 | F-12: Redis — spam de erros ECONNREFUSED sem Redis local | Infra     | Média      | Silenciar erros de conexão Redis quando não configurado |
 | Drill-down multi-dimensão                                | BI        | Média      | Já implementado mas dimensão pode ser mais flexível     |

@@ -1,4 +1,4 @@
-import { ForbiddenException } from '@nestjs/common';
+import { ExecutionContext, ForbiddenException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 
 import { SectorsGuard } from './sectors.guard';
@@ -8,7 +8,7 @@ const createContext = (
   userSectors: string[] = [],
   userRoles: string[] = ['viewer'],
   routeSector?: string,
-) =>
+): ExecutionContext =>
   ({
     getHandler: () => 'handler',
     getClass: () => 'class',
@@ -23,7 +23,7 @@ const createContext = (
         },
       }),
     }),
-  }) as any;
+  }) as unknown as ExecutionContext;
 
 describe('SectorsGuard', () => {
   it('deve permitir acesso quando não houver setor exigido', () => {
