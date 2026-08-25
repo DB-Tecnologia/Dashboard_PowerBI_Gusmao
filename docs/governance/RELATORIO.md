@@ -5,6 +5,19 @@
 
 > As entradas anteriores a 24/08/2026 preservam os caminhos da estrutura documental vigente na data de cada registro. A estrutura atual e mantida em `docs/INDEX.md`; referencias historicas abaixo nao representam arquivos ausentes.
 
+## 2026-08-25 — Hardening P0-04 da chave TOTP
+
+- `TotpEncryptionService` passou a interromper a inicialização de produção quando `TOTP_ENCRYPTION_KEY` está ausente, vazia ou composta apenas por espaços.
+- A validação ocorre durante a instanciação do provider NestJS, antes do `listen`, sem expor o valor da chave na mensagem de erro.
+- O fallback em texto simples foi preservado somente fora de produção, mantendo o ambiente demo e os testes existentes compatíveis.
+- Foram adicionados testes para produção sem chave, whitespace, chave preenchida, fallback em teste e round-trip criptográfico.
+- A documentação de produção, o roadmap, a arquitetura, o README, o contexto e a memória persistida foram atualizados. Nenhum endpoint, banco, tela, Docker, Oracle ou SMTP foi alterado.
+- `pnpm verify:workspace`, `pnpm verify:env`, `pnpm verify:docker`, `pnpm verify:docs`, `pnpm lint`, `pnpm format:check`, `pnpm typecheck`, `pnpm quality`, `pnpm test` e `pnpm build` passaram.
+- O teste específico do TOTP passou com 9 casos; as suítes completas passaram com API 48/48 e 313 testes, Web 43/43 e 142 testes. O Playwright passou com 7/7 cenários.
+- O smoke test real com `NODE_ENV=production` e chave vazia recusou o boot durante a criação do provider, antes do `listen`, com exit code 1 e sem expor qualquer valor de chave.
+- Nenhum secret real será criado ou versionado.
+- **Commit/push:** será criado com a mensagem `security: exigir chave TOTP no boot de producao` e publicado em `origin/main`; o hash final será comunicado na entrega e consolidado no próximo snapshot.
+
 ## 2026-08-25 — Memória persistida do projeto
 
 - Criado `docs/governance/MEMORIA_PROJETO.md` com snapshot vigente, stack, topologia, fontes, arquitetura Oracle/COMPASS, regras para agentes, roadmap, validações, decisões, pendências e linha do tempo completa em nível de handoff técnico.

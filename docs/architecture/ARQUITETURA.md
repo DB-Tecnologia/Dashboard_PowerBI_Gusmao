@@ -130,7 +130,7 @@ A API NestJS é a fonte oficial de todos os fluxos autenticados. O frontend não
 - O template canônico é `infra/env/.env.production.example`.
 - `DATABASE_PROVIDER=oracle` é o padrão documentado para Oracle 19c/COMPASS; SQL Server permanece como compatibilidade legada.
 - O Compose injeta `REDIS_HOST=redis`, usa `TRUST_PROXY_HOPS=1` atrás do Nginx e restringe CORS ao domínio público configurado.
-- O template não contém credenciais reais. `TOTP_ENCRYPTION_KEY` deve ser exigida no boot pela tarefa P0-04 antes da produção.
+- O template não contém credenciais reais. A API rejeita o boot de produção quando `TOTP_ENCRYPTION_KEY` está ausente ou vazia; desenvolvimento e testes preservam o fallback controlado.
 - `pnpm verify:env` valida cobertura, defaults de produção e ausência de valores demo.
 
 ---
@@ -143,7 +143,7 @@ A API NestJS é a fonte oficial de todos os fluxos autenticados. O frontend não
 - **Principais arquivos:** `apps/api/src/auth/*`, `apps/web/src/components/auth/*`, `apps/web/src/lib/auth/session.ts`
 - **Funcionalidades:** Login com JWT + refresh token, reset de senha com token temporário, `GET /auth/me`, `PATCH /auth/me/password`, 2FA/TOTP (setup, verify, disable, login), rate limiting de tentativas, CSRF middleware
 - **Dependências:** `bcrypt`, `otplib`, `@supabase/supabase-js`
-- **Status:** Parcial — 2FA/TOTP implementado e opcional; hardening final pendente (2FA obrigatório para admins, blacklist de tokens)
+- **Status:** Parcial — 2FA/TOTP implementado, exigência de chave de criptografia no boot de produção e hardening de sessão ativos; regras finas adicionais permanecem no roadmap.
 
 ### Admin Users
 

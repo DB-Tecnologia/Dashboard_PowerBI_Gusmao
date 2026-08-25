@@ -3,6 +3,13 @@
 **Projeto:** Dashboard Power BI
 **Atualizado em:** 2026-08-25
 
+## 2026-08-25 — Hardening P0-04 da chave TOTP
+
+- `TotpEncryptionService` agora rejeita a inicialização quando `NODE_ENV=production` e `TOTP_ENCRYPTION_KEY` está ausente, vazia ou composta apenas por espaços.
+- O erro ocorre durante a instanciação do provider, antes de a API executar `listen`, e não inclui o valor da chave.
+- Desenvolvimento, ambiente demo e testes continuam permitindo o fallback controlado para preservar a compatibilidade local.
+- Foram adicionados testes para ausência, whitespace, produção válida, fallback fora de produção e criptografia/descriptografia.
+
 ## 2026-08-25 — Memória persistida do projeto
 
 - Criado `docs/governance/MEMORIA_PROJETO.md` como pacote consolidado de contexto e histórico para handoff entre agentes e conversas.
@@ -34,7 +41,7 @@
 - O arquivo `infra/env/.env.production.example` foi completado com as variáveis do `.env.example`, `NGINX_PORT` e os parâmetros específicos de Oracle, cache, TOTP e retenção.
 - A configuração padrão documentada é `DATABASE_PROVIDER=oracle`, com `REDIS_HOST=redis`, `TRUST_PROXY_HOPS=1`, CORS pelo domínio público e nenhum segredo preenchido.
 - `scripts/verify-env-examples.mjs` e `pnpm verify:env` passaram a proteger a cobertura e a segurança dos templates.
-- A chave `TOTP_ENCRYPTION_KEY` permanece vazia no exemplo; P0-04 deverá exigir seu preenchimento no boot de produção.
+- A chave `TOTP_ENCRYPTION_KEY` permanece vazia no exemplo por segurança, mas o boot de produção agora falha explicitamente até que a infraestrutura a forneça em ambiente seguro.
 
 ## 2026-08-24 — Docker demo e contrato BI v1
 

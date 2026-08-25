@@ -33,14 +33,14 @@ O ambiente demo local é o principal critério de validação atual. Ele usa SQL
 
 - **Desenvolvimento local:** pronto para validação reproduzível com Docker demo.
 - **Qualidade automatizada:** gates de lint, formatação, typecheck, testes, build, documentação, ambiente, Docker e E2E aprovados no último ciclo concluído.
-- **Produção:** não liberada; faltam integração Oracle/COMPASS, hardening operacional, TOTP obrigatório no boot, SMTP real e demais itens do roadmap.
+- **Produção:** não liberada; a exigência da chave TOTP no boot foi concluída, mas ainda faltam integração Oracle/COMPASS, hardening operacional, SMTP real e demais itens do roadmap.
 - **BI de produção:** ainda não reconciliado com a fonte Oracle; não declarar KPIs produtivos como validados antes do smoke test e da reconciliação.
 
 ### Estado do Git
 
 - Branch de trabalho: `main`.
 - Remote esperado: `origin` apontando para `DB-Tecnologia/Dashboard_PowerBI_Gusmao`.
-- Último ciclo funcional concluído antes desta memória: `58fd208` (`fix: corrigir divida de lint`).
+- Último ciclo funcional concluído antes desta tarefa: `6b92afe` (`docs: criar memoria persistida do projeto`).
 - A memória é criada neste ciclo. O hash do próprio commit será comunicado na entrega e incorporado no próximo snapshot, evitando referência circular.
 
 ## Produto, stack e topologia
@@ -127,15 +127,14 @@ As regras completas estão em [`AGENTS.md`](../../AGENTS.md). Em resumo:
 
 ## Roadmap e próximas prioridades
 
-As tarefas P0-02, P0-03, P1-02 e P1-01 estão concluídas. As prioridades vigentes são:
+As tarefas P0-02, P0-03, P1-02, P1-01 e P0-04 estão concluídas. As prioridades vigentes são:
 
-1. **P0-04:** exigir `TOTP_ENCRYPTION_KEY` no boot e completar o hardening da autenticação.
-2. **P1-03:** ampliar E2E para filtros, exportação, administração e 2FA quando os fluxos existirem no runtime.
-3. **P1-04:** consolidar build e qualidade no CI.
-4. **P0-01:** preparar TLS/HTTPS de produção.
-5. **P1-05:** implementar SMTP real; o modo mock continua sendo uma limitação documentada.
-6. **P1-06 a P1-08:** logs estruturados, backup e rollback operacional.
-7. **Integração Oracle/COMPASS:** executar quando a infraestrutura fornecer os dados de conexão e acesso somente leitura.
+1. **P1-03:** ampliar E2E para filtros, exportação, administração e 2FA quando os fluxos existirem no runtime.
+2. **P1-04:** consolidar build e qualidade no CI.
+3. **P0-01:** preparar TLS/HTTPS de produção.
+4. **P1-05:** implementar SMTP real; o modo mock continua sendo uma limitação documentada.
+5. **P1-06 a P1-08:** logs estruturados, backup e rollback operacional.
+6. **Integração Oracle/COMPASS:** executar quando a infraestrutura fornecer os dados de conexão e acesso somente leitura.
 
 A ordem final deve ser confirmada no `ROADMAP.md` e pode ser ajustada pelo risco de lançamento.
 
@@ -154,14 +153,15 @@ Essas evidências comprovam a base demo e a qualidade do código no ciclo regist
 
 ## Decisões técnicas relevantes
 
-| Data       | Decisão                                                             | Motivo                                                                    | Impacto                                                                |
-| ---------- | ------------------------------------------------------------------- | ------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
-| 2026-08-24 | SQL Server demo é a primeira fonte local                            | Permitir validação reproduzível sem o Oracle do cliente                   | Docker e E2E podem ser executados localmente                           |
-| 2026-08-24 | Oracle 19c/COMPASS é a fonte alvo de produção                       | Alinhar a plataforma ao sistema operacional do cliente                    | Integração real depende de rede, service name e acesso somente leitura |
-| 2026-08-25 | Playwright usa Web `3000` e API demo `3001`                         | Refletir a topologia real do ambiente local                               | Login e navegação E2E ficaram verificáveis                             |
-| 2026-08-25 | Template de produção usa `DATABASE_PROVIDER=oracle` sem credenciais | Tornar o contrato de deploy explícito sem expor dados sensíveis           | Infraestrutura deve preencher os valores em ambiente seguro            |
-| 2026-08-25 | Prettier e ESLint são gates obrigatórios                            | Reduzir variação de revisão e falhas estáticas                            | Formatação e lint passaram a ser evidências de entrega                 |
-| 2026-08-25 | Memória persistida separada de contexto e diário                    | Reduzir perda de contexto sem misturar decisão atual com histórico formal | Agentes recebem um pacote de handoff consolidado                       |
+| Data       | Decisão                                                             | Motivo                                                                    | Impacto                                                                 |
+| ---------- | ------------------------------------------------------------------- | ------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| 2026-08-24 | SQL Server demo é a primeira fonte local                            | Permitir validação reproduzível sem o Oracle do cliente                   | Docker e E2E podem ser executados localmente                            |
+| 2026-08-24 | Oracle 19c/COMPASS é a fonte alvo de produção                       | Alinhar a plataforma ao sistema operacional do cliente                    | Integração real depende de rede, service name e acesso somente leitura  |
+| 2026-08-25 | Playwright usa Web `3000` e API demo `3001`                         | Refletir a topologia real do ambiente local                               | Login e navegação E2E ficaram verificáveis                              |
+| 2026-08-25 | Template de produção usa `DATABASE_PROVIDER=oracle` sem credenciais | Tornar o contrato de deploy explícito sem expor dados sensíveis           | Infraestrutura deve preencher os valores em ambiente seguro             |
+| 2026-08-25 | Prettier e ESLint são gates obrigatórios                            | Reduzir variação de revisão e falhas estáticas                            | Formatação e lint passaram a ser evidências de entrega                  |
+| 2026-08-25 | Memória persistida separada de contexto e diário                    | Reduzir perda de contexto sem misturar decisão atual com histórico formal | Agentes recebem um pacote de handoff consolidado                        |
+| 2026-08-25 | Produção falha sem `TOTP_ENCRYPTION_KEY`                            | Impedir armazenamento de secrets TOTP em texto simples                    | O provider falha antes do `listen`; dev/teste preservam compatibilidade |
 
 ## Linha do tempo de tarefas
 
@@ -201,6 +201,15 @@ Essas evidências comprovam a base demo e a qualidade do código no ciclo regist
 - **Commit/push:** `58fd208`, publicado em `origin/main`.
 - **Próximos passos:** preservar o gate e avançar para P0-04 ou P1-03 conforme prioridade de lançamento.
 
+### 2026-08-25 — P0-04: exigir chave TOTP no boot de produção
+
+- **Objetivo:** impedir que a API de produção use o fallback em texto simples para secrets TOTP.
+- **Áreas/arquivos:** `apps/api/src/auth/services/totp-encryption.service.ts`, testes unitários, template de ambiente e documentação vigente.
+- **Validações:** teste específico passou com 9 casos para ausência, whitespace, chave válida, fallback fora de produção e round-trip criptográfico; gates globais passaram, com API 48/48 e 313 testes, Web 43/43 e 142 testes, build aprovado e Playwright 7/7. Smoke real em produção sem chave recusou o boot antes do `listen`.
+- **Limitações/riscos:** a chave real continua dependente da infraestrutura e deve ser fornecida por gerenciador de segredos; rotação e backup codes permanecem fora do escopo.
+- **Commit/push:** será criado com a mensagem `security: exigir chave TOTP no boot de producao` e publicado em `origin/main`; o hash final será comunicado na entrega e consolidado no próximo snapshot.
+- **Próximos passos:** P1-03 para expandir E2E de 2FA e fluxos administrativos.
+
 ### 2026-08-25 — Criar memória persistida do projeto
 
 - **Objetivo:** criar um pacote consolidado de contexto e histórico para handoff entre agentes.
@@ -214,7 +223,6 @@ Essas evidências comprovam a base demo e a qualidade do código no ciclo regist
 
 | Item                                         | Estado                               | Impacto                                                                     |
 | -------------------------------------------- | ------------------------------------ | --------------------------------------------------------------------------- |
-| `TOTP_ENCRYPTION_KEY` obrigatório no boot    | Pendente em P0-04                    | Hardening de autenticação ainda não está fechado                            |
 | Integração Oracle/COMPASS                    | Bloqueada por infraestrutura         | Não há conexão produtiva nem reconciliação de KPIs                          |
 | Smoke queries e data de corte                | Pendente                             | Sem prova de consistência dos indicadores reais                             |
 | Atualização idempotente e ledger de execução | Pendente                             | Frescor, watermark e último snapshot ainda precisam de fechamento produtivo |

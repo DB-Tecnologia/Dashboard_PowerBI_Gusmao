@@ -3,7 +3,7 @@
 **Projeto:** Dashboard Power BI
 **Data:** 2026-08-25
 
-> **Atualizações P0-02/P0-03/P1-02/P1-01 (2026-08-25):** Playwright foi validado em ambiente demo com 7 cenários. O `.env.production.example` foi completado com todas as variáveis do contrato geral, Oracle/COMPASS como fonte padrão e validação automatizada, sem credenciais reais. A formatação foi padronizada em 387 arquivos e o lint foi corrigido com zero erros e zero avisos. P0-04 continua responsável pela exigência da chave TOTP no boot.
+> **Atualizações P0-02/P0-03/P1-02/P1-01/P0-04 (2026-08-25):** Playwright foi validado em ambiente demo com 7 cenários. O `.env.production.example` foi completado com todas as variáveis do contrato geral, Oracle/COMPASS como fonte padrão e validação automatizada, sem credenciais reais. A formatação foi padronizada em 387 arquivos, o lint foi corrigido com zero erros e zero avisos e a API passou a rejeitar boot de produção sem `TOTP_ENCRYPTION_KEY`.
 
 ---
 
@@ -11,12 +11,12 @@
 
 ### P0 — Bloqueadores Críticos
 
-| ID    | Área      | Tarefa                                                 | Problema resolvido                         | Arquivos envolvidos                                                    | Dependências | Complexidade | Estimativa | Critério de aceite                                                                       | Risco |
-| ----- | --------- | ------------------------------------------------------ | ------------------------------------------ | ---------------------------------------------------------------------- | ------------ | ------------ | ---------- | ---------------------------------------------------------------------------------------- | ----- |
-| P0-01 | Infra     | Configurar TLS/HTTPS no nginx                          | Tráfego não criptografado em produção      | `infra/docker/nginx/default.conf`, `docker-compose.prod.yml`           | —            | Média        | 4h         | Nginx serve HTTPS com certificado válido; redirect HTTP→HTTPS                            | Alto  |
-| P0-02 | Qualidade | Validar configuração do Playwright (Web na porta 3000) | Testes E2E não funcionam corretamente      | `playwright.config.ts`                                                 | —            | Baixa        | 0.5h       | **Concluído:** `pnpm test:e2e:playwright` executa 7 cenários contra Web na porta 3000    | Médio |
-| P0-03 | Infra     | Completar e validar `.env.production.example`          | Referência de produção incompleta          | `infra/env/.env.production.example`, `scripts/verify-env-examples.mjs` | —            | Baixa        | 1h         | **Concluído:** todas as variáveis documentadas, sem credenciais e com Oracle como padrão | Médio |
-| P0-04 | Segurança | Garantir `TOTP_ENCRYPTION_KEY` definida em produção    | Secrets TOTP em plain text se não definida | `infra/env/.env.production.example`, docs                              | —            | Baixa        | 1h         | Env example documenta necessidade da key; validação no boot                              | Médio |
+| ID    | Área      | Tarefa                                                 | Problema resolvido                         | Arquivos envolvidos                                                    | Dependências | Complexidade | Estimativa | Critério de aceite                                                                          | Risco |
+| ----- | --------- | ------------------------------------------------------ | ------------------------------------------ | ---------------------------------------------------------------------- | ------------ | ------------ | ---------- | ------------------------------------------------------------------------------------------- | ----- |
+| P0-01 | Infra     | Configurar TLS/HTTPS no nginx                          | Tráfego não criptografado em produção      | `infra/docker/nginx/default.conf`, `docker-compose.prod.yml`           | —            | Média        | 4h         | Nginx serve HTTPS com certificado válido; redirect HTTP→HTTPS                               | Alto  |
+| P0-02 | Qualidade | Validar configuração do Playwright (Web na porta 3000) | Testes E2E não funcionam corretamente      | `playwright.config.ts`                                                 | —            | Baixa        | 0.5h       | **Concluído:** `pnpm test:e2e:playwright` executa 7 cenários contra Web na porta 3000       | Médio |
+| P0-03 | Infra     | Completar e validar `.env.production.example`          | Referência de produção incompleta          | `infra/env/.env.production.example`, `scripts/verify-env-examples.mjs` | —            | Baixa        | 1h         | **Concluído:** todas as variáveis documentadas, sem credenciais e com Oracle como padrão    | Médio |
+| P0-04 | Segurança | Garantir `TOTP_ENCRYPTION_KEY` definida em produção    | Secrets TOTP em plain text se não definida | `apps/api/src/auth/services/totp-encryption.service.ts`, env e docs    | —            | Baixa        | 1h         | **Concluído:** produção falha antes do listen sem chave; fallback fica limitado a dev/teste | Médio |
 
 ### P1 — Obrigatório para o Lançamento
 
@@ -126,7 +126,7 @@ Cada tarefa tem critérios de aceite específicos na tabela acima. Adicionalment
 
 1. **P0-02:** Validar config Playwright (concluído em 2026-08-25; desbloqueia testes E2E)
 2. **P0-03:** Completar `.env.production.example` (concluído em 2026-08-25)
-3. **P0-04:** Garantir TOTP_ENCRYPTION_KEY em produção
+3. **P0-04:** Garantir TOTP_ENCRYPTION_KEY em produção — concluído em 2026-08-25; validação fail-fast no provider
 4. **P1-02:** Corrigir formatação Prettier (concluído em 2026-08-25; 387 arquivos padronizados)
 5. **P1-04:** Adicionar build no CI
 6. **P1-01:** Corrigir erros de lint — concluído em 2026-08-25; zero erros e zero avisos
@@ -152,7 +152,7 @@ Cada tarefa tem critérios de aceite específicos na tabela acima. Adicionalment
 
 - [x] P0-02: Config Playwright validada; 7 testes E2E passando em 2026-08-25
 - [x] P0-03: `.env.production.example` completo e validado em 2026-08-25
-- [ ] P0-04: TOTP_ENCRYPTION_KEY documentada
+- [x] P0-04: TOTP_ENCRYPTION_KEY exigida no boot de produção em 2026-08-25
 - [x] P1-02: Formatação Prettier corrigida em 2026-08-25; 387 arquivos padronizados
 - [ ] P1-04: Build no CI
 - [ ] `pnpm test` passa (API + Web)
@@ -174,7 +174,7 @@ Cada tarefa tem critérios de aceite específicos na tabela acima. Adicionalment
 - [ ] P1-06: Logs estruturados implementados
 - [ ] P1-07: Backup documentado e testado
 - [ ] P1-08: Rollback documentado e testado
-- [ ] `TOTP_ENCRYPTION_KEY` definida em produção
+- [ ] `TOTP_ENCRYPTION_KEY` preenchida no ambiente seguro de produção antes do deploy
 - [ ] `JWT_ACCESS_SECRET` forte em produção
 - [ ] Redis configurado e healthcheck passando
 - [ ] Docker Compose prod testado end-to-end

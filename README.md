@@ -255,7 +255,7 @@ pnpm verify:env
 pnpm docker:prod
 ```
 
-Preencha o arquivo local somente com o gerenciador de segredos ou ambiente seguro da operação. Não versione `infra/env/.env.production`; a conexão Oracle, o Supabase, o domínio, SMTP, JWT e a chave TOTP dependem da infraestrutura real e continuam sem valores no repositório.
+Preencha o arquivo local somente com o gerenciador de segredos ou ambiente seguro da operação. `TOTP_ENCRYPTION_KEY` é obrigatória antes do boot de produção; sem ela, a API encerra a inicialização para impedir armazenamento de secrets TOTP em texto simples. Não versione `infra/env/.env.production`; a conexão Oracle, o Supabase, o domínio, SMTP, JWT e a chave TOTP dependem da infraestrutura real e continuam sem valores no repositório.
 
 ## Licença
 

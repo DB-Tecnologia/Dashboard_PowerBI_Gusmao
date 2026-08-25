@@ -13,6 +13,11 @@ export class TotpEncryptionService {
 
   constructor(private readonly configService: ConfigService) {
     const encryptionKey = this.configService.get<string>('TOTP_ENCRYPTION_KEY');
+    const nodeEnv = this.configService.get<string>('NODE_ENV', 'development');
+
+    if (nodeEnv === 'production' && !encryptionKey?.trim()) {
+      throw new Error('TOTP_ENCRYPTION_KEY é obrigatória em produção.');
+    }
 
     if (encryptionKey) {
       const salt = this.configService.get<string>('TOTP_ENCRYPTION_SALT', DEFAULT_SALT);
