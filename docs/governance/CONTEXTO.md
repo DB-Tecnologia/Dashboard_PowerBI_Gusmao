@@ -3,6 +3,13 @@
 **Projeto:** Dashboard Power BI
 **Atualizado em:** 2026-08-25
 
+## 2026-08-25 — Memória persistida do projeto
+
+- Criado `docs/governance/MEMORIA_PROJETO.md` como pacote consolidado de contexto e histórico para handoff entre agentes e conversas.
+- A memória separa o snapshot vigente e a linha do tempo técnica de `CONTEXTO.md`, que continua sendo a fonte de decisões e riscos atuais, e de `RELATORIO.md`, que continua sendo o diário formal das sessões.
+- O protocolo exige leitura no início, conferência contra runtime e Git, registro ao final e proibição explícita de secrets, tokens, senhas, chaves privadas, `.env` reais e dados sensíveis.
+- `scripts/verify-docs.mjs` passa a proteger a existência, as seções mínimas, o link no índice e a ausência de credenciais conhecidas.
+
 ## 2026-08-25 — Correção da dívida de lint P1-01
 
 - O ESLint passou de 7.920 erros e 683 avisos aparentes para o diagnóstico real de 25 achados após a exclusão recursiva de `dist`, `.next`, `build`, `out`, cobertura e relatórios gerados.

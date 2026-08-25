@@ -14,6 +14,7 @@ const requiredFiles = [
   'docs/product/ESCOPO.md',
   'docs/governance/CONTEXTO.md',
   'docs/governance/RELATORIO.md',
+  'docs/governance/MEMORIA_PROJETO.md',
   'docs/reference/api.md',
   'docs/reference/web.md',
   'docs/decisions/README.md',
@@ -75,4 +76,48 @@ if (missingCommands.length > 0) {
   process.exit(1);
 }
 
-console.log('Documentação inicial validada com sucesso.');
+const memoryPath = resolve(root, 'docs/governance/MEMORIA_PROJETO.md');
+const memory = readFileSync(memoryPath, 'utf8');
+
+const requiredMemorySections = [
+  '## Objetivo e leitura',
+  '## Snapshot vigente',
+  '## Produto, stack e topologia',
+  '## Arquitetura e fontes de dados',
+  '## Decisões técnicas relevantes',
+  '## Linha do tempo de tarefas',
+  '## Pendências e bloqueios',
+  '## Protocolo de atualização',
+  '## Segurança e dados proibidos',
+];
+
+const missingMemorySections = requiredMemorySections.filter((section) => !memory.includes(section));
+
+if (missingMemorySections.length > 0) {
+  console.error('Memória persistida sem seções obrigatórias:');
+  for (const section of missingMemorySections) console.error(`- ${section}`);
+  process.exit(1);
+}
+
+const index = readFileSync(resolve(root, 'docs/INDEX.md'), 'utf8');
+
+if (!index.includes('governance/MEMORIA_PROJETO.md')) {
+  console.error('Índice da documentação sem referência à memória persistida.');
+  process.exit(1);
+}
+
+const forbiddenSecretPatterns = [
+  /BEGIN PRIVATE KEY/i,
+  /Bearer\s+eyJ/i,
+  /(?:JWT_(?:ACCESS|REFRESH)_SECRET|TOTP_ENCRYPTION_KEY|(?:SQLSERVER|ORACLE|SMTP)_PASSWORD)\s*=\s*[^\s`]+/i,
+];
+
+const foundForbiddenPatterns = forbiddenSecretPatterns.filter((pattern) => pattern.test(memory));
+
+if (foundForbiddenPatterns.length > 0) {
+  console.error('Memória persistida contém valores sensíveis ou credenciais conhecidas:');
+  for (const pattern of foundForbiddenPatterns) console.error(`- ${pattern}`);
+  process.exit(1);
+}
+
+console.log('Documentação e memória persistida validadas com sucesso.');

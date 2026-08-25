@@ -5,6 +5,17 @@
 
 > As entradas anteriores a 24/08/2026 preservam os caminhos da estrutura documental vigente na data de cada registro. A estrutura atual e mantida em `docs/INDEX.md`; referencias historicas abaixo nao representam arquivos ausentes.
 
+## 2026-08-25 — Memória persistida do projeto
+
+- Criado `docs/governance/MEMORIA_PROJETO.md` com snapshot vigente, stack, topologia, fontes, arquitetura Oracle/COMPASS, regras para agentes, roadmap, validações, decisões, pendências e linha do tempo completa em nível de handoff técnico.
+- Integrados `docs/INDEX.md`, `AGENTS.md`, `docs/governance/CONTEXTO.md`, `scripts/verify-docs.mjs` e a seção de documentação do `README.md`.
+- A memória incorpora as entregas P0-02, P0-03, P1-02 e P1-01, preservando os hashes já publicados e mantendo o histórico original em `docs/archive/`.
+- Não houve alteração de API, banco, telas, infraestrutura ou contratos funcionais. Não foram incluídos secrets, tokens, senhas, `.env` reais ou artefatos gerados.
+- O protocolo de manutenção diferencia memória consolidada, contexto de decisões e diário formal, reduzindo perda de contexto em novas sessões.
+- `pnpm verify:docs`, `pnpm verify:workspace`, `pnpm verify:env`, `pnpm verify:docker`, `pnpm format:check`, `pnpm quality`, `pnpm typecheck`, `pnpm test` e `pnpm build` passaram.
+- A primeira execução E2E apresentou falha transitória no logout; a execução isolada do caso e a repetição completa passaram, totalizando 7 de 7 testes. Não houve alteração funcional para tratar a ocorrência não reproduzida.
+- O hash do próprio commit será registrado na entrega e incorporado ao próximo snapshot para evitar referência circular.
+
 ## 2026-08-25 — Correção da dívida de lint P1-01
 
 - O diagnóstico inicial aparente registrava 7.920 erros e 683 avisos porque o ESLint analisava `apps/api/dist` e `apps/web/.next`; os padrões de exclusão foram corrigidos para serem recursivos.

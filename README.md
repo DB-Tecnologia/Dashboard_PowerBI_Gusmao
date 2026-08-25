@@ -232,6 +232,7 @@ Comece pelo [índice da documentação](docs/INDEX.md):
 - [Produto e KPIs](docs/product/): escopo, mapeamento e indicadores.
 - [API e Web](docs/reference/): contratos e fluxos disponíveis.
 - [Decisões](docs/decisions/): ADRs arquiteturais.
+- [Memória persistida](docs/governance/MEMORIA_PROJETO.md): snapshot, histórico, validações e handoff para agentes.
 
 ## Produção e suporte operacional
 

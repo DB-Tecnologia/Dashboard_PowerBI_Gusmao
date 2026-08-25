@@ -96,6 +96,7 @@ Leia primeiro:
 - `ROADMAP.md`
 - `docs/INDEX.md`
 - `docs/governance/CONTEXTO.md`
+- `docs/governance/MEMORIA_PROJETO.md`
 - `docs/architecture/ARQUITETURA.md`
 - `docs/architecture/BANCO_DADOS.md`
 - `docs/product/ESCOPO.md`
@@ -346,6 +347,13 @@ Exemplos:
 4. Atualizar `docs/reference/web.md` se novas telas foram criadas;
 5. Registrar em `docs/governance/CONTEXTO.md` qualquer decisão técnica, bloqueio ou mudança importante;
 6. Atualizar `docs/governance/RELATORIO.md` ao final da sessão com o que foi feito no dia.
+7. Atualizar `docs/governance/MEMORIA_PROJETO.md` com o snapshot vigente, a linha do tempo, as validações, os riscos, o commit, o push e os próximos passos.
+
+### Regra de MEMORIA_PROJETO.md
+
+Leia `docs/governance/MEMORIA_PROJETO.md` no início de toda tarefa relevante, depois de `README.md`, `AGENTS.md`, `PRD.md`, `ROADMAP.md` e `docs/INDEX.md`. Use-a como pacote consolidado de contexto e histórico para handoff, sem substituir `CONTEXTO.md` como registro de decisões atuais nem `RELATORIO.md` como diário formal da sessão.
+
+Ao finalizar a tarefa, confira o snapshot contra o runtime e o Git, registre a entrada cronológica correspondente e atualize pendências, validações, riscos, commit, push e próximos passos. Nunca escreva na memória secrets, tokens, senhas, chaves privadas, `.env` reais ou dados sensíveis.
 
 ### Regra de docs/governance/RELATORIO.md
 

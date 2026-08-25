@@ -50,6 +50,7 @@ Este indice separa a documentacao vigente do historico preservado. Os quatro doc
 
 - [Contexto vivo](governance/CONTEXTO.md): decisoes, riscos e pendencias.
 - [Relatorio diario](governance/RELATORIO.md): historico de execucao e validacoes.
+- [Memoria persistida do projeto](governance/MEMORIA_PROJETO.md): snapshot, decisoes, historico, validacoes e handoff para agentes.
 - [Decisoes arquiteturais](decisions/): ADRs curtas.
 - [Roadmap detalhado](roadmap/): telas, modulos e tarefas.
 - [Especificacoes](specs/): documentos SDD por modulo.
