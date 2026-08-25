@@ -7,6 +7,8 @@
 
 > Este documento é uma análise estática do código, da documentação e dos testes do repositório. Não representa uma nova sincronização com o ambiente de produção, Oracle 19c ou COMPASS ERP. Nenhuma credencial ou dado de autenticação é reproduzido aqui.
 
+> **Atualização de validação em 25/08/2026:** a configuração do Playwright foi validada no ambiente demo. A Web respondeu na porta `3000`, a API na porta `3001` e os 7 cenários E2E existentes passaram. A expansão de cobertura continua planejada em P1-03.
+
 ## 1. Conclusão executiva
 
 O repositório entrega uma base funcional avançada para uma plataforma de BI: autenticação, permissões, dashboards configuráveis, relatórios, exportações, administração, API NestJS, frontend Next.js, Docker, integração com Supabase e adaptadores para SQL Server e Oracle.
@@ -55,7 +57,7 @@ Foram cruzadas quatro fontes de evidência:
 | Build                             |                 Passou | API NestJS e web Next.js foram compilados                                                              |
 | Lint                              |                 Falhou | 633 erros e 23 avisos na execução atual; parte dos erros também atingiu artefatos compilados em `dist` |
 | Formatação                        |                 Falhou | 417 arquivos fora do padrão Prettier                                                                   |
-| E2E Playwright                    |                Parcial | A auditoria do projeto registra poucos cenários e `webServer` apontando para a porta da API            |
+| E2E Playwright                    |   Validado no baseline | 7 cenários passaram contra a Web em `3000`; a expansão de cobertura permanece pendente                 |
 
 Os testes e o build demonstram que a base técnica compila e possui cobertura unitária relevante. Eles não comprovam conexão com o Oracle produtivo, qualidade dos dados, reconciliação com o BI atual ou prontidão operacional.
 
@@ -206,7 +208,7 @@ Até a confirmação do ambiente de origem, o projeto deve tratar o Oracle 19c c
 - criar reconciliação automática entre origem, camada analítica e telas;
 - separar a camada de dashboard da persistência de plataforma;
 - definir observabilidade com logs estruturados, métricas, alertas e rastreamento dos jobs;
-- corrigir o `webServer` do Playwright para iniciar e testar a aplicação web na porta correta;
+- ampliar a cobertura do Playwright para exportação, CRUD administrativo e 2FA após a validação do baseline;
 - incluir `pnpm build` e os cenários web reais no pipeline de CI;
 - corrigir lint e formatação para que `pnpm quality` seja uma validação confiável.
 

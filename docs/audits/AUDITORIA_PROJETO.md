@@ -4,6 +4,8 @@
 **Data da auditoria:** 2026-07-20
 **Auditor:** Rui Diniz
 
+> **Atualização em 2026-08-25:** a configuração do Playwright foi validada contra a Web em `3000` e a API demo em `3001`; os 7 cenários existentes passaram. As referências abaixo a uma porta incorreta representam o estado observado na auditoria original e foram superadas por esta validação; a limitação de cobertura adicional permanece em P1-03.
+
 ---
 
 ## 1. Resumo Executivo
@@ -283,17 +285,17 @@ Ver arquivo `docs/audits/MATRIZ_REQUISITOS.md` para a tabela completa de 72 requ
 
 ## 16. Funcionalidades Parciais
 
-| Funcionalidade                       | %   | Pendência                                                                  |
-| ------------------------------------ | --- | -------------------------------------------------------------------------- |
-| SMTP envio real de e-mails           | 50% | `SMTP_MODE=mock` no env example; envio real não confirmado                 |
-| Testes E2E (Playwright)              | 50% | Apenas 6 testes (auth+dashboard); config webServer aponta porta errada     |
-| Lint                                 | 25% | 1129 erros, 426 warnings                                                   |
-| Formatação Prettier                  | 10% | 187 arquivos com formatação incorreta                                      |
-| Observabilidade                      | 10% | Apenas logs NestJS nativos; sem métricas/tracing/alertas                   |
-| HTTPS/TLS produção                   | 50% | Nginx configurado mas sem SSL/TLS                                          |
-| Monitoramento de queries             | 25% | Timeout configurável, sem logs estruturados de performance                 |
-| Bloqueio por inatividade no frontend | 50% | Timeout no refresh, sem bloqueio proativo no frontend                      |
-| Governança completa                  | 50% | Auditoria, permissões, settings, retenção ativos, mas cobertura incompleta |
+| Funcionalidade                       | %   | Pendência                                                                                     |
+| ------------------------------------ | --- | --------------------------------------------------------------------------------------------- |
+| SMTP envio real de e-mails           | 50% | `SMTP_MODE=mock` no env example; envio real não confirmado                                    |
+| Testes E2E (Playwright)              | 70% | 7 testes de baseline (auth, dashboard, drill-down e relatórios); cobertura adicional pendente |
+| Lint                                 | 25% | 1129 erros, 426 warnings                                                                      |
+| Formatação Prettier                  | 10% | 187 arquivos com formatação incorreta                                                         |
+| Observabilidade                      | 10% | Apenas logs NestJS nativos; sem métricas/tracing/alertas                                      |
+| HTTPS/TLS produção                   | 50% | Nginx configurado mas sem SSL/TLS                                                             |
+| Monitoramento de queries             | 25% | Timeout configurável, sem logs estruturados de performance                                    |
+| Bloqueio por inatividade no frontend | 50% | Timeout no refresh, sem bloqueio proativo no frontend                                         |
+| Governança completa                  | 50% | Auditoria, permissões, settings, retenção ativos, mas cobertura incompleta                    |
 
 ---
 
@@ -335,12 +337,12 @@ Ver arquivo `docs/audits/MATRIZ_REQUISITOS.md` para a tabela completa de 72 requ
 
 ### Implementado parcialmente (aparenta estar concluído mas tem lacunas)
 
-| Item                                        | Aparência                  | Lacuna real                                                                                                    |
-| ------------------------------------------- | -------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| ROADMAP marca 18/18 telas como "Concluído"  | ROADMAP.md:49              | 6 módulos marcados como "Parcial" — telas existem mas funcionalidades avançadas pendentes                      |
-| Testes E2E marcados como CONCLUÍDO (DT-005) | ROADMAP.md:123             | Apenas 6 testes em 1 arquivo; config do Playwright aponta webServer para porta 3001 (API) em vez de 3000 (Web) |
-| `pnpm quality` como comando de validação    | README.md:66               | Inclui lint e format:check que falham (1129 erros, 187 arquivos)                                               |
-| CI/CD pipeline                              | `.github/workflows/ci.yml` | CI executa `pnpm quality` (que falha) e `pnpm test:e2e` (API e2e, não Playwright); não executa `pnpm build`    |
+| Item                                        | Aparência                  | Lacuna real                                                                                                 |
+| ------------------------------------------- | -------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| ROADMAP marca 18/18 telas como "Concluído"  | ROADMAP.md:49              | 6 módulos marcados como "Parcial" — telas existem mas funcionalidades avançadas pendentes                   |
+| Testes E2E marcados como CONCLUÍDO (DT-005) | ROADMAP.md:123             | Baseline validado com 7 testes; cobertura adicional de exportação, admin CRUD e 2FA permanece pendente      |
+| `pnpm quality` como comando de validação    | README.md:66               | Inclui lint e format:check que falham (1129 erros, 187 arquivos)                                            |
+| CI/CD pipeline                              | `.github/workflows/ci.yml` | CI executa `pnpm quality` (que falha) e `pnpm test:e2e` (API e2e, não Playwright); não executa `pnpm build` |
 
 ### Código órfão ou não utilizado
 
@@ -362,13 +364,13 @@ Ver arquivo `docs/audits/MATRIZ_REQUISITOS.md` para a tabela completa de 72 requ
 
 ### Riscos de falsa conclusão
 
-| Item                                                   | Risco                                                                         |
-| ------------------------------------------------------ | ----------------------------------------------------------------------------- |
-| ROADMAP marca todas as 18 telas como "✅ Concluído"    | Pode levar a crer que o V1 está completo, mas 6 módulos são "Parcial"         |
-| DT-005 (Testes E2E) marcado como CONCLUÍDO             | Apenas 6 testes básicos; config do Playwright pode não funcionar corretamente |
-| `pnpm build` passa                                     | Lint e format:check falham; qualidade de código abaixo do ideal               |
-| F-01 e F-02 marcados como "✅ Corrigido" em FALHAS.md  | CONTEXTO.md ainda lista F-01 e F-02 como pendências                           |
-| ARQUITETURA.md diz "Redis não é dependência funcional" | BullMQ e token blacklist usam Redis com fallback em memória                   |
+| Item                                                   | Risco                                                                  |
+| ------------------------------------------------------ | ---------------------------------------------------------------------- |
+| ROADMAP marca todas as 18 telas como "✅ Concluído"    | Pode levar a crer que o V1 está completo, mas 6 módulos são "Parcial"  |
+| DT-005 (Testes E2E) marcado como CONCLUÍDO             | Baseline validado com 7 testes; cobertura adicional permanece pendente |
+| `pnpm build` passa                                     | Lint e format:check falham; qualidade de código abaixo do ideal        |
+| F-01 e F-02 marcados como "✅ Corrigido" em FALHAS.md  | CONTEXTO.md ainda lista F-01 e F-02 como pendências                    |
+| ARQUITETURA.md diz "Redis não é dependência funcional" | BullMQ e token blacklist usam Redis com fallback em memória            |
 
 ---
 
@@ -390,12 +392,12 @@ Ver arquivo `docs/audits/MATRIZ_REQUISITOS.md` para a tabela completa de 72 requ
 
 **Problemas encontrados:**
 
-| Arquivo                        | Local           | Problema                                                                          | Severidade | Correção                    |
-| ------------------------------ | --------------- | --------------------------------------------------------------------------------- | ---------- | --------------------------- |
-| `exports.processor.ts:41`      | onModuleInit    | Cria conexão Redis sem tratamento de erro assíncrono                              | Média      | Try/catch no `onModuleInit` |
-| `playwright.config.ts:25`      | webServer.url   | Aponta para `http://localhost:3001` (API) em vez de `http://localhost:3000` (Web) | Alta       | Corrigir para porta 3000    |
-| `apps/web/src/lib/supabase.ts` | Cliente browser | Frontend ainda tem cliente Supabase browser                                       | Média      | Remover se não usado        |
-| Lint geral                     | 1129 erros      | `@typescript-eslint/no-explicit-any` extensivo                                    | Média      | Refatorar tipos             |
+| Arquivo                        | Local           | Problema                                                                            | Severidade | Correção                                     |
+| ------------------------------ | --------------- | ----------------------------------------------------------------------------------- | ---------- | -------------------------------------------- |
+| `exports.processor.ts:41`      | onModuleInit    | Cria conexão Redis sem tratamento de erro assíncrono                                | Média      | Try/catch no `onModuleInit`                  |
+| `playwright.config.ts`         | webServer.url   | Validado em `http://localhost:3000` para a Web; API demo em `http://localhost:3001` | —          | Manter baseline e ampliar cobertura em P1-03 |
+| `apps/web/src/lib/supabase.ts` | Cliente browser | Frontend ainda tem cliente Supabase browser                                         | Média      | Remover se não usado                         |
+| Lint geral                     | 1129 erros      | `@typescript-eslint/no-explicit-any` extensivo                                      | Média      | Refatorar tipos                              |
 
 ### Frontend
 
@@ -486,15 +488,15 @@ Ver arquivo `docs/audits/MATRIZ_REQUISITOS.md` para a tabela completa de 72 requ
 
 ## 22. Auditoria de Testes
 
-| Categoria               | Quantidade               | Status      |
-| ----------------------- | ------------------------ | ----------- |
-| Testes API (spec)       | 37 arquivos, ~304 testes | ✅ Passando |
-| Testes Web (test)       | 37 arquivos, ~142 testes | ✅ Passando |
-| Testes E2E (Playwright) | 1 arquivo, 6 testes      | ⚠️ Parcial  |
-| Lint                    | 1129 erros, 426 warnings | ❌ Falhando |
-| Format                  | 187 arquivos             | ❌ Falhando |
-| Typecheck               | API + Web                | ✅ Passando |
-| Build                   | API + Web                | ✅ Passando |
+| Categoria               | Quantidade               | Status                                                      |
+| ----------------------- | ------------------------ | ----------------------------------------------------------- |
+| Testes API (spec)       | 37 arquivos, ~304 testes | ✅ Passando                                                 |
+| Testes Web (test)       | 37 arquivos, ~142 testes | ✅ Passando                                                 |
+| Testes E2E (Playwright) | 1 arquivo, 7 testes      | ⚠️ Parcial: baseline validado; cobertura adicional pendente |
+| Lint                    | 1129 erros, 426 warnings | ❌ Falhando                                                 |
+| Format                  | 187 arquivos             | ❌ Falhando                                                 |
+| Typecheck               | API + Web                | ✅ Passando                                                 |
+| Build                   | API + Web                | ✅ Passando                                                 |
 
 **Fluxos críticos sem teste E2E:**
 
@@ -530,18 +532,18 @@ Ver arquivo `docs/audits/MATRIZ_REQUISITOS.md` para a tabela completa de 72 requ
 
 ## 24. Riscos
 
-| Risco                                        | Severidade | Probabilidade | Mitigação                                 |
-| -------------------------------------------- | ---------- | ------------- | ----------------------------------------- |
-| Fallback em memória perde dados ao reiniciar | Alto       | Média         | Garantir Supabase configurado em produção |
-| Sem TLS/HTTPS em produção                    | Alto       | Alta          | Configurar certificado SSL no nginx       |
-| Lint com 1129 erros                          | Médio      | Alta          | Corrigir progressivamente                 |
-| Testes E2E insuficientes                     | Médio      | Alta          | Expandir cobertura Playwright             |
-| Sem observabilidade estruturada              | Alto       | Alta          | Implementar logs estruturados + métricas  |
-| TOTP_ENCRYPTION_KEY não definida em dev      | Médio      | Alta          | Definir em produção                       |
-| Config Playwright aponta porta errada        | Médio      | Alta          | Corrigir webServer.url para porta 3000    |
-| `.env.production.example` não versionado     | Médio      | Média         | Criar arquivo de referência               |
-| CI não executa build                         | Médio      | Média         | Adicionar step de build no ci.yml         |
-| SMTP em modo mock                            | Médio      | Média         | Configurar SMTP real em produção          |
+| Risco                                        | Severidade | Probabilidade | Mitigação                                         |
+| -------------------------------------------- | ---------- | ------------- | ------------------------------------------------- |
+| Fallback em memória perde dados ao reiniciar | Alto       | Média         | Garantir Supabase configurado em produção         |
+| Sem TLS/HTTPS em produção                    | Alto       | Alta          | Configurar certificado SSL no nginx               |
+| Lint com 1129 erros                          | Médio      | Alta          | Corrigir progressivamente                         |
+| Testes E2E insuficientes                     | Médio      | Alta          | Expandir cobertura Playwright                     |
+| Sem observabilidade estruturada              | Alto       | Alta          | Implementar logs estruturados + métricas          |
+| TOTP_ENCRYPTION_KEY não definida em dev      | Médio      | Alta          | Definir em produção                               |
+| Cobertura Playwright ainda limitada          | Médio      | Média         | Expandir testes para exportação, admin CRUD e 2FA |
+| `.env.production.example` não versionado     | Médio      | Média         | Criar arquivo de referência                       |
+| CI não executa build                         | Médio      | Média         | Adicionar step de build no ci.yml                 |
+| SMTP em modo mock                            | Médio      | Média         | Configurar SMTP real em produção                  |
 
 ---
 

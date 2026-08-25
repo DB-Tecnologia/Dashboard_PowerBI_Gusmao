@@ -3,6 +3,8 @@
 **Projeto:** Dashboard Power BI
 **Data:** 2026-07-20
 
+> **Atualização em 2026-08-25:** P0-02 foi validado no ambiente demo. A Web respondeu em `3000`, a API em `3001` e os 7 cenários Playwright existentes passaram. A cobertura adicional continua em P1-03; os demais achados deste resumo permanecem válidos como auditoria histórica.
+
 ---
 
 ## Resultado Geral
@@ -32,7 +34,7 @@
 
 ## O que falta
 
-- **P0 (Bloqueadores):** TLS/HTTPS no nginx, config Playwright corrigida, `.env.production.example`, TOTP_ENCRYPTION_KEY em produção
+- **P0 (Bloqueadores):** TLS/HTTPS no nginx, `.env.production.example`, TOTP_ENCRYPTION_KEY em produção
 - **P1 (Lançamento):** Lint (1129 erros), formatação (187 arquivos), testes E2E expandidos, build no CI, SMTP real, logs estruturados, backup/rollback documentados
 - **P2 (Estabilização):** Remover Supabase browser do frontend, testes de segurança, métricas, bloqueio por inatividade no frontend, silenciar Redis noise, remover código órfão, atualizar docs divergentes, cron de refresh
 - **P3 (Evoluções):** Storage S3, export dashboard como imagem, compartilhamento de dashboards, alertas em tempo real, monitoramento, escala horizontal
@@ -45,22 +47,21 @@
 2. **Fallback em memória perde dados ao reiniciar** — se Supabase não configurado (Alto)
 3. **Sem observabilidade estruturada** — sem métricas, tracing ou alertas (Alto)
 4. **Lint com 1129 erros** — qualidade de código abaixo do padrão (Médio)
-5. **Testes E2E insuficientes** — apenas 6 testes, config possivelmente incorreta (Médio)
+5. **Testes E2E insuficientes** — 7 testes de baseline; ainda faltam exportação, CRUD administrativo e 2FA (Médio)
 
 ---
 
 ## Próximas Dez Ações
 
-1. **P0-02:** Corrigir config Playwright (webServer.url → porta 3000) — 0.5h
-2. **P0-03:** Criar `infra/env/.env.production.example` — 1h
-3. **P0-04:** Documentar e validar TOTP_ENCRYPTION_KEY em produção — 1h
-4. **P1-02:** Executar `pnpm format` para corrigir 187 arquivos — 2h
-5. **P1-04:** Adicionar step `pnpm build` no `ci.yml` — 1h
-6. **P1-01:** Corrigir 1129 erros de lint progressivamente — 16h
-7. **P1-03:** Expandir testes E2E para 15+ testes — 12h
-8. **P0-01:** Configurar TLS/HTTPS no nginx com certificado — 4h
-9. **P1-05:** Configurar SMTP real para produção — 4h
-10. **P1-06:** Implementar logs estruturados (pino/winston) — 8h
+1. **P0-03:** Criar `infra/env/.env.production.example` — 1h
+2. **P0-04:** Documentar e validar TOTP_ENCRYPTION_KEY em produção — 1h
+3. **P1-02:** Executar `pnpm format` para corrigir 187 arquivos — 2h
+4. **P1-04:** Adicionar step `pnpm build` no `ci.yml` — 1h
+5. **P1-01:** Corrigir 1129 erros de lint progressivamente — 16h
+6. **P1-03:** Expandir testes E2E para 15+ testes — 12h
+7. **P0-01:** Configurar TLS/HTTPS no nginx com certificado — 4h
+8. **P1-05:** Configurar SMTP real para produção — 4h
+9. **P1-06:** Implementar logs estruturados (pino/winston) — 8h
 
 ---
 

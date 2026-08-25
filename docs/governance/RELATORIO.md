@@ -1,9 +1,20 @@
 # RELATORIO.md — Registro Diário de Desenvolvimento
 
 **Projeto:** Dashboard Power BI
-**Atualizado em:** 2026-08-24
+**Atualizado em:** 2026-08-25
 
 > As entradas anteriores a 24/08/2026 preservam os caminhos da estrutura documental vigente na data de cada registro. A estrutura atual e mantida em `docs/INDEX.md`; referencias historicas abaixo nao representam arquivos ausentes.
+
+## 2026-08-25 — Validação P0-02 do Playwright
+
+- A configuração atual foi validada sem alteração de código: o `webServer` inicia/reutiliza a Web em `http://localhost:3000` e o ambiente demo disponibiliza a API em `http://localhost:3001`.
+- `pnpm exec playwright test --list`: 7 testes descobertos em `tests/e2e/auth-dashboard.spec.ts`.
+- `pnpm test:e2e:playwright`: 7 testes passaram em 37,4 segundos, cobrindo autenticação, logout, dashboard, drill-down, seletor de dimensão e catálogo de relatórios.
+- Validações adicionais: `pnpm verify:workspace`, `pnpm verify:docker`, `pnpm verify:docs`, `pnpm typecheck`, `pnpm test` (43 suítes/142 testes Web e 48 suítes/308 testes API) e `pnpm build` passaram.
+- `git diff --check` passou; o artefato gerado `apps/web/tsconfig.tsbuildinfo` foi restaurado e não faz parte da entrega.
+- P0-02 foi encerrado. A ampliação da cobertura E2E para exportação, CRUD administrativo e 2FA permanece como P1-03.
+- Documentação atualizada: `ROADMAP.md`, `docs/operations/TAREFAS_PARA_CONCLUSAO.md`, `docs/governance/CONTEXTO.md` e este relatório.
+- Nenhuma credencial, alteração de API, banco, Docker ou tela foi incluída nesta tarefa.
 
 ## 2026-08-24 — Docker e integração BI
 

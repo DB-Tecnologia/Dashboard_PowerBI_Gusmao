@@ -1,7 +1,7 @@
 # ROADMAP.md — Roadmap de Desenvolvimento
 
 **Projeto:** Dashboard Power BI
-**Atualizado em:** 2026-08-24
+**Atualizado em:** 2026-08-25
 **Metodologia:** Specification-Driven Development (SDD) + Test-Driven Development (TDD)
 
 **Fonte única de verdade para acompanhamento do projeto com base no escopo V1.**
@@ -182,7 +182,8 @@ Uma tarefa só é considerada pronta quando:
 
 - ✅ Repositório `main` clonado em `Dashboard_PowerBI_Gusmao` sem alterar os documentos do diretório pai.
 - ✅ Ambiente demo reproduzível com SQL Server, API, Web e Redis; normalização de EOL corrigida no entrypoint Linux.
-- ✅ Playwright apontado para a porta da Web (`3000`).
+- ✅ P0-02 concluído: Playwright validado contra a Web em `3000`, com API demo em `3001` e 7 cenários E2E aprovados em 2026-08-25.
+- ⏳ P1-03 permanece separado: ampliar a cobertura para exportação, CRUD administrativo e 2FA.
 - ✅ Contrato BI v1 com fonte, frescor, filtros, resumo de produção Oracle e refresh idempotente.
 - ⏳ Oracle/COMPASS bloqueado até receber rede, host, service name e credencial somente leitura.
 - ⏳ Smoke queries de algodão, algodoeira e romaneios, reconciliação de KPIs e persistência durável do ledger de refresh.

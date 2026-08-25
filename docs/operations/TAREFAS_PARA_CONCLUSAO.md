@@ -1,7 +1,9 @@
 # TAREFAS_PARA_CONCLUSAO.md — Plano de Execução para Conclusão
 
 **Projeto:** Dashboard Power BI
-**Data:** 2026-07-20
+**Data:** 2026-08-25
+
+> **Atualização P0-02 (2026-08-25):** a configuração atual do Playwright foi validada em ambiente demo. `pnpm test:e2e:playwright` executou 7 cenários com sucesso, usando a Web na porta `3000` e a API na porta `3001`. A expansão para 15+ cenários permanece em P1-03.
 
 ---
 
@@ -9,12 +11,12 @@
 
 ### P0 — Bloqueadores Críticos
 
-| ID    | Área      | Tarefa                                                   | Problema resolvido                         | Arquivos envolvidos                                          | Dependências | Complexidade | Estimativa | Critério de aceite                                            | Risco |
-| ----- | --------- | -------------------------------------------------------- | ------------------------------------------ | ------------------------------------------------------------ | ------------ | ------------ | ---------- | ------------------------------------------------------------- | ----- |
-| P0-01 | Infra     | Configurar TLS/HTTPS no nginx                            | Tráfego não criptografado em produção      | `infra/docker/nginx/default.conf`, `docker-compose.prod.yml` | —            | Média        | 4h         | Nginx serve HTTPS com certificado válido; redirect HTTP→HTTPS | Alto  |
-| P0-02 | Qualidade | Corrigir config do Playwright (webServer.url porta 3000) | Testes E2E não funcionam corretamente      | `playwright.config.ts:25`                                    | —            | Baixa        | 0.5h       | `pnpm test:e2e:playwright` executa contra Web na porta 3000   | Médio |
-| P0-03 | Infra     | Criar `.env.production.example` versionado               | Sem referência de variáveis de produção    | `infra/env/.env.production.example`                          | —            | Baixa        | 1h         | Arquivo versionado com todas as variáveis necessárias         | Médio |
-| P0-04 | Segurança | Garantir `TOTP_ENCRYPTION_KEY` definida em produção      | Secrets TOTP em plain text se não definida | `infra/env/.env.production.example`, docs                    | —            | Baixa        | 1h         | Env example documenta necessidade da key; validação no boot   | Médio |
+| ID    | Área      | Tarefa                                                 | Problema resolvido                         | Arquivos envolvidos                                          | Dependências | Complexidade | Estimativa | Critério de aceite                                                                    | Risco |
+| ----- | --------- | ------------------------------------------------------ | ------------------------------------------ | ------------------------------------------------------------ | ------------ | ------------ | ---------- | ------------------------------------------------------------------------------------- | ----- |
+| P0-01 | Infra     | Configurar TLS/HTTPS no nginx                          | Tráfego não criptografado em produção      | `infra/docker/nginx/default.conf`, `docker-compose.prod.yml` | —            | Média        | 4h         | Nginx serve HTTPS com certificado válido; redirect HTTP→HTTPS                         | Alto  |
+| P0-02 | Qualidade | Validar configuração do Playwright (Web na porta 3000) | Testes E2E não funcionam corretamente      | `playwright.config.ts`                                       | —            | Baixa        | 0.5h       | **Concluído:** `pnpm test:e2e:playwright` executa 7 cenários contra Web na porta 3000 | Médio |
+| P0-03 | Infra     | Criar `.env.production.example` versionado             | Sem referência de variáveis de produção    | `infra/env/.env.production.example`                          | —            | Baixa        | 1h         | Arquivo versionado com todas as variáveis necessárias                                 | Médio |
+| P0-04 | Segurança | Garantir `TOTP_ENCRYPTION_KEY` definida em produção    | Secrets TOTP em plain text se não definida | `infra/env/.env.production.example`, docs                    | —            | Baixa        | 1h         | Env example documenta necessidade da key; validação no boot                           | Médio |
 
 ### P1 — Obrigatório para o Lançamento
 
@@ -60,7 +62,7 @@
 ### P0 — Bloqueadores Críticos (4 tarefas, ~6.5h)
 
 - P0-01: TLS/HTTPS no nginx
-- P0-02: Corrigir config Playwright
+- P0-02: Validar config Playwright — concluído em 2026-08-25
 - P0-03: Criar `.env.production.example`
 - P0-04: Garantir TOTP_ENCRYPTION_KEY em produção
 
@@ -122,7 +124,7 @@ Cada tarefa tem critérios de aceite específicos na tabela acima. Adicionalment
 
 ## 6. Ordem Recomendada de Implementação
 
-1. **P0-02:** Corrigir config Playwright (desbloqueia testes E2E)
+1. **P0-02:** Validar config Playwright (concluído em 2026-08-25; desbloqueia testes E2E)
 2. **P0-03:** Criar `.env.production.example`
 3. **P0-04:** Garantir TOTP_ENCRYPTION_KEY em produção
 4. **P1-02:** Corrigir formatação Prettier (rápido, desbloqueia CI)
@@ -148,7 +150,7 @@ Cada tarefa tem critérios de aceite específicos na tabela acima. Adicionalment
 
 ## 7. Checklist para MVP
 
-- [ ] P0-02: Config Playwright corrigida
+- [x] P0-02: Config Playwright validada; 7 testes E2E passando em 2026-08-25
 - [ ] P0-03: `.env.production.example` criado
 - [ ] P0-04: TOTP_ENCRYPTION_KEY documentada
 - [ ] P1-02: Formatação Prettier corrigida

@@ -1,7 +1,12 @@
 # CONTEXTO.md — Contexto Vivo do Projeto
 
 **Projeto:** Dashboard Power BI
-**Atualizado em:** 2026-07-02
+**Atualizado em:** 2026-08-25
+
+## 2026-08-25 — Validação P0-02 do Playwright
+
+- A configuração atual foi validada contra a Web em `3000` e a API demo em `3001`; os 7 cenários E2E atuais passaram.
+- A expansão para exportação, CRUD administrativo e 2FA permanece como P1-03.
 
 ## 2026-08-24 — Docker demo e contrato BI v1
 
@@ -17,7 +22,7 @@
 
 ## 1. Resumo Executivo
 
-O Dashboard Power BI é uma plataforma web interna de relatórios e BI em estado funcional avançado. O sistema entrega autenticação com JWT, dashboard com KPIs e gráficos Recharts, catálogo e execução de relatórios via SQL Server/Oracle, administração de usuários/grupos/permissões com herança via grupos, auditoria com retenção LGPD, exportações com pipeline real, notificações, settings, dashboards personalizados com editor visual drag-and-drop completo (react-grid-layout) e seed automático de dashboard padrão por setor, dashboard admin com gráficos de tendência (agregações temporais de audit logs, exports e usuários), 2FA/TOTP obrigatório para admins, hardening de sessão (token blacklist, token versioning, revogação), cache de queries SQL com TTL e LRU, e política de retenção de logs com cron diário. As lacunas remanescentes são: testes E2E (Playwright não configurado) e drill-down multi-dimensão selecionável pelo usuário. O principal risco técnico é a dependência de fallback em memória quando Supabase não está configurado.
+O Dashboard Power BI é uma plataforma web interna de relatórios e BI em estado funcional avançado. O sistema entrega autenticação com JWT, dashboard com KPIs e gráficos Recharts, catálogo e execução de relatórios via SQL Server/Oracle, administração de usuários/grupos/permissões com herança via grupos, auditoria com retenção LGPD, exportações com pipeline real, notificações, settings, dashboards personalizados com editor visual drag-and-drop completo (react-grid-layout) e seed automático de dashboard padrão por setor, dashboard admin com gráficos de tendência (agregações temporais de audit logs, exports e usuários), 2FA/TOTP obrigatório para admins, hardening de sessão (token blacklist, token versioning, revogação), cache de queries SQL com TTL e LRU, política de retenção de logs com cron diário e baseline E2E validado com Playwright. As lacunas remanescentes são a expansão da cobertura E2E para fluxos adicionais e a evolução do drill-down multi-dimensão. O principal risco técnico é a dependência de fallback em memória quando Supabase não está configurado.
 
 ---
 
@@ -207,7 +212,7 @@ O Dashboard Power BI é uma plataforma web interna de relatórios e BI em estado
 | F-11: Format — 187 arquivos com formatação incorreta     | Qualidade | Baixa      | Executar `pnpm format`                                  |
 | F-12: Redis — spam de erros ECONNREFUSED sem Redis local | Infra     | Média      | Silenciar erros de conexão Redis quando não configurado |
 | Drill-down multi-dimensão                                | BI        | Média      | Já implementado mas dimensão pode ser mais flexível     |
-| Testes E2E (Playwright)                                  | Qualidade | Média      | Configurar Playwright para fluxos críticos              |
+| Expansão dos testes E2E (Playwright)                     | Qualidade | Média      | Ampliar cobertura para exportação, admin CRUD e 2FA     |
 
 ---
 
@@ -221,12 +226,12 @@ O Dashboard Power BI é uma plataforma web interna de relatórios e BI em estado
 
 ## 8. Riscos Técnicos
 
-| Risco                                                    | Impacto | Mitigação                                    |
-| -------------------------------------------------------- | ------- | -------------------------------------------- |
-| Fallback em memória perde dados ao reiniciar             | Alto    | Garantir Supabase configurado em produção    |
-| Fila em memória não suporta múltiplas instâncias         | Baixo   | BullMQ + Redis já implementados com fallback |
-| `pnpm typecheck` falha sem artefatos de build do Next.js | Baixo   | Rodar `pnpm build` antes do typecheck        |
-| Testes E2E configurados (Playwright)                     | Baixo   | 6 testes E2E em `tests/e2e/`                 |
+| Risco                                                    | Impacto | Mitigação                                                  |
+| -------------------------------------------------------- | ------- | ---------------------------------------------------------- |
+| Fallback em memória perde dados ao reiniciar             | Alto    | Garantir Supabase configurado em produção                  |
+| Fila em memória não suporta múltiplas instâncias         | Baixo   | BullMQ + Redis já implementados com fallback               |
+| `pnpm typecheck` falha sem artefatos de build do Next.js | Baixo   | Rodar `pnpm build` antes do typecheck                      |
+| Testes E2E configurados (Playwright)                     | Baixo   | 7 testes E2E base em `tests/e2e/`, validados em 2026-08-25 |
 
 ---
 
