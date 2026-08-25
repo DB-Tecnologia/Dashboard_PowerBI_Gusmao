@@ -33,9 +33,12 @@ describe('sql-query-validator', () => {
   });
 
   describe('validateSqlColumnName', () => {
-    it.each(['id', 'report_id', 'createdAt', 'coluna_1'])('deve aceitar coluna segura: %s', (value) => {
-      expect(validateSqlColumnName(value)).toBe(value);
-    });
+    it.each(['id', 'report_id', 'createdAt', 'coluna_1'])(
+      'deve aceitar coluna segura: %s',
+      (value) => {
+        expect(validateSqlColumnName(value)).toBe(value);
+      },
+    );
 
     it.each(['', 'report.id', 'report id', 'id; drop table users', 'id--', '[id]', 'select'])(
       'deve rejeitar coluna insegura: %s',

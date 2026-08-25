@@ -232,7 +232,13 @@ export function AdminPermissions() {
   );
 }
 
-function CreatePermissionModal({ onClose, onCreated }: { onClose: () => void; onCreated: () => void }) {
+function CreatePermissionModal({
+  onClose,
+  onCreated,
+}: {
+  onClose: () => void;
+  onCreated: () => void;
+}) {
   const [code, setCode] = useState('');
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');

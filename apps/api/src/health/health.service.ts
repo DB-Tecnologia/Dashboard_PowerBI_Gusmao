@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 
-import { DatabaseHealthResponse, DatabaseProviderService } from '../sql-server/database-provider.service';
+import {
+  DatabaseHealthResponse,
+  DatabaseProviderService,
+} from '../sql-server/database-provider.service';
 
 export interface HealthResponse {
   status: 'ok';

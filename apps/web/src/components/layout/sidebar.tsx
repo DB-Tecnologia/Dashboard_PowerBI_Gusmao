@@ -17,7 +17,16 @@ export function Sidebar({ activePath = '/' }: { activePath?: string }) {
           const Icon = item.icon;
           const active = item.href === activePath;
           return (
-            <a key={item.href} href={item.href} aria-current={active ? 'page' : undefined} className={cn('flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground', active && 'bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground')}>
+            <a
+              key={item.href}
+              href={item.href}
+              aria-current={active ? 'page' : undefined}
+              className={cn(
+                'flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground',
+                active &&
+                  'bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground',
+              )}
+            >
               <Icon aria-hidden="true" className="h-4 w-4" />
               {item.label}
             </a>

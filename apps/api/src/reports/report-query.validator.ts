@@ -58,7 +58,10 @@ export function normalizeListReportsQuery(input: PaginationInput & { sector?: st
   };
 }
 
-export function validateReportQuery(definition: ReportDefinition, input: QueryReportInput = {}): NormalizedReportQuery {
+export function validateReportQuery(
+  definition: ReportDefinition,
+  input: QueryReportInput = {},
+): NormalizedReportQuery {
   const filters = input.filters ?? {};
 
   if (!filters || typeof filters !== 'object' || Array.isArray(filters)) {
@@ -66,10 +69,15 @@ export function validateReportQuery(definition: ReportDefinition, input: QueryRe
   }
 
   const parameterDefinitions = definition.parameters ?? [];
-  const normalizedParameters = normalizeSqlParameters(toSqlParameterDefinitions(parameterDefinitions), filters);
+  const normalizedParameters = normalizeSqlParameters(
+    toSqlParameterDefinitions(parameterDefinitions),
+    filters,
+  );
 
   return {
-    filters: Object.fromEntries(normalizedParameters.map((parameter) => [parameter.name, parameter.value])),
+    filters: Object.fromEntries(
+      normalizedParameters.map((parameter) => [parameter.name, parameter.value]),
+    ),
     pagination: normalizePagination(input),
   };
 }
@@ -83,7 +91,11 @@ function toSqlParameterDefinitions(parameters: ReportParameterDefinition[]) {
   }));
 }
 
-function normalizePositiveInteger(value: number | string | undefined, defaultValue: number, label: string): number {
+function normalizePositiveInteger(
+  value: number | string | undefined,
+  defaultValue: number,
+  label: string,
+): number {
   if (value === undefined || value === null || value === '') {
     return defaultValue;
   }

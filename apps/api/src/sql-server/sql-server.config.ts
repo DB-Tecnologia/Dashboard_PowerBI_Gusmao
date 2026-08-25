@@ -97,11 +97,7 @@ export function getSqlServerSafeConfig(configService: EnvReader): SqlServerSafeC
     databaseConfigured: Boolean(readOptionalString(configService, 'SQLSERVER_DATABASE')),
     userConfigured: Boolean(readOptionalString(configService, 'SQLSERVER_USER')),
     encrypt: readBoolean(configService, 'SQLSERVER_ENCRYPT', true),
-    trustServerCertificate: readBoolean(
-      configService,
-      'SQLSERVER_TRUST_SERVER_CERTIFICATE',
-      false,
-    ),
+    trustServerCertificate: readBoolean(configService, 'SQLSERVER_TRUST_SERVER_CERTIFICATE', false),
     connectionTimeout: readPositiveInteger(
       configService,
       'SQLSERVER_CONNECTION_TIMEOUT_MS',

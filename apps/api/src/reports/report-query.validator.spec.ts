@@ -53,9 +53,15 @@ describe('report-query.validator', () => {
   });
 
   it('deve rejeitar filtros desconhecidos, tipos inválidos e nomes inseguros', () => {
-    expect(() => validateReportQuery(definition, { filters: { unknown: 'x', startDate: '2026-05-01' } })).toThrow();
-    expect(() => validateReportQuery(definition, { filters: { startDate: 'data-invalida' } })).toThrow();
-    expect(() => validateReportQuery(definition, { filters: { 'startDate;drop': '2026-05-01' } })).toThrow();
+    expect(() =>
+      validateReportQuery(definition, { filters: { unknown: 'x', startDate: '2026-05-01' } }),
+    ).toThrow();
+    expect(() =>
+      validateReportQuery(definition, { filters: { startDate: 'data-invalida' } }),
+    ).toThrow();
+    expect(() =>
+      validateReportQuery(definition, { filters: { 'startDate;drop': '2026-05-01' } }),
+    ).toThrow();
   });
 
   it('deve manter tentativa de SQL Injection como valor parametrizado quando o parâmetro é permitido', () => {

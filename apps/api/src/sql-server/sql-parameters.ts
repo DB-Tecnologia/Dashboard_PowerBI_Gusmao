@@ -32,7 +32,9 @@ export function normalizeSqlParameters(
   values: Record<string, unknown>,
 ): SqlParameterValue[] {
   const safeValues = values ?? {};
-  const definitionNames = new Set(definitions.map((definition) => validateSqlParameterName(definition.name)));
+  const definitionNames = new Set(
+    definitions.map((definition) => validateSqlParameterName(definition.name)),
+  );
 
   for (const parameterName of Object.keys(safeValues)) {
     validateSqlParameterName(parameterName);
@@ -73,7 +75,10 @@ export function normalizeSqlParameters(
 }
 
 function normalizeValue(definition: SqlParameterDefinition, value: unknown): SqlParameterPrimitive {
-  if (Array.isArray(value) || (typeof value === 'object' && !(value instanceof Date) && value !== null)) {
+  if (
+    Array.isArray(value) ||
+    (typeof value === 'object' && !(value instanceof Date) && value !== null)
+  ) {
     throw new SqlParameterValidationError(`Parâmetro inválido: ${definition.name}`);
   }
 
@@ -89,7 +94,9 @@ function normalizeValue(definition: SqlParameterDefinition, value: unknown): Sql
     case 'date':
       return normalizeDate(definition, value);
     default:
-      throw new SqlParameterValidationError(`Tipo de parâmetro não suportado: ${definition.type as string}`);
+      throw new SqlParameterValidationError(
+        `Tipo de parâmetro não suportado: ${definition.type as string}`,
+      );
   }
 }
 
@@ -170,6 +177,8 @@ function getDriverType(definition: SqlParameterDefinition): unknown {
     case 'date':
       return DateTime2;
     default:
-      throw new SqlParameterValidationError(`Tipo de parâmetro não suportado: ${definition.type as string}`);
+      throw new SqlParameterValidationError(
+        `Tipo de parâmetro não suportado: ${definition.type as string}`,
+      );
   }
 }

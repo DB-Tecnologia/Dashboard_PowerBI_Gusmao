@@ -40,14 +40,19 @@ export class ReportDefinitionsRepository {
   }
 
   async findBySector(sector: string, activeOnly = true): Promise<ReportDefinition[]> {
-    return [...this.reports.values()].filter((report) => report.sector === sector && (!activeOnly || report.isActive));
+    return [...this.reports.values()].filter(
+      (report) => report.sector === sector && (!activeOnly || report.isActive),
+    );
   }
 
   async findById(id: string): Promise<ReportDefinition | undefined> {
     return this.reports.get(id);
   }
 
-  async update(id: string, input: UpdateReportDefinitionInput): Promise<ReportDefinition | undefined> {
+  async update(
+    id: string,
+    input: UpdateReportDefinitionInput,
+  ): Promise<ReportDefinition | undefined> {
     const current = await this.findById(id);
 
     if (!current) {
@@ -71,9 +76,14 @@ export class ReportDefinitionsRepository {
     return this.update(id, { isActive: false });
   }
 
-  async existsBySourceAndSector(sourceName: string, sector: string, ignoredId?: string): Promise<boolean> {
+  async existsBySourceAndSector(
+    sourceName: string,
+    sector: string,
+    ignoredId?: string,
+  ): Promise<boolean> {
     return [...this.reports.values()].some(
-      (report) => report.sourceName === sourceName && report.sector === sector && report.id !== ignoredId,
+      (report) =>
+        report.sourceName === sourceName && report.sector === sector && report.id !== ignoredId,
     );
   }
 
@@ -147,5 +157,8 @@ export class ReportDefinitionsRepository {
 }
 
 function isDemoMode(configService: ConfigService): boolean {
-  return configService.get<string>('APP_MODE') === 'demo' || configService.get<string>('DATA_MODE') === 'mock';
+  return (
+    configService.get<string>('APP_MODE') === 'demo' ||
+    configService.get<string>('DATA_MODE') === 'mock'
+  );
 }

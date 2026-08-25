@@ -15,9 +15,15 @@ export class SectorsGuard implements CanActivate {
       context.getClass(),
     ]);
 
-    const request = context.switchToHttp().getRequest<Request & { params?: Record<string, string>; user?: AuthenticatedRequestUser }>();
+    const request = context
+      .switchToHttp()
+      .getRequest<Request & { params?: Record<string, string>; user?: AuthenticatedRequestUser }>();
     const sectorParam = request.params?.sector as SectorCode | undefined;
-    const requiredSectors = staticSectors?.length ? staticSectors : sectorParam ? [sectorParam] : [];
+    const requiredSectors = staticSectors?.length
+      ? staticSectors
+      : sectorParam
+        ? [sectorParam]
+        : [];
 
     if (!requiredSectors.length) {
       return true;

@@ -52,7 +52,10 @@ describe('Admin usuários e grupos (e2e)', () => {
   it('deve retornar 403 para usuário não admin', async () => {
     const token = await login('viewer.financeiro@example.com');
 
-    await request(app.getHttpServer()).get('/admin/users').set('Authorization', `Bearer ${token}`).expect(403);
+    await request(app.getHttpServer())
+      .get('/admin/users')
+      .set('Authorization', `Bearer ${token}`)
+      .expect(403);
   });
 
   it('admin deve criar, editar, vincular grupo, resetar senha e desativar usuário', async () => {

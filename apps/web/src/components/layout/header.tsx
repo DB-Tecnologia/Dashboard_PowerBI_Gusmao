@@ -15,7 +15,10 @@ export function Header() {
             <p className="text-xs text-muted-foreground">Fundação técnica da Sprint 1</p>
           </div>
         </div>
-        <nav aria-label="Navegação principal" className="hidden items-center gap-4 text-sm text-muted-foreground sm:flex">
+        <nav
+          aria-label="Navegação principal"
+          className="hidden items-center gap-4 text-sm text-muted-foreground sm:flex"
+        >
           <a href="/">Home</a>
           <a href="/design-system">Design system</a>
           <Badge variant="success">Online</Badge>

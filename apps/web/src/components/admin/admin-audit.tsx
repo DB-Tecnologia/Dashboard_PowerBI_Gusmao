@@ -1,11 +1,6 @@
 'use client';
 
-import {
-  TriangleAlert as AlertTriangle,
-  Loader as Loader2,
-  Search,
-  FileText,
-} from 'lucide-react';
+import { TriangleAlert as AlertTriangle, Loader as Loader2, Search, FileText } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 
 import {
@@ -178,9 +173,7 @@ export function AdminAudit() {
                         {log.resource}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-sm text-slate-600">
-                      {log.ipAddress || '-'}
-                    </TableCell>
+                    <TableCell className="text-sm text-slate-600">{log.ipAddress || '-'}</TableCell>
                   </TableRow>
                 ))
               )}

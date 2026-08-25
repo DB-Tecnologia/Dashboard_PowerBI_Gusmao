@@ -50,9 +50,21 @@ export function getOracleConfig(configService: EnvReader): OracleConfig {
     password: readRequiredString(configService, 'ORACLE_PASSWORD'),
     poolMin: readNonNegativeInteger(configService, 'ORACLE_POOL_MIN', DEFAULT_POOL_MIN),
     poolMax: readPositiveInteger(configService, 'ORACLE_POOL_MAX', DEFAULT_POOL_MAX),
-    poolIncrement: readPositiveInteger(configService, 'ORACLE_POOL_INCREMENT', DEFAULT_POOL_INCREMENT),
-    queueTimeout: readPositiveInteger(configService, 'ORACLE_QUEUE_TIMEOUT_MS', DEFAULT_QUEUE_TIMEOUT),
-    stmtCacheSize: readPositiveInteger(configService, 'ORACLE_STMT_CACHE_SIZE', DEFAULT_STMT_CACHE_SIZE),
+    poolIncrement: readPositiveInteger(
+      configService,
+      'ORACLE_POOL_INCREMENT',
+      DEFAULT_POOL_INCREMENT,
+    ),
+    queueTimeout: readPositiveInteger(
+      configService,
+      'ORACLE_QUEUE_TIMEOUT_MS',
+      DEFAULT_QUEUE_TIMEOUT,
+    ),
+    stmtCacheSize: readPositiveInteger(
+      configService,
+      'ORACLE_STMT_CACHE_SIZE',
+      DEFAULT_STMT_CACHE_SIZE,
+    ),
   };
 }
 
@@ -64,9 +76,21 @@ export function getOracleSafeConfig(configService: EnvReader): OracleSafeConfig 
     userConfigured: Boolean(readOptionalString(configService, 'ORACLE_USER')),
     poolMin: readNonNegativeInteger(configService, 'ORACLE_POOL_MIN', DEFAULT_POOL_MIN),
     poolMax: readPositiveInteger(configService, 'ORACLE_POOL_MAX', DEFAULT_POOL_MAX),
-    poolIncrement: readPositiveInteger(configService, 'ORACLE_POOL_INCREMENT', DEFAULT_POOL_INCREMENT),
-    queueTimeout: readPositiveInteger(configService, 'ORACLE_QUEUE_TIMEOUT_MS', DEFAULT_QUEUE_TIMEOUT),
-    stmtCacheSize: readPositiveInteger(configService, 'ORACLE_STMT_CACHE_SIZE', DEFAULT_STMT_CACHE_SIZE),
+    poolIncrement: readPositiveInteger(
+      configService,
+      'ORACLE_POOL_INCREMENT',
+      DEFAULT_POOL_INCREMENT,
+    ),
+    queueTimeout: readPositiveInteger(
+      configService,
+      'ORACLE_QUEUE_TIMEOUT_MS',
+      DEFAULT_QUEUE_TIMEOUT,
+    ),
+    stmtCacheSize: readPositiveInteger(
+      configService,
+      'ORACLE_STMT_CACHE_SIZE',
+      DEFAULT_STMT_CACHE_SIZE,
+    ),
   };
 }
 
@@ -102,7 +126,11 @@ function readPositiveInteger(configService: EnvReader, key: string, defaultValue
   return value;
 }
 
-function readNonNegativeInteger(configService: EnvReader, key: string, defaultValue: number): number {
+function readNonNegativeInteger(
+  configService: EnvReader,
+  key: string,
+  defaultValue: number,
+): number {
   const value = readInteger(configService, key, defaultValue);
 
   if (value < 0) {

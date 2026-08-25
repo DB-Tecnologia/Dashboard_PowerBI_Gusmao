@@ -26,9 +26,12 @@ export default function DesignSystemPage() {
         <section className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-6 py-10">
           <div>
             <Badge>Preview visual</Badge>
-            <h1 className="mt-4 text-3xl font-bold tracking-tight text-foreground">Design system base</h1>
+            <h1 className="mt-4 text-3xl font-bold tracking-tight text-foreground">
+              Design system base
+            </h1>
             <p className="mt-3 max-w-3xl text-sm leading-6 text-muted-foreground">
-              Tokens, componentes e padrões visuais iniciais para relatórios, dashboards e administração.
+              Tokens, componentes e padrões visuais iniciais para relatórios, dashboards e
+              administração.
             </p>
           </div>
 
@@ -44,7 +47,11 @@ export default function DesignSystemPage() {
                 <Button variant="outline">Contorno</Button>
                 <Button variant="ghost">Ghost</Button>
               </div>
-              <Input label="Nome do relatório" placeholder="Indicadores financeiros" helperText="Use nomes claros e rastreáveis." />
+              <Input
+                label="Nome do relatório"
+                placeholder="Indicadores financeiros"
+                helperText="Use nomes claros e rastreáveis."
+              />
             </CardContent>
           </Card>
 

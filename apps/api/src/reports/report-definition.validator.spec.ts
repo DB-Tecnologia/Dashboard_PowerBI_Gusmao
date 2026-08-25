@@ -35,9 +35,9 @@ describe('report-definition.validator', () => {
   });
 
   it('deve rejeitar tipo de fonte SQL inválido', () => {
-    expect(() => validateCreateReportDefinition({ ...validInput, sourceType: 'query' as never })).toThrow(
-      ReportDefinitionValidationError,
-    );
+    expect(() =>
+      validateCreateReportDefinition({ ...validInput, sourceType: 'query' as never }),
+    ).toThrow(ReportDefinitionValidationError);
   });
 
   it('deve rejeitar parâmetros inválidos ou duplicados', () => {

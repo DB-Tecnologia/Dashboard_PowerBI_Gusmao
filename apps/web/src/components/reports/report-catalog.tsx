@@ -3,7 +3,16 @@
 import { ChartBar as BarChart3, ListFilter as Filter, Search, ShieldCheck } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
-import { Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Input } from '@/components/ui';
+import {
+  Badge,
+  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  Input,
+} from '@/components/ui';
 
 export type ReportCatalogItem = {
   id: string;
@@ -38,7 +47,10 @@ export function ReportCatalog({ reports, onSelectReport }: ReportCatalogProps) {
   const [sector, setSector] = useState('todos');
   const [status, setStatus] = useState<ReportCatalogItem['status'] | 'todos'>('todos');
 
-  const sectors = useMemo(() => ['todos', ...Array.from(new Set(reports.map((report) => report.sector))).sort()], [reports]);
+  const sectors = useMemo(
+    () => ['todos', ...Array.from(new Set(reports.map((report) => report.sector))).sort()],
+    [reports],
+  );
 
   const filteredReports = useMemo(() => {
     const normalizedSearch = search.trim().toLowerCase();
@@ -65,13 +77,18 @@ export function ReportCatalog({ reports, onSelectReport }: ReportCatalogProps) {
       <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-blue-700">Relatórios</p>
-            <h1 id="reports-catalog-title" className="mt-3 text-3xl font-bold tracking-tight text-slate-950">
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-blue-700">
+              Relatórios
+            </p>
+            <h1
+              id="reports-catalog-title"
+              className="mt-3 text-3xl font-bold tracking-tight text-slate-950"
+            >
               Catálogo de dashboards
             </h1>
             <p className="mt-4 max-w-3xl text-sm leading-6 text-slate-600">
-              Consulte relatórios autorizados por setor, acompanhe o status operacional e acesse rapidamente os
-              dashboards disponíveis para a sua sessão.
+              Consulte relatórios autorizados por setor, acompanhe o status operacional e acesse
+              rapidamente os dashboards disponíveis para a sua sessão.
             </p>
           </div>
 
@@ -94,7 +111,10 @@ export function ReportCatalog({ reports, onSelectReport }: ReportCatalogProps) {
           <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
             Buscar
             <span className="relative">
-              <Search className="pointer-events-none absolute left-3 top-3 h-4 w-4 text-slate-400" aria-hidden="true" />
+              <Search
+                className="pointer-events-none absolute left-3 top-3 h-4 w-4 text-slate-400"
+                aria-hidden="true"
+              />
               <Input
                 className="pl-9"
                 value={search}
@@ -126,7 +146,9 @@ export function ReportCatalog({ reports, onSelectReport }: ReportCatalogProps) {
             <select
               className="h-11 rounded-xl border border-input bg-background px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
               value={status}
-              onChange={(event) => setStatus(event.target.value as ReportCatalogItem['status'] | 'todos')}
+              onChange={(event) =>
+                setStatus(event.target.value as ReportCatalogItem['status'] | 'todos')
+              }
               aria-label="Filtrar por status"
             >
               <option value="todos">Todos os status</option>
@@ -142,7 +164,9 @@ export function ReportCatalog({ reports, onSelectReport }: ReportCatalogProps) {
         <Card className="border-dashed text-center">
           <CardHeader>
             <CardTitle>Nenhum relatório encontrado</CardTitle>
-            <CardDescription>Revise os filtros aplicados ou solicite acesso ao administrador do setor.</CardDescription>
+            <CardDescription>
+              Revise os filtros aplicados ou solicite acesso ao administrador do setor.
+            </CardDescription>
           </CardHeader>
         </Card>
       ) : (
@@ -151,9 +175,15 @@ export function ReportCatalog({ reports, onSelectReport }: ReportCatalogProps) {
             <Card key={report.id} className="flex h-full flex-col">
               <CardHeader>
                 <div className="flex flex-wrap items-center gap-2">
-                  <Badge className={statusClassName[report.status]}>{statusLabel[report.status]}</Badge>
-                  <Badge className="border border-slate-200 bg-white text-slate-700">{report.sector}</Badge>
-                  <Badge className="border border-slate-200 bg-white text-slate-700">{report.sourceType === 'view' ? 'View SQL' : 'Procedure SQL'}</Badge>
+                  <Badge className={statusClassName[report.status]}>
+                    {statusLabel[report.status]}
+                  </Badge>
+                  <Badge className="border border-slate-200 bg-white text-slate-700">
+                    {report.sector}
+                  </Badge>
+                  <Badge className="border border-slate-200 bg-white text-slate-700">
+                    {report.sourceType === 'view' ? 'View SQL' : 'Procedure SQL'}
+                  </Badge>
                 </div>
                 <CardTitle className="flex items-start gap-3">
                   <BarChart3 className="mt-1 h-5 w-5 shrink-0 text-blue-700" aria-hidden="true" />
@@ -170,7 +200,10 @@ export function ReportCatalog({ reports, onSelectReport }: ReportCatalogProps) {
                   </p>
                   <div className="mt-3 flex flex-wrap gap-2">
                     {report.requiredPermissions.map((permission) => (
-                      <Badge key={permission} className="border border-slate-200 bg-white text-slate-700">
+                      <Badge
+                        key={permission}
+                        className="border border-slate-200 bg-white text-slate-700"
+                      >
                         {permission}
                       </Badge>
                     ))}
@@ -178,8 +211,14 @@ export function ReportCatalog({ reports, onSelectReport }: ReportCatalogProps) {
                 </div>
 
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                  <p className="text-xs text-slate-500">Atualizado em {formatDate(report.updatedAt)}</p>
-                  <Button disabled={report.status !== 'available'} aria-disabled={report.status !== 'available'} onClick={() => report.status === 'available' && onSelectReport?.(report.id)}>
+                  <p className="text-xs text-slate-500">
+                    Atualizado em {formatDate(report.updatedAt)}
+                  </p>
+                  <Button
+                    disabled={report.status !== 'available'}
+                    aria-disabled={report.status !== 'available'}
+                    onClick={() => report.status === 'available' && onSelectReport?.(report.id)}
+                  >
                     {report.status === 'available' ? 'Abrir dashboard' : 'Acesso indisponível'}
                   </Button>
                 </div>

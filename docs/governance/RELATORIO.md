@@ -5,6 +5,17 @@
 
 > As entradas anteriores a 24/08/2026 preservam os caminhos da estrutura documental vigente na data de cada registro. A estrutura atual e mantida em `docs/INDEX.md`; referencias historicas abaixo nao representam arquivos ausentes.
 
+## 2026-08-25 — Padronização de formatação P1-02
+
+- Aplicado o Prettier com a configuração existente aos 387 arquivos identificados pelo diagnóstico inicial, abrangendo código, documentação e configurações.
+- `pnpm format:check` passou com todos os arquivos compatíveis usando o padrão vigente.
+- A regra global `* text=auto eol=lf` foi adicionada ao `.gitattributes`; isso torna a validação reproduzível em Windows mesmo com `core.autocrlf=true`.
+- A auditoria do diff confirmou que a alteração é de estilo; não foram alterados API, banco, Docker, telas ou contratos.
+- `pnpm lint` permanece fora do escopo e continua registrado como P1-01; não foi executado `eslint --fix`.
+- O diagnóstico de `pnpm lint` e `pnpm quality` continua bloqueado por P1-01, com 7.920 erros e 683 avisos no estado atual; nenhum desses problemas foi misturado ao commit de formatação.
+- Validações da tarefa: `pnpm format:check`, verificadores de ambiente/workspace/Docker/docs, typecheck, testes, build, E2E e `git diff --check`.
+- P1-02 foi encerrada; o próximo foco recomendado é P0-04 ou P1-01, conforme a prioridade de segurança e qualidade.
+
 ## 2026-08-25 — Configuração P0-03 de produção
 
 - Auditado e completado `infra/env/.env.production.example`; o arquivo já era versionado, mas não cobria todas as variáveis do contrato geral.

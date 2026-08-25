@@ -22,7 +22,10 @@ export interface ReportDefinition {
   updatedAt: string;
 }
 
-export type CreateReportDefinitionInput = Omit<ReportDefinition, 'id' | 'isActive' | 'createdAt' | 'updatedAt'> & {
+export type CreateReportDefinitionInput = Omit<
+  ReportDefinition,
+  'id' | 'isActive' | 'createdAt' | 'updatedAt'
+> & {
   isActive?: boolean;
 };
 

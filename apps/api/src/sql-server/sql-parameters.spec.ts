@@ -47,27 +47,34 @@ describe('normalizeSqlParameters', () => {
     [{ allowed: 'x'.repeat(11) }, 'tamanho máximo'],
   ])('deve rejeitar parâmetros inseguros: %#', (values, expectedMessage) => {
     expect(() =>
-      normalizeSqlParameters([{ name: 'allowed', type: 'string', required: true, maxLength: 10 }], values),
+      normalizeSqlParameters(
+        [{ name: 'allowed', type: 'string', required: true, maxLength: 10 }],
+        values,
+      ),
     ).toThrow(expectedMessage);
   });
 
   it('deve rejeitar parâmetro obrigatório ausente', () => {
-    expect(() => normalizeSqlParameters([{ name: 'reportId', type: 'string', required: true }], {})).toThrow(
-      SqlParameterValidationError,
-    );
+    expect(() =>
+      normalizeSqlParameters([{ name: 'reportId', type: 'string', required: true }], {}),
+    ).toThrow(SqlParameterValidationError);
   });
 
   it('deve rejeitar tipos incompatíveis', () => {
-    expect(() => normalizeSqlParameters([{ name: 'page', type: 'int', required: true }], { page: '1.5' })).toThrow(
-      SqlParameterValidationError,
-    );
-
     expect(() =>
-      normalizeSqlParameters([{ name: 'active', type: 'boolean', required: true }], { active: 'talvez' }),
+      normalizeSqlParameters([{ name: 'page', type: 'int', required: true }], { page: '1.5' }),
     ).toThrow(SqlParameterValidationError);
 
     expect(() =>
-      normalizeSqlParameters([{ name: 'createdAt', type: 'date', required: true }], { createdAt: 'data-invalida' }),
+      normalizeSqlParameters([{ name: 'active', type: 'boolean', required: true }], {
+        active: 'talvez',
+      }),
+    ).toThrow(SqlParameterValidationError);
+
+    expect(() =>
+      normalizeSqlParameters([{ name: 'createdAt', type: 'date', required: true }], {
+        createdAt: 'data-invalida',
+      }),
     ).toThrow(SqlParameterValidationError);
   });
 });

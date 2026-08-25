@@ -26,9 +26,30 @@ describe('kpis', () => {
 
   it('agrega kpis por setor', () => {
     const sectors = aggregateKpisBySector([
-      { id: 'receita', title: 'Receita', sector: 'Financeiro', value: 120000, previousValue: 100000, unit: 'currency' },
-      { id: 'margem', title: 'Margem', sector: 'Financeiro', value: 32, previousValue: 30, unit: 'percent' },
-      { id: 'leads', title: 'Leads', sector: 'Comercial', value: 430, previousValue: 400, unit: 'number' },
+      {
+        id: 'receita',
+        title: 'Receita',
+        sector: 'Financeiro',
+        value: 120000,
+        previousValue: 100000,
+        unit: 'currency',
+      },
+      {
+        id: 'margem',
+        title: 'Margem',
+        sector: 'Financeiro',
+        value: 32,
+        previousValue: 30,
+        unit: 'percent',
+      },
+      {
+        id: 'leads',
+        title: 'Leads',
+        sector: 'Comercial',
+        value: 430,
+        previousValue: 400,
+        unit: 'number',
+      },
     ]);
 
     expect(sectors).toEqual([
@@ -45,8 +66,22 @@ describe('kpis', () => {
 
   it('resume total de kpis, setores e media de delta', () => {
     const summary = summarizeKpis([
-      { id: 'receita', title: 'Receita', sector: 'Financeiro', value: 120000, previousValue: 100000, unit: 'currency' },
-      { id: 'leads', title: 'Leads', sector: 'Comercial', value: 430, previousValue: 400, unit: 'number' },
+      {
+        id: 'receita',
+        title: 'Receita',
+        sector: 'Financeiro',
+        value: 120000,
+        previousValue: 100000,
+        unit: 'currency',
+      },
+      {
+        id: 'leads',
+        title: 'Leads',
+        sector: 'Comercial',
+        value: 430,
+        previousValue: 400,
+        unit: 'number',
+      },
     ]);
 
     expect(summary).toEqual({

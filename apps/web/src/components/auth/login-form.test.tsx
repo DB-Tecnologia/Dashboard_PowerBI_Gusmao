@@ -22,7 +22,12 @@ describe('LoginForm', () => {
   });
 
   it('deve executar happy path de login e redirecionar', async () => {
-    jest.spyOn(api, 'login').mockResolvedValue({ accessToken: 'access', refreshToken: 'refresh', tokenType: 'Bearer', expiresIn: 900 });
+    jest.spyOn(api, 'login').mockResolvedValue({
+      accessToken: 'access',
+      refreshToken: 'refresh',
+      tokenType: 'Bearer',
+      expiresIn: 900,
+    });
     render(<LoginForm />);
     await userEvent.type(screen.getByLabelText(/e-mail/i), 'admin@example.com');
     await userEvent.type(screen.getByLabelText(/senha/i), 'Admin123!');

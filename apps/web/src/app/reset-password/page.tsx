@@ -9,7 +9,10 @@ type ResetPasswordPageProps = {
 
 export default function ResetPasswordPage({ searchParams }: ResetPasswordPageProps) {
   return (
-    <AuthCard title="Redefinir senha" description="Crie uma nova senha para voltar a acessar sua conta.">
+    <AuthCard
+      title="Redefinir senha"
+      description="Crie uma nova senha para voltar a acessar sua conta."
+    >
       <ResetPasswordForm token={searchParams.token} />
     </AuthCard>
   );

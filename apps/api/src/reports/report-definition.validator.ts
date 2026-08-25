@@ -20,7 +20,9 @@ export class ReportDefinitionValidationError extends BadRequestException {
   }
 }
 
-export function validateCreateReportDefinition(input: CreateReportDefinitionInput): CreateReportDefinitionInput {
+export function validateCreateReportDefinition(
+  input: CreateReportDefinitionInput,
+): CreateReportDefinitionInput {
   const normalized = {
     name: validateRequiredText(input.name, 'nome', 120),
     description: validateRequiredText(input.description, 'descrição', 500),
@@ -54,7 +56,6 @@ export function validateUpdateReportDefinition(
 export function validateSector(value: string): string {
   return validateRequiredText(value, 'setor', 80).toLowerCase();
 }
-
 
 function validateSourceName(value: string): string {
   try {
@@ -98,7 +99,9 @@ function validateParameters(parameters: ReportParameterDefinition[]): ReportPara
 
     if (
       parameter.maxLength !== undefined &&
-      (!Number.isInteger(parameter.maxLength) || parameter.maxLength <= 0 || parameter.maxLength > 1000)
+      (!Number.isInteger(parameter.maxLength) ||
+        parameter.maxLength <= 0 ||
+        parameter.maxLength > 1000)
     ) {
       throw new ReportDefinitionValidationError(`Tamanho máximo inválido para parâmetro: ${name}`);
     }

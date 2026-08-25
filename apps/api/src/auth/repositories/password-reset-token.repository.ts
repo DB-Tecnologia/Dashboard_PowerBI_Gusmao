@@ -23,9 +23,7 @@ export class PasswordResetTokenRepository {
 
     return Array.from(this.tokens.values()).filter(
       (token) =>
-        token.userId === userId &&
-        token.usedAt === null &&
-        token.expiresAt.getTime() > now,
+        token.userId === userId && token.usedAt === null && token.expiresAt.getTime() > now,
     );
   }
 

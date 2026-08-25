@@ -27,7 +27,10 @@ export class AuthzTestController {
   @Get('download/:sector')
   @Roles('downloader', 'admin')
   @ApiOkResponse({ description: 'Usuário possui permissão de download no setor.' })
-  downloadSector(@Param('sector') sector: SectorCode, @CurrentUser() user: AuthenticatedRequestUser) {
+  downloadSector(
+    @Param('sector') sector: SectorCode,
+    @CurrentUser() user: AuthenticatedRequestUser,
+  ) {
     return {
       action: 'download',
       sector,

@@ -12,12 +12,18 @@ export interface ReportAccessContext {
 
 @Injectable()
 export class ReportAuthorizationService {
-  normalizeContext(user?: AuthenticatedRequestUser | ReportAccessContext | null): ReportAccessContext {
+  normalizeContext(
+    user?: AuthenticatedRequestUser | ReportAccessContext | null,
+  ): ReportAccessContext {
     if (!user) {
       throw new UnauthorizedException('Usuário não autenticado.');
     }
 
-    const rawUser = user as AuthenticatedRequestUser & { permissions?: string[]; userId?: string; id?: string };
+    const rawUser = user as AuthenticatedRequestUser & {
+      permissions?: string[];
+      userId?: string;
+      id?: string;
+    };
 
     return {
       userId: rawUser.sub ?? rawUser.userId ?? rawUser.id ?? 'unknown',
@@ -27,7 +33,10 @@ export class ReportAuthorizationService {
     };
   }
 
-  assertCanAccessReport(report: ReportDefinition, user?: AuthenticatedRequestUser | ReportAccessContext | null): void {
+  assertCanAccessReport(
+    report: ReportDefinition,
+    user?: AuthenticatedRequestUser | ReportAccessContext | null,
+  ): void {
     const context = this.normalizeContext(user);
 
     if (context.roles.includes('admin')) {
@@ -38,14 +47,19 @@ export class ReportAuthorizationService {
       throw new ForbiddenException('Usuário sem acesso ao setor do relatório.');
     }
 
-    const missingPermission = report.requiredPermissions.find((permission) => !context.permissions.includes(permission));
+    const missingPermission = report.requiredPermissions.find(
+      (permission) => !context.permissions.includes(permission),
+    );
 
     if (missingPermission) {
       throw new ForbiddenException('Usuário sem permissão para acessar o relatório.');
     }
   }
 
-  canAccessReport(report: ReportDefinition, user?: AuthenticatedRequestUser | ReportAccessContext | null): boolean {
+  canAccessReport(
+    report: ReportDefinition,
+    user?: AuthenticatedRequestUser | ReportAccessContext | null,
+  ): boolean {
     try {
       this.assertCanAccessReport(report, user);
 
@@ -61,5 +75,8 @@ function normalizeList(value: unknown): string[] {
     return [];
   }
 
-  return value.filter((item): item is string => typeof item === 'string').map((item) => item.trim().toLowerCase()).filter(Boolean);
+  return value
+    .filter((item): item is string => typeof item === 'string')
+    .map((item) => item.trim().toLowerCase())
+    .filter(Boolean);
 }

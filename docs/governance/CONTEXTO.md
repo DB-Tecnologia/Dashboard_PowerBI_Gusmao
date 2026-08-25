@@ -3,6 +3,13 @@
 **Projeto:** Dashboard Power BI
 **Atualizado em:** 2026-08-25
 
+## 2026-08-25 — Padronização de formatação P1-02
+
+- O Prettier foi aplicado aos 387 arquivos que estavam fora do padrão, usando a configuração vigente do projeto.
+- `pnpm format:check` passou sem arquivos pendentes; não foram alterados contratos, comportamento funcional, banco, Docker ou telas.
+- A política global de texto foi fixada em `LF` no `.gitattributes` para impedir que `core.autocrlf` reintroduza falsos desvios de formatação em novos checkouts Windows.
+- A correção de lint permanece separada como P1-01 para evitar misturar mudanças semânticas com a normalização de estilo.
+
 ## 2026-08-25 — Validação P0-02 do Playwright
 
 - A configuração atual foi validada contra a Web em `3000` e a API demo em `3001`; os 7 cenários E2E atuais passaram.
@@ -216,7 +223,7 @@ O Dashboard Power BI é uma plataforma web interna de relatórios e BI em estado
 | F-01: Typecheck API — mock incompleto em retention.spec  | Qualidade | Média      | Completar mock de ExportsService no spec                |
 | F-02: Teste API — ConfigService sem método get() no mock | Qualidade | Média      | Adicionar mock de get() no ConfigService do spec        |
 | F-10: Lint — 1129 erros e 426 warnings                   | Qualidade | Média      | Corrigir progressivamente @typescript-eslint warnings   |
-| F-11: Format — 187 arquivos com formatação incorreta     | Qualidade | Baixa      | Executar `pnpm format`                                  |
+| F-11: Format — 387 arquivos com formatação incorreta     | Qualidade | Baixa      | **Resolvido em 2026-08-25** com `pnpm format`           |
 | F-12: Redis — spam de erros ECONNREFUSED sem Redis local | Infra     | Média      | Silenciar erros de conexão Redis quando não configurado |
 | Drill-down multi-dimensão                                | BI        | Média      | Já implementado mas dimensão pode ser mais flexível     |
 | Expansão dos testes E2E (Playwright)                     | Qualidade | Média      | Ampliar cobertura para exportação, admin CRUD e 2FA     |

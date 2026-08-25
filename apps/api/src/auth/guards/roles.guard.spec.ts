@@ -21,23 +21,31 @@ const createContext = (roles: string[] | undefined, userRoles: string[] = []) =>
 
 describe('RolesGuard', () => {
   it('deve permitir acesso quando não houver metadata de role', () => {
-    const reflector = { getAllAndOverride: jest.fn().mockReturnValue(undefined) } as unknown as Reflector;
+    const reflector = {
+      getAllAndOverride: jest.fn().mockReturnValue(undefined),
+    } as unknown as Reflector;
     const guard = new RolesGuard(reflector);
 
     expect(guard.canActivate(createContext(undefined))).toBe(true);
   });
 
   it('deve permitir usuário com role exigida', () => {
-    const reflector = { getAllAndOverride: jest.fn().mockReturnValue(['downloader']) } as unknown as Reflector;
+    const reflector = {
+      getAllAndOverride: jest.fn().mockReturnValue(['downloader']),
+    } as unknown as Reflector;
     const guard = new RolesGuard(reflector);
 
     expect(guard.canActivate(createContext(['downloader'], ['downloader']))).toBe(true);
   });
 
   it('deve negar usuário sem role exigida', () => {
-    const reflector = { getAllAndOverride: jest.fn().mockReturnValue(['downloader']) } as unknown as Reflector;
+    const reflector = {
+      getAllAndOverride: jest.fn().mockReturnValue(['downloader']),
+    } as unknown as Reflector;
     const guard = new RolesGuard(reflector);
 
-    expect(() => guard.canActivate(createContext(['downloader'], ['viewer']))).toThrow(ForbiddenException);
+    expect(() => guard.canActivate(createContext(['downloader'], ['viewer']))).toThrow(
+      ForbiddenException,
+    );
   });
 });

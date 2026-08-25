@@ -44,18 +44,62 @@ export function ResetPasswordForm({ token }: Props) {
   return (
     <form className="space-y-5" onSubmit={onSubmit} noValidate>
       <div className="space-y-2">
-        <label htmlFor="newPassword" className="text-sm font-medium text-slate-800">Nova senha</label>
-        <Input id="newPassword" type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} autoComplete="new-password" />
+        <label htmlFor="newPassword" className="text-sm font-medium text-slate-800">
+          Nova senha
+        </label>
+        <Input
+          id="newPassword"
+          type="password"
+          value={newPassword}
+          onChange={(e) => setNewPassword(e.target.value)}
+          autoComplete="new-password"
+        />
       </div>
       <div className="space-y-2">
-        <label htmlFor="confirmPassword" className="text-sm font-medium text-slate-800">Confirmar senha</label>
-        <Input id="confirmPassword" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} autoComplete="new-password" />
+        <label htmlFor="confirmPassword" className="text-sm font-medium text-slate-800">
+          Confirmar senha
+        </label>
+        <Input
+          id="confirmPassword"
+          type="password"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          autoComplete="new-password"
+        />
       </div>
-      {fieldError ? <div role="alert" className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{fieldError}</div> : null}
-      {status ? <div role="status" className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">{status}</div> : null}
-      {error ? <div role="alert" className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div> : null}
-      <Button className="w-full" type="submit" disabled={isLoading || !token}>{isLoading ? 'Redefinindo...' : 'Redefinir senha'}</Button>
-      <p className="text-center text-sm text-slate-600">Já redefiniu? <Link className="font-semibold text-blue-700" href="/login">Voltar ao login</Link></p>
+      {fieldError ? (
+        <div
+          role="alert"
+          className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+        >
+          {fieldError}
+        </div>
+      ) : null}
+      {status ? (
+        <div
+          role="status"
+          className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700"
+        >
+          {status}
+        </div>
+      ) : null}
+      {error ? (
+        <div
+          role="alert"
+          className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+        >
+          {error}
+        </div>
+      ) : null}
+      <Button className="w-full" type="submit" disabled={isLoading || !token}>
+        {isLoading ? 'Redefinindo...' : 'Redefinir senha'}
+      </Button>
+      <p className="text-center text-sm text-slate-600">
+        Já redefiniu?{' '}
+        <Link className="font-semibold text-blue-700" href="/login">
+          Voltar ao login
+        </Link>
+      </p>
     </form>
   );
 }

@@ -4,7 +4,12 @@ import { AuthenticatedRequestUser } from '../auth/types/auth.types';
 import { DatabaseProviderService } from '../sql-server/database-provider.service';
 import { SqlQueryService } from '../sql-server/sql-query.service';
 import { ReportDefinition, ReportParameterDefinition } from './entities/report-definition.entity';
-import { normalizeListReportsQuery, PaginationInput, QueryReportInput, validateReportQuery } from './report-query.validator';
+import {
+  normalizeListReportsQuery,
+  PaginationInput,
+  QueryReportInput,
+  validateReportQuery,
+} from './report-query.validator';
 import { ReportAccessContext, ReportAuthorizationService } from './report-authorization.service';
 import { ReportDefinitionsService } from './report-definitions.service';
 import { PaginatedResponse, PublicReportDefinition } from './dto/report-query-response.dto';
@@ -28,13 +33,28 @@ export class ReportsApiService {
       ? await this.reportDefinitionsService.listBySector(normalizedQuery.sector)
       : await this.reportDefinitionsService.list();
 
-    const authorizedReports = reports.filter((report) => report.isActive && this.reportAuthorizationService.canAccessReport(report, context));
-    const items = paginate(authorizedReports.map(toPublicReportDefinition), normalizedQuery.pagination.offset, normalizedQuery.pagination.limit);
+    const authorizedReports = reports.filter(
+      (report) =>
+        report.isActive && this.reportAuthorizationService.canAccessReport(report, context),
+    );
+    const items = paginate(
+      authorizedReports.map(toPublicReportDefinition),
+      normalizedQuery.pagination.offset,
+      normalizedQuery.pagination.limit,
+    );
 
-    return toPaginatedResponse(items, authorizedReports.length, normalizedQuery.pagination.page, normalizedQuery.pagination.pageSize);
+    return toPaginatedResponse(
+      items,
+      authorizedReports.length,
+      normalizedQuery.pagination.page,
+      normalizedQuery.pagination.pageSize,
+    );
   }
 
-  async getReportById(id: string, user?: AuthenticatedRequestUser | ReportAccessContext | null): Promise<PublicReportDefinition> {
+  async getReportById(
+    id: string,
+    user?: AuthenticatedRequestUser | ReportAccessContext | null,
+  ): Promise<PublicReportDefinition> {
     const report = await this.reportDefinitionsService.getById(id);
 
     if (!report.isActive) {
@@ -62,18 +82,29 @@ export class ReportsApiService {
 
     const rows =
       report.sourceType === 'view'
-        ? await this.sqlQueryService.executeView<Record<string, unknown>>({
-            viewName: report.sourceName,
-            filters: toViewFilters(report.parameters, query.filters),
-          }, this.databaseProviderService.getProvider())
-        : await this.sqlQueryService.executeStoredProcedure<Record<string, unknown>>({
-            procedureName: report.sourceName,
-            parameters: toProcedureParameters(report.parameters, query.filters),
-          }, this.databaseProviderService.getProvider());
+        ? await this.sqlQueryService.executeView<Record<string, unknown>>(
+            {
+              viewName: report.sourceName,
+              filters: toViewFilters(report.parameters, query.filters),
+            },
+            this.databaseProviderService.getProvider(),
+          )
+        : await this.sqlQueryService.executeStoredProcedure<Record<string, unknown>>(
+            {
+              procedureName: report.sourceName,
+              parameters: toProcedureParameters(report.parameters, query.filters),
+            },
+            this.databaseProviderService.getProvider(),
+          );
 
     const items = paginate(rows, query.pagination.offset, query.pagination.limit);
 
-    return toPaginatedResponse(items, rows.length, query.pagination.page, query.pagination.pageSize);
+    return toPaginatedResponse(
+      items,
+      rows.length,
+      query.pagination.page,
+      query.pagination.pageSize,
+    );
   }
 }
 
@@ -96,7 +127,9 @@ function toPublicReportDefinition(report: ReportDefinition): PublicReportDefinit
 
 function toViewFilters(parameters: ReportParameterDefinition[], filters: Record<string, unknown>) {
   return parameters
-    .filter((parameter) => filters[parameter.name] !== undefined && filters[parameter.name] !== null)
+    .filter(
+      (parameter) => filters[parameter.name] !== undefined && filters[parameter.name] !== null,
+    )
     .map((parameter) => ({
       column: parameter.name,
       name: parameter.name,
@@ -107,9 +140,14 @@ function toViewFilters(parameters: ReportParameterDefinition[], filters: Record<
     }));
 }
 
-function toProcedureParameters(parameters: ReportParameterDefinition[], filters: Record<string, unknown>) {
+function toProcedureParameters(
+  parameters: ReportParameterDefinition[],
+  filters: Record<string, unknown>,
+) {
   return parameters
-    .filter((parameter) => filters[parameter.name] !== undefined && filters[parameter.name] !== null)
+    .filter(
+      (parameter) => filters[parameter.name] !== undefined && filters[parameter.name] !== null,
+    )
     .map((parameter) => ({
       name: parameter.name,
       type: parameter.type,
@@ -123,7 +161,12 @@ function paginate<TItem>(items: TItem[], offset: number, limit: number): TItem[]
   return items.slice(offset, offset + limit);
 }
 
-function toPaginatedResponse<TItem>(items: TItem[], total: number, page: number, pageSize: number): PaginatedResponse<TItem> {
+function toPaginatedResponse<TItem>(
+  items: TItem[],
+  total: number,
+  page: number,
+  pageSize: number,
+): PaginatedResponse<TItem> {
   return {
     items,
     page,

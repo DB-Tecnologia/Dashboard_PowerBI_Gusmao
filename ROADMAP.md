@@ -184,7 +184,9 @@ Uma tarefa só é considerada pronta quando:
 - ✅ Ambiente demo reproduzível com SQL Server, API, Web e Redis; normalização de EOL corrigida no entrypoint Linux.
 - ✅ P0-02 concluído: Playwright validado contra a Web em `3000`, com API demo em `3001` e 7 cenários E2E aprovados em 2026-08-25.
 - ✅ P0-03 concluído: `.env.production.example` completo, sem credenciais, com Oracle/COMPASS como fonte padrão e verificador automatizado.
+- ✅ P1-02 concluído: formatação padronizada nos 387 arquivos identificados pelo Prettier; `pnpm format:check` aprovado em 2026-08-25.
 - ⏳ P0-04 permanece pendente: exigir `TOTP_ENCRYPTION_KEY` no boot de produção.
+- ⏳ P1-01 permanece separado: corrigir os erros de lint sem misturar alterações funcionais com a normalização de estilo.
 - ⏳ P1-03 permanece separado: ampliar a cobertura para exportação, CRUD administrativo e 2FA.
 - ✅ Contrato BI v1 com fonte, frescor, filtros, resumo de produção Oracle e refresh idempotente.
 - ⏳ Oracle/COMPASS bloqueado até receber rede, host, service name e credencial somente leitura.
