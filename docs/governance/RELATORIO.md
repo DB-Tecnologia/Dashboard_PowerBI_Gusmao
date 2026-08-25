@@ -5,6 +5,19 @@
 
 > As entradas anteriores a 24/08/2026 preservam os caminhos da estrutura documental vigente na data de cada registro. A estrutura atual e mantida em `docs/INDEX.md`; referencias historicas abaixo nao representam arquivos ausentes.
 
+## 2026-08-25 — Configuração P0-03 de produção
+
+- Auditado e completado `infra/env/.env.production.example`; o arquivo já era versionado, mas não cobria todas as variáveis do contrato geral.
+- Definido `DATABASE_PROVIDER=oracle` como padrão documentado para Oracle 19c/COMPASS. SQL Server permanece no template como compatibilidade legada.
+- Removidos valores de demonstração do template de produção; usuários demo, senhas, passwords de banco e `TOTP_ENCRYPTION_KEY` ficaram vazios ou como placeholders.
+- Criado `scripts/verify-env-examples.mjs`, adicionado `pnpm verify:env` e incluído o verificador no fluxo `pnpm quality`.
+- Atualizados README, ROADMAP, tarefas operacionais, contexto, arquitetura, banco de dados, integração e auditorias vigentes.
+- `pnpm verify:env`, `pnpm verify:workspace`, `pnpm verify:docker` e `pnpm verify:docs` passaram.
+- A configuração do Compose de produção foi validada com um arquivo temporário derivado do template; o arquivo temporário foi removido ao final.
+- `pnpm typecheck`, `pnpm test` (43 suítes/142 testes Web e 48 suítes/308 testes API), `pnpm build` e `pnpm test:e2e:playwright` passaram; o E2E concluiu 7 testes em 20,1 segundos.
+- `pnpm format:check` continua apontando dívida preexistente em 392 arquivos; nenhum reformat global foi aplicado nesta tarefa.
+- P0-04 permanece pendente para exigir `TOTP_ENCRYPTION_KEY` no boot. P1-05 permanece pendente para SMTP real.
+
 ## 2026-08-25 — Validação P0-02 do Playwright
 
 - A configuração atual foi validada sem alteração de código: o `webServer` inicia/reutiliza a Web em `http://localhost:3000` e o ambiente demo disponibiliza a API em `http://localhost:3001`.

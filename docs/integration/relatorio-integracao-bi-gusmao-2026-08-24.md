@@ -9,6 +9,8 @@
 
 > **Atualização de validação em 25/08/2026:** a configuração do Playwright foi validada no ambiente demo. A Web respondeu na porta `3000`, a API na porta `3001` e os 7 cenários E2E existentes passaram. A expansão de cobertura continua planejada em P1-03.
 
+> **Atualização P0-03 em 25/08/2026:** `infra/env/.env.production.example` foi completado com o contrato geral e os parâmetros de Oracle 19c/COMPASS, sem credenciais reais. `pnpm verify:env` valida a cobertura e os defaults seguros. A validação da chave TOTP no boot permanece em P0-04.
+
 ## 1. Conclusão executiva
 
 O repositório entrega uma base funcional avançada para uma plataforma de BI: autenticação, permissões, dashboards configuráveis, relatórios, exportações, administração, API NestJS, frontend Next.js, Docker, integração com Supabase e adaptadores para SQL Server e Oracle.
@@ -189,7 +191,7 @@ Até a confirmação do ambiente de origem, o projeto deve tratar o Oracle 19c c
 | Modelo agrícola          | Quatro fontes são insuficientes para o conjunto de abas e KPIs reais                | Não há paridade com o BI atual                                  | Mapear tabelas/views de produção, romaneios, qualidade, algodoeira, estoque e financeiro |
 | KPIs de grãos e algodão  | Não existem as fórmulas completas de volume, produtividade, rolos, @/ha e qualidade | Entrega não atende ao pedido principal do cliente               | Implementar contratos de KPI versionados e reconciliados                                 |
 | Segurança de produção    | Nginx produtivo não apresenta TLS configurado na evidência analisada                | Risco de exposição de autenticação e dados                      | Configurar HTTPS, certificados, redirecionamento, headers e renovação                    |
-| Configuração de produção | Não há `.env.production.example` versionado conforme a auditoria                    | Implantação dependente de configuração informal                 | Criar referência sem segredos e validar variáveis obrigatórias no boot                   |
+| Configuração de produção | `.env.production.example` completo, sem credenciais e com Oracle como padrão        | Ainda depende de preencher segredos e validar TOTP no boot      | Executar P0-04, fornecer infraestrutura e validar conexão Oracle read-only               |
 | Persistência             | Há fallbacks em memória em partes da plataforma                                     | Perda de estado em reinício ou múltiplas instâncias             | Tornar Supabase obrigatório em produção e falhar cedo quando ausente                     |
 | Backup e rollback        | Estratégia de backup e rollback não está fechada                                    | Recuperação incerta em incidente                                | Definir backups, retenção, restauração testada e procedimento de rollback                |
 

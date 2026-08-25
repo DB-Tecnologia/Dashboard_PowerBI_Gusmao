@@ -102,6 +102,7 @@ git clone https://github.com/DB-Tecnologia/Dashboard_PowerBI_Gusmao.git
 cd Dashboard_PowerBI_Gusmao
 pnpm install
 pnpm verify:workspace
+pnpm verify:env
 pnpm verify:docker
 pnpm verify:docs
 ```
@@ -244,6 +245,16 @@ infra/docker/web.prod.Dockerfile
 ```
 
 O deploy automatizado e os limites operacionais estão descritos em [Arquitetura](docs/architecture/ARQUITETURA.md). Variáveis de produção devem ser fornecidas exclusivamente pelo ambiente seguro de execução.
+
+O template versionado [`infra/env/.env.production.example`](infra/env/.env.production.example) documenta o contrato completo de produção, com Oracle/COMPASS como fonte padrão e SQL Server como compatibilidade legada. Para preparar uma implantação:
+
+```powershell
+Copy-Item infra/env/.env.production.example infra/env/.env.production
+pnpm verify:env
+pnpm docker:prod
+```
+
+Preencha o arquivo local somente com o gerenciador de segredos ou ambiente seguro da operação. Não versione `infra/env/.env.production`; a conexão Oracle, o Supabase, o domínio, SMTP, JWT e a chave TOTP dependem da infraestrutura real e continuam sem valores no repositório.
 
 ## Licença
 

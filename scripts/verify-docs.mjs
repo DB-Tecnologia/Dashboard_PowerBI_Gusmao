@@ -58,6 +58,7 @@ if (missingSections.length > 0) {
 const requiredCommands = [
   'pnpm install',
   'pnpm verify:workspace',
+  'pnpm verify:env',
   'pnpm verify:docker',
   'pnpm verify:docs',
   'pnpm quality',

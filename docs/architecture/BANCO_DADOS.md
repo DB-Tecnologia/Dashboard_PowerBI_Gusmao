@@ -1,8 +1,8 @@
 # BANCO_DADOS.md — Arquitetura de Banco de Dados
 
 **Projeto:** Dashboard Power BI
-**Atualizado em:** 2026-06-28
-**Banco identificado:** Supabase (PostgreSQL gerenciado) + SQL Server externo (somente leitura)
+**Atualizado em:** 2026-08-25
+**Banco identificado:** Supabase (PostgreSQL gerenciado) + Oracle 19c/COMPASS (fonte-alvo) + SQL Server legado (somente leitura)
 
 ---
 
@@ -11,7 +11,8 @@
 O sistema utiliza duas fontes de dados distintas:
 
 1. **Supabase (PostgreSQL gerenciado)** — banco principal da plataforma, armazena usuários, grupos, permissões, auditoria, settings, dashboards, exportações, notificações, definições de relatórios e favoritos. Acessado via service role key no backend NestJS com bypass de RLS.
-2. **SQL Server externo** — origem de leitura para relatórios e KPIs. Acessado via `mssql` com queries parametrizadas. Somente SELECT e EXEC de stored procedures permitidos.
+2. **Oracle 19c/COMPASS** — fonte-alvo de leitura para os fatos agrícolas e KPIs do projeto. Acessado via `oracledb` com usuário somente leitura, service name e consultas versionadas.
+3. **SQL Server externo** — compatibilidade legada para relatórios e KPIs. Acessado via `mssql` com queries parametrizadas. Somente SELECT e EXEC de stored procedures permitidos.
 
 A estratégia de persistência é híbrida: quando `SUPABASE_URL` e `SUPABASE_SERVICE_ROLE_KEY` estão configurados, a API usa Supabase; caso contrário, usa fallback em memória para parte do domínio.
 
@@ -20,28 +21,28 @@ A estratégia de persistência é híbrida: quando `SUPABASE_URL` e `SUPABASE_SE
 ## 2. Tecnologia e Ferramentas
 
 - **Banco de plataforma:** Supabase (PostgreSQL 15+)
-- **Banco de relatórios:** SQL Server (versão a confirmar no ambiente do cliente)
+- **Banco de relatórios:** Oracle 19c/COMPASS como fonte-alvo; SQL Server legado como alternativa explícita
 - **ORM:** Nenhum (Prisma não implementado)
 - **Client PostgreSQL:** `@supabase/supabase-js` (service role)
 - **Client SQL Server:** `mssql` (pool de conexões)
 - **Migration tool:** Supabase CLI (`supabase/migrations/`)
 - **Seeds:** Setores padrão e configurações iniciais embutidos nas migrations
 - **Ambiente local:** Docker Compose com Supabase local ou Supabase cloud
-- **Ambiente produção:** Supabase cloud + SQL Server do cliente (rede interna ou VPN)
+- **Ambiente produção:** Supabase cloud + Oracle 19c/COMPASS do cliente (rede interna ou VPN); SQL Server permanece compatibilidade legada
 - **String de conexão:** `NÃO DOCUMENTAR VALORES SENSÍVEIS` — ver `infra/env/.env.example`
 
 ---
 
 ## 3. Localização dos Arquivos de Banco
 
-| Tipo                     | Caminho                                                       | Observação                          |
-| ------------------------ | ------------------------------------------------------------- | ----------------------------------- |
-| Migrations               | `supabase/migrations/`                                        | 8 arquivos SQL                      |
-| Configuração Supabase    | `apps/api/src/supabase/supabase.service.ts`                   | Cliente service role                |
-| Configuração SQL Server  | `apps/api/src/sql-server/sql-server.service.ts`               | Pool de conexões                    |
-| Query builder SQL Server | `apps/api/src/sql-server/sql-query-builder.ts`                | Montagem segura de queries          |
-| Repositórios (API)       | `apps/api/src/*/repositories/`                                | Padrão híbrido (memória + Supabase) |
-| Env examples             | `infra/env/.env.example`, `infra/env/.env.production.example` | Variáveis de conexão                |
+| Tipo                     | Caminho                                                       | Observação                              |
+| ------------------------ | ------------------------------------------------------------- | --------------------------------------- |
+| Migrations               | `supabase/migrations/`                                        | 8 arquivos SQL                          |
+| Configuração Supabase    | `apps/api/src/supabase/supabase.service.ts`                   | Cliente service role                    |
+| Configuração SQL Server  | `apps/api/src/sql-server/sql-server.service.ts`               | Pool de conexões                        |
+| Query builder SQL Server | `apps/api/src/sql-server/sql-query-builder.ts`                | Montagem segura de queries              |
+| Repositórios (API)       | `apps/api/src/*/repositories/`                                | Padrão híbrido (memória + Supabase)     |
+| Env examples             | `infra/env/.env.example`, `infra/env/.env.production.example` | Contrato completo de conexão e operação |
 
 ---
 

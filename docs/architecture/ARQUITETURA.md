@@ -125,6 +125,14 @@ A API NestJS é a fonte oficial de todos os fluxos autenticados. O frontend não
 - **Regra:** somente leitura; ausência de credencial, timeout, consulta vazia ou erro de origem produz status explícito e `warnings`.
 - **Estado:** resumo de produção implementado para as views Oracle já mapeadas; grãos, algodão, algodoeira e romaneios aguardam smoke queries de produção.
 
+### Contrato de ambiente de produção
+
+- O template canônico é `infra/env/.env.production.example`.
+- `DATABASE_PROVIDER=oracle` é o padrão documentado para Oracle 19c/COMPASS; SQL Server permanece como compatibilidade legada.
+- O Compose injeta `REDIS_HOST=redis`, usa `TRUST_PROXY_HOPS=1` atrás do Nginx e restringe CORS ao domínio público configurado.
+- O template não contém credenciais reais. `TOTP_ENCRYPTION_KEY` deve ser exigida no boot pela tarefa P0-04 antes da produção.
+- `pnpm verify:env` valida cobertura, defaults de produção e ausência de valores demo.
+
 ---
 
 ## 5. Módulos do Sistema

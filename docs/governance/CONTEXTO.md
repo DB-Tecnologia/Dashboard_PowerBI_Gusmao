@@ -8,6 +8,13 @@
 - A configuração atual foi validada contra a Web em `3000` e a API demo em `3001`; os 7 cenários E2E atuais passaram.
 - A expansão para exportação, CRUD administrativo e 2FA permanece como P1-03.
 
+## 2026-08-25 — Configuração P0-03 de produção
+
+- O arquivo `infra/env/.env.production.example` foi completado com as variáveis do `.env.example`, `NGINX_PORT` e os parâmetros específicos de Oracle, cache, TOTP e retenção.
+- A configuração padrão documentada é `DATABASE_PROVIDER=oracle`, com `REDIS_HOST=redis`, `TRUST_PROXY_HOPS=1`, CORS pelo domínio público e nenhum segredo preenchido.
+- `scripts/verify-env-examples.mjs` e `pnpm verify:env` passaram a proteger a cobertura e a segurança dos templates.
+- A chave `TOTP_ENCRYPTION_KEY` permanece vazia no exemplo; P0-04 deverá exigir seu preenchimento no boot de produção.
+
 ## 2026-08-24 — Docker demo e contrato BI v1
 
 - O repositório foi clonado em `Dashboard_PowerBI_Gusmao`, preservando os documentos existentes no diretório pai.

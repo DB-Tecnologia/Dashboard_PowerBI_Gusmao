@@ -6,6 +6,8 @@
 
 > **Atualização em 2026-08-25:** a configuração do Playwright foi validada contra a Web em `3000` e a API demo em `3001`; os 7 cenários existentes passaram. As referências abaixo a uma porta incorreta representam o estado observado na auditoria original e foram superadas por esta validação; a limitação de cobertura adicional permanece em P1-03.
 
+> **Atualização P0-03 em 2026-08-25:** `infra/env/.env.production.example` está versionado e foi completado com as variáveis de produção, Oracle como fonte padrão e sem credenciais demo. A validação automatizada está em `pnpm verify:env`; P0-04 ainda cobre a exigência de TOTP no boot.
+
 ---
 
 ## 1. Resumo Executivo
@@ -185,7 +187,7 @@ Bloqueadores para produção:
 - Sem backup configurado para Supabase
 - Sem estratégia de rollback documentada
 - Testes E2E limitados
-- `.env.production.example` não versionado (apenas `.env.example` e `.env.demo.example`)
+- `.env.production.example` foi completado; ainda faltam segredos reais fornecidos por ambiente seguro e validação obrigatória de TOTP no boot
 
 ---
 
@@ -316,14 +318,14 @@ Ver arquivo `docs/audits/MATRIZ_REQUISITOS.md` para a tabela completa de 72 requ
 
 ### Documentado, mas não implementado
 
-| Item                               | Documento                 | Evidência                                                                       |
-| ---------------------------------- | ------------------------- | ------------------------------------------------------------------------------- |
-| Cron de refresh                    | ESCOPO.md, ARQUITETURA.md | `ScheduleModule.forRoot()` ativo, mas apenas cron de retenção implementado      |
-| Storage S3                         | ESCOPO.md                 | Não há código referente a S3                                                    |
-| Export dashboard como imagem/PDF   | ESCOPO.md                 | Não implementado                                                                |
-| Compartilhamento de dashboards     | ESCOPO.md                 | Não implementado                                                                |
-| Alertas de segurança em tempo real | ESCOPO.md                 | Não implementado                                                                |
-| `.env.production.example`          | README.md                 | Arquivo não existe no repositório (apenas `.env.example` e `.env.demo.example`) |
+| Item                               | Documento                                                              | Evidência                                                                                            |
+| ---------------------------------- | ---------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| Cron de refresh                    | ESCOPO.md, ARQUITETURA.md                                              | `ScheduleModule.forRoot()` ativo, mas apenas cron de retenção implementado                           |
+| Storage S3                         | ESCOPO.md                                                              | Não há código referente a S3                                                                         |
+| Export dashboard como imagem/PDF   | ESCOPO.md                                                              | Não implementado                                                                                     |
+| Compartilhamento de dashboards     | ESCOPO.md                                                              | Não implementado                                                                                     |
+| Alertas de segurança em tempo real | ESCOPO.md                                                              | Não implementado                                                                                     |
+| `.env.production.example`          | `infra/env/.env.production.example`, `scripts/verify-env-examples.mjs` | Template completo, sem credenciais e validado automaticamente; preenchimento seguro ainda necessário |
 
 ### Implementado, mas não documentado no ESCOPO principal
 
@@ -541,7 +543,7 @@ Ver arquivo `docs/audits/MATRIZ_REQUISITOS.md` para a tabela completa de 72 requ
 | Sem observabilidade estruturada              | Alto       | Alta          | Implementar logs estruturados + métricas          |
 | TOTP_ENCRYPTION_KEY não definida em dev      | Médio      | Alta          | Definir em produção                               |
 | Cobertura Playwright ainda limitada          | Médio      | Média         | Expandir testes para exportação, admin CRUD e 2FA |
-| `.env.production.example` não versionado     | Médio      | Média         | Criar arquivo de referência                       |
+| Template de produção sem segredos reais      | Médio      | Média         | Preencher via ambiente seguro e executar P0-04    |
 | CI não executa build                         | Médio      | Média         | Adicionar step de build no ci.yml                 |
 | SMTP em modo mock                            | Médio      | Média         | Configurar SMTP real em produção                  |
 
