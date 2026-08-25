@@ -3,7 +3,7 @@
 **Projeto:** Dashboard Power BI
 **Data:** 2026-08-25
 
-> **Atualizações P0-02/P0-03/P1-02/P1-01/P0-04 (2026-08-25):** Playwright foi validado em ambiente demo com 7 cenários. O `.env.production.example` foi completado com todas as variáveis do contrato geral, Oracle/COMPASS como fonte padrão e validação automatizada, sem credenciais reais. A formatação foi padronizada em 387 arquivos, o lint foi corrigido com zero erros e zero avisos e a API passou a rejeitar boot de produção sem `TOTP_ENCRYPTION_KEY`.
+> **Atualizações P0-02/P0-03/P1-02/P1-01/P0-04/P1-03 (2026-08-25):** Playwright foi validado e expandido em ambiente demo para 16 cenários. O `.env.production.example` foi completado com todas as variáveis do contrato geral, Oracle/COMPASS como fonte padrão e validação automatizada, sem credenciais reais. A formatação foi padronizada em 387 arquivos, o lint foi corrigido com zero erros e zero avisos, a API passou a rejeitar boot de produção sem `TOTP_ENCRYPTION_KEY` e os fluxos administrativos, exportações e 2FA passaram no navegador.
 
 ---
 
@@ -20,16 +20,16 @@
 
 ### P1 — Obrigatório para o Lançamento
 
-| ID    | Área            | Tarefa                                            | Problema resolvido                      | Arquivos envolvidos                                     | Dependências | Complexidade | Estimativa | Critério de aceite                                              | Risco |
-| ----- | --------------- | ------------------------------------------------- | --------------------------------------- | ------------------------------------------------------- | ------------ | ------------ | ---------- | --------------------------------------------------------------- | ----- |
-| P1-01 | Qualidade       | Corrigir dívida de lint (25 achados reais)        | Qualidade de código abaixo do padrão    | `eslint.config.mjs`, `apps/api/src/*`, `apps/web/src/*` | —            | Alta         | 24-40h     | **Concluído:** `pnpm lint` passa com zero erros e zero avisos   | Médio |
-| P1-02 | Qualidade       | Corrigir formatação Prettier (387 arquivos)       | Formatação inconsistente                | Todo o repositório                                      | —            | Baixa        | 3-5h       | **Concluído:** `pnpm format:check` passa sem arquivos pendentes | Baixo |
-| P1-03 | Testes          | Expandir testes E2E (exportação, admin CRUD, 2FA) | Cobertura E2E insuficiente              | `tests/e2e/`                                            | P0-02        | Alta         | 12h        | Mínimo 15 testes E2E cobrindo fluxos críticos                   | Médio |
-| P1-04 | Infra           | Adicionar step de build no CI                     | CI não valida build                     | `.github/workflows/ci.yml`                              | —            | Baixa        | 1h         | CI executa `pnpm build` e falha se build quebrar                | Baixo |
-| P1-05 | Infra           | Configurar SMTP real para produção                | E-mails de recuperação não são enviados | `infra/env/.env.production.example`, `email.service.ts` | —            | Média        | 4h         | E-mail de recuperação enviado com SMTP real                     | Médio |
-| P1-06 | Observabilidade | Implementar logs estruturados (pino ou winston)   | Sem observabilidade                     | `apps/api/src/main.ts`, services                        | —            | Alta         | 8h         | Logs em formato JSON com nível, timestamp, contexto             | Alto  |
-| P1-07 | Infra           | Documentar estratégia de backup e restore         | Sem backup documentado                  | `docs/architecture/ARQUITETURA.md`                      | —            | Média        | 4h         | Documento de backup/restore para Supabase e Redis               | Médio |
-| P1-08 | Infra           | Documentar estratégia de rollback                 | Sem rollback documentado                | `docs/architecture/ARQUITETURA.md`                      | —            | Baixa        | 2h         | Procedimento de rollback via git + docker compose               | Baixo |
+| ID    | Área            | Tarefa                                            | Problema resolvido                      | Arquivos envolvidos                                                                     | Dependências | Complexidade | Estimativa | Critério de aceite                                                                         | Risco |
+| ----- | --------------- | ------------------------------------------------- | --------------------------------------- | --------------------------------------------------------------------------------------- | ------------ | ------------ | ---------- | ------------------------------------------------------------------------------------------ | ----- |
+| P1-01 | Qualidade       | Corrigir dívida de lint (25 achados reais)        | Qualidade de código abaixo do padrão    | `eslint.config.mjs`, `apps/api/src/*`, `apps/web/src/*`                                 | —            | Alta         | 24-40h     | **Concluído:** `pnpm lint` passa com zero erros e zero avisos                              | Médio |
+| P1-02 | Qualidade       | Corrigir formatação Prettier (387 arquivos)       | Formatação inconsistente                | Todo o repositório                                                                      | —            | Baixa        | 3-5h       | **Concluído:** `pnpm format:check` passa sem arquivos pendentes                            | Baixo |
+| P1-03 | Testes          | Expandir testes E2E (exportação, admin CRUD, 2FA) | Cobertura E2E insuficiente              | `tests/e2e/`, `apps/web/src/lib/auth/api.ts`, `apps/api/src/auth/dto/totp-setup.dto.ts` | P0-02        | Alta         | 12-16h     | **Concluído:** 16 testes E2E aprovados, com credenciais administrativas somente em runtime | Médio |
+| P1-04 | Infra           | Adicionar step de build no CI                     | CI não valida build                     | `.github/workflows/ci.yml`                                                              | —            | Baixa        | 1h         | CI executa `pnpm build` e falha se build quebrar                                           | Baixo |
+| P1-05 | Infra           | Configurar SMTP real para produção                | E-mails de recuperação não são enviados | `infra/env/.env.production.example`, `email.service.ts`                                 | —            | Média        | 4h         | E-mail de recuperação enviado com SMTP real                                                | Médio |
+| P1-06 | Observabilidade | Implementar logs estruturados (pino ou winston)   | Sem observabilidade                     | `apps/api/src/main.ts`, services                                                        | —            | Alta         | 8h         | Logs em formato JSON com nível, timestamp, contexto                                        | Alto  |
+| P1-07 | Infra           | Documentar estratégia de backup e restore         | Sem backup documentado                  | `docs/architecture/ARQUITETURA.md`                                                      | —            | Média        | 4h         | Documento de backup/restore para Supabase e Redis                                          | Médio |
+| P1-08 | Infra           | Documentar estratégia de rollback                 | Sem rollback documentado                | `docs/architecture/ARQUITETURA.md`                                                      | —            | Baixa        | 2h         | Procedimento de rollback via git + docker compose                                          | Baixo |
 
 ### P2 — Importante Após Estabilização
 
@@ -70,7 +70,7 @@
 
 - P1-01: Corrigir lint — concluído em 2026-08-25
 - P1-02: Corrigir formatação — concluído em 2026-08-25
-- P1-03: Expandir testes E2E
+- P1-03: Expandir testes E2E — concluído em 2026-08-25; 16 testes aprovados
 - P1-04: Build no CI
 - P1-05: SMTP real
 - P1-06: Logs estruturados
@@ -128,9 +128,9 @@ Cada tarefa tem critérios de aceite específicos na tabela acima. Adicionalment
 2. **P0-03:** Completar `.env.production.example` (concluído em 2026-08-25)
 3. **P0-04:** Garantir TOTP_ENCRYPTION_KEY em produção — concluído em 2026-08-25; validação fail-fast no provider
 4. **P1-02:** Corrigir formatação Prettier (concluído em 2026-08-25; 387 arquivos padronizados)
-5. **P1-04:** Adicionar build no CI
-6. **P1-01:** Corrigir erros de lint — concluído em 2026-08-25; zero erros e zero avisos
-7. **P1-03:** Expandir testes E2E
+5. **P1-03:** Expandir testes E2E — concluído em 2026-08-25; 16/16 aprovados e fluxos admin, export e 2FA cobertos
+6. **P1-04:** Adicionar build no CI
+7. **P1-01:** Corrigir erros de lint — concluído em 2026-08-25; zero erros e zero avisos
 8. **P0-01:** Configurar TLS/HTTPS no nginx
 9. **P1-05:** Configurar SMTP real
 10. **P1-06:** Implementar logs estruturados
@@ -155,6 +155,7 @@ Cada tarefa tem critérios de aceite específicos na tabela acima. Adicionalment
 - [x] P0-04: TOTP_ENCRYPTION_KEY exigida no boot de produção em 2026-08-25
 - [x] P1-02: Formatação Prettier corrigida em 2026-08-25; 387 arquivos padronizados
 - [ ] P1-04: Build no CI
+- [x] P1-03: 16 testes E2E aprovados em 2026-08-25 para auth, dashboard, admin, export e 2FA
 - [ ] `pnpm test` passa (API + Web)
 - [ ] `pnpm typecheck` passa
 - [ ] `pnpm build` passa
@@ -169,7 +170,7 @@ Cada tarefa tem critérios de aceite específicos na tabela acima. Adicionalment
 - [ ] Todos os itens do checklist MVP
 - [ ] P0-01: TLS/HTTPS configurado no nginx
 - [x] P1-01: Lint sem erros e sem avisos em 2026-08-25
-- [ ] P1-03: Testes E2E expandidos (mínimo 15)
+- [x] P1-03: Testes E2E expandidos; 16 testes aprovados em 2026-08-25
 - [ ] P1-05: SMTP real configurado
 - [ ] P1-06: Logs estruturados implementados
 - [ ] P1-07: Backup documentado e testado

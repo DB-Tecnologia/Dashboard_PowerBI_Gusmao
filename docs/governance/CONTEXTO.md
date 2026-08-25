@@ -34,7 +34,16 @@
 ## 2026-08-25 — Validação P0-02 do Playwright
 
 - A configuração atual foi validada contra a Web em `3000` e a API demo em `3001`; os 7 cenários E2E atuais passaram.
-- A expansão para exportação, CRUD administrativo e 2FA permanece como P1-03.
+- A expansão P1-03 foi concluída com 16 testes E2E; as credenciais administrativas são exigidas somente por variáveis de runtime.
+
+## 2026-08-25 — Expansão P1-03 dos testes E2E
+
+- A cobertura Playwright passou de 7 para 16 testes aprovados contra Web `3000` e API demo `3001`, preservando os cenários de autenticação, dashboard, drill-down e catálogo.
+- Foram adicionados cenários de login administrativo com TOTP válido e inválido, bloqueio de usuário comum, listas de usuários e grupos, criação/exclusão de grupo, consulta, modal e solicitação de exportação, histórico/download e ciclo completo de 2FA.
+- Os helpers exigem `E2E_ADMIN_EMAIL`, `E2E_ADMIN_PASSWORD` e `E2E_ADMIN_TOTP_SECRET` em runtime; nenhum segredo é gravado em teste, documentação ou commit.
+- O E2E revelou duas lacunas de integração e elas foram corrigidas: validação dos campos TOTP nos DTOs da API e envio do Bearer pelo cliente Web nas chamadas autenticadas de configuração, verificação e desativação 2FA.
+- O helper de grupos obtém o CSRF pelo contexto do navegador, sem desabilitar a proteção da API.
+- No modo demo, a tela de histórico usa dados demonstrativos; a reconciliação entre o job recém-solicitado e o histórico persistido fica para a validação com dados reais.
 
 ## 2026-08-25 — Configuração P0-03 de produção
 
@@ -57,7 +66,7 @@
 
 ## 1. Resumo Executivo
 
-O Dashboard Power BI é uma plataforma web interna de relatórios e BI em estado funcional avançado. O sistema entrega autenticação com JWT, dashboard com KPIs e gráficos Recharts, catálogo e execução de relatórios via SQL Server/Oracle, administração de usuários/grupos/permissões com herança via grupos, auditoria com retenção LGPD, exportações com pipeline real, notificações, settings, dashboards personalizados com editor visual drag-and-drop completo (react-grid-layout) e seed automático de dashboard padrão por setor, dashboard admin com gráficos de tendência (agregações temporais de audit logs, exports e usuários), 2FA/TOTP obrigatório para admins, hardening de sessão (token blacklist, token versioning, revogação), cache de queries SQL com TTL e LRU, política de retenção de logs com cron diário e baseline E2E validado com Playwright. As lacunas remanescentes são a expansão da cobertura E2E para fluxos adicionais e a evolução do drill-down multi-dimensão. O principal risco técnico é a dependência de fallback em memória quando Supabase não está configurado.
+O Dashboard Power BI é uma plataforma web interna de relatórios e BI em estado funcional avançado. O sistema entrega autenticação com JWT, dashboard com KPIs e gráficos Recharts, catálogo e execução de relatórios via SQL Server/Oracle, administração de usuários/grupos/permissões com herança via grupos, auditoria com retenção LGPD, exportações com pipeline real, notificações, settings, dashboards personalizados com editor visual drag-and-drop completo (react-grid-layout) e seed automático de dashboard padrão por setor, dashboard admin com gráficos de tendência (agregações temporais de audit logs, exports e usuários), 2FA/TOTP obrigatório para admins, hardening de sessão (token blacklist, token versioning, revogação), cache de queries SQL com TTL e LRU, política de retenção de logs com cron diário e cobertura E2E de 16 testes. As lacunas remanescentes são a evolução do drill-down multi-dimensão e a validação produtiva com Oracle/COMPASS. O principal risco técnico é a dependência de fallback em memória quando Supabase não está configurado.
 
 ---
 
@@ -239,15 +248,15 @@ O Dashboard Power BI é uma plataforma web interna de relatórios e BI em estado
 
 ## 6. Pendências Atuais
 
-| Pendência                                                | Área      | Prioridade | Próxima ação                                            |
-| -------------------------------------------------------- | --------- | ---------- | ------------------------------------------------------- |
-| F-01: Typecheck API — mock incompleto em retention.spec  | Qualidade | Média      | Completar mock de ExportsService no spec                |
-| F-02: Teste API — ConfigService sem método get() no mock | Qualidade | Média      | Adicionar mock de get() no ConfigService do spec        |
-| F-10: Lint — 25 achados reais                            | Qualidade | Média      | **Resolvido em 2026-08-25** com `pnpm lint`             |
-| F-11: Format — 387 arquivos com formatação incorreta     | Qualidade | Baixa      | **Resolvido em 2026-08-25** com `pnpm format`           |
-| F-12: Redis — spam de erros ECONNREFUSED sem Redis local | Infra     | Média      | Silenciar erros de conexão Redis quando não configurado |
-| Drill-down multi-dimensão                                | BI        | Média      | Já implementado mas dimensão pode ser mais flexível     |
-| Expansão dos testes E2E (Playwright)                     | Qualidade | Média      | Ampliar cobertura para exportação, admin CRUD e 2FA     |
+| Pendência                                                | Área      | Prioridade | Próxima ação                                                       |
+| -------------------------------------------------------- | --------- | ---------- | ------------------------------------------------------------------ |
+| F-01: Typecheck API — mock incompleto em retention.spec  | Qualidade | Média      | Completar mock de ExportsService no spec                           |
+| F-02: Teste API — ConfigService sem método get() no mock | Qualidade | Média      | Adicionar mock de get() no ConfigService do spec                   |
+| F-10: Lint — 25 achados reais                            | Qualidade | Média      | **Resolvido em 2026-08-25** com `pnpm lint`                        |
+| F-11: Format — 387 arquivos com formatação incorreta     | Qualidade | Baixa      | **Resolvido em 2026-08-25** com `pnpm format`                      |
+| F-12: Redis — spam de erros ECONNREFUSED sem Redis local | Infra     | Média      | Silenciar erros de conexão Redis quando não configurado            |
+| Drill-down multi-dimensão                                | BI        | Média      | Já implementado mas dimensão pode ser mais flexível                |
+| Expansão dos testes E2E (Playwright)                     | Qualidade | Média      | **Resolvido em 2026-08-25** com 16 testes contra Web 3000/API 3001 |
 
 ---
 
@@ -261,19 +270,20 @@ O Dashboard Power BI é uma plataforma web interna de relatórios e BI em estado
 
 ## 8. Riscos Técnicos
 
-| Risco                                                    | Impacto | Mitigação                                                  |
-| -------------------------------------------------------- | ------- | ---------------------------------------------------------- |
-| Fallback em memória perde dados ao reiniciar             | Alto    | Garantir Supabase configurado em produção                  |
-| Fila em memória não suporta múltiplas instâncias         | Baixo   | BullMQ + Redis já implementados com fallback               |
-| `pnpm typecheck` falha sem artefatos de build do Next.js | Baixo   | Rodar `pnpm build` antes do typecheck                      |
-| Testes E2E configurados (Playwright)                     | Baixo   | 7 testes E2E base em `tests/e2e/`, validados em 2026-08-25 |
+| Risco                                                    | Impacto | Mitigação                                                                     |
+| -------------------------------------------------------- | ------- | ----------------------------------------------------------------------------- |
+| Fallback em memória perde dados ao reiniciar             | Alto    | Garantir Supabase configurado em produção                                     |
+| Fila em memória não suporta múltiplas instâncias         | Baixo   | BullMQ + Redis já implementados com fallback                                  |
+| `pnpm typecheck` falha sem artefatos de build do Next.js | Baixo   | Rodar `pnpm build` antes do typecheck                                         |
+| Testes E2E configurados (Playwright)                     | Baixo   | 16 testes em `tests/e2e/`, com credenciais administrativas somente em runtime |
 
 ---
 
 ## 9. Próximos Passos
 
-1. Validação final de aderência ao escopo V1.
-2. Validar com `pnpm verify:docs`, `pnpm typecheck`, `pnpm test`, `pnpm build`.
+1. Adicionar o step de build no CI (P1-04).
+2. Validar a integração Oracle/COMPASS quando a infraestrutura fornecer acesso somente leitura.
+3. Preservar a suíte E2E com `pnpm test:e2e:playwright` e credenciais somente em runtime.
 
 ---
 

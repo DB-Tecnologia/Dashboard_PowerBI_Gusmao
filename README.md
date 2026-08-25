@@ -183,6 +183,22 @@ pnpm docker:dev
 pnpm docker:demo
 ```
 
+### Testes E2E com Playwright
+
+Os testes E2E executam contra a Web em `http://localhost:3000` e a API demo em `http://localhost:3001`. O conjunto atual exige credenciais fornecidas somente no ambiente de execução:
+
+- `E2E_EMAIL` e `E2E_PASSWORD` para o usuário comum.
+- `E2E_ADMIN_EMAIL`, `E2E_ADMIN_PASSWORD` e `E2E_ADMIN_TOTP_SECRET` para os cenários administrativos e 2FA.
+- `E2E_BASE_URL` e `E2E_API_URL` podem substituir as URLs locais padrão.
+
+Configure essas variáveis em um gerenciador de segredos ou no shell local, sem salvá-las em arquivos versionados, e execute:
+
+```bash
+pnpm test:e2e:playwright
+```
+
+Os testes falham explicitamente quando as credenciais administrativas não são fornecidas. O segredo TOTP é usado apenas para gerar códigos temporários durante a execução e nunca deve aparecer em logs, documentação ou commits.
+
 ## Desenvolvimento sem Docker
 
 ```bash

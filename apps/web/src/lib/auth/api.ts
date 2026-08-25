@@ -1,4 +1,5 @@
 import { AuthClientError } from './errors';
+import { getAuthSession } from './session';
 import { getCsrfHeader } from '@/lib/csrf';
 
 export type LoginResponse = {
@@ -106,15 +107,33 @@ export function loginWithTotp(tempToken: string, code: string): Promise<LoginRes
 }
 
 export function setupTotp(): Promise<{ secret: string; otpauthUrl: string }> {
-  return post<{ secret: string; otpauthUrl: string }>('/auth/totp/setup', {});
+  const session = getAuthSession();
+
+  return post<{ secret: string; otpauthUrl: string }>(
+    '/auth/totp/setup',
+    {},
+    session ? { Authorization: `${session.tokenType} ${session.accessToken}` } : undefined,
+  );
 }
 
 export function verifyTotpSetup(code: string): Promise<{ enabled: true }> {
-  return post<{ enabled: true }>('/auth/totp/verify', { code });
+  const session = getAuthSession();
+
+  return post<{ enabled: true }>(
+    '/auth/totp/verify',
+    { code },
+    session ? { Authorization: `${session.tokenType} ${session.accessToken}` } : undefined,
+  );
 }
 
 export function disableTotp(code: string, password: string): Promise<{ disabled: true }> {
-  return post<{ disabled: true }>('/auth/totp/disable', { code, password });
+  const session = getAuthSession();
+
+  return post<{ disabled: true }>(
+    '/auth/totp/disable',
+    { code, password },
+    session ? { Authorization: `${session.tokenType} ${session.accessToken}` } : undefined,
+  );
 }
 
 export function refreshSession(refreshToken: string): Promise<LoginResponse> {

@@ -32,7 +32,7 @@ O ambiente demo local é o principal critério de validação atual. Ele usa SQL
 **Nível de prontidão atual:**
 
 - **Desenvolvimento local:** pronto para validação reproduzível com Docker demo.
-- **Qualidade automatizada:** gates de lint, formatação, typecheck, testes, build, documentação, ambiente, Docker e E2E aprovados no último ciclo concluído.
+- **Qualidade automatizada:** gates de lint, formatação, typecheck, testes, build, documentação, ambiente, Docker e E2E aprovados no último ciclo concluído; a suíte Playwright atual tem 16 testes aprovados.
 - **Produção:** não liberada; a exigência da chave TOTP no boot foi concluída, mas ainda faltam integração Oracle/COMPASS, hardening operacional, SMTP real e demais itens do roadmap.
 - **BI de produção:** ainda não reconciliado com a fonte Oracle; não declarar KPIs produtivos como validados antes do smoke test e da reconciliação.
 
@@ -40,8 +40,8 @@ O ambiente demo local é o principal critério de validação atual. Ele usa SQL
 
 - Branch de trabalho: `main`.
 - Remote esperado: `origin` apontando para `DB-Tecnologia/Dashboard_PowerBI_Gusmao`.
-- Último ciclo funcional concluído antes desta tarefa: `6b92afe` (`docs: criar memoria persistida do projeto`).
-- A memória é criada neste ciclo. O hash do próprio commit será comunicado na entrega e incorporado no próximo snapshot, evitando referência circular.
+- Último commit publicado antes desta tarefa: `aca4c2d` (`security: exigir chave TOTP no boot de producao`).
+- O hash do commit desta tarefa será comunicado na entrega e incorporado no próximo snapshot, evitando referência circular.
 
 ## Produto, stack e topologia
 
@@ -162,6 +162,8 @@ Essas evidências comprovam a base demo e a qualidade do código no ciclo regist
 | 2026-08-25 | Prettier e ESLint são gates obrigatórios                            | Reduzir variação de revisão e falhas estáticas                            | Formatação e lint passaram a ser evidências de entrega                  |
 | 2026-08-25 | Memória persistida separada de contexto e diário                    | Reduzir perda de contexto sem misturar decisão atual com histórico formal | Agentes recebem um pacote de handoff consolidado                        |
 | 2026-08-25 | Produção falha sem `TOTP_ENCRYPTION_KEY`                            | Impedir armazenamento de secrets TOTP em texto simples                    | O provider falha antes do `listen`; dev/teste preservam compatibilidade |
+| 2026-08-25 | Credenciais E2E administrativas ficam apenas no runtime             | Permitir cobertura real de admin/2FA sem versionar secrets                | Helpers falham explicitamente sem as variáveis obrigatórias             |
+| 2026-08-25 | Cliente Web envia Bearer nas operações autenticadas de 2FA          | Corrigir chamadas de perfil que chegavam à API sem autenticação           | Setup, verificação e desativação 2FA passam a funcionar no navegador    |
 
 ## Linha do tempo de tarefas
 
@@ -219,16 +221,26 @@ Essas evidências comprovam a base demo e a qualidade do código no ciclo regist
 - **Commit/push:** será comunicado na entrega e publicado em `origin/main`.
 - **Próximos passos:** iniciar a próxima tarefa lendo esta memória e confirmar seu snapshot contra o runtime e o Git.
 
+### 2026-08-25 — P1-03: expandir testes E2E de administração, exportações e 2FA
+
+- **Objetivo:** elevar a cobertura Playwright para os fluxos críticos de autenticação, administração, exportação e 2FA.
+- **Áreas/arquivos:** `tests/e2e/helpers.ts`, `tests/e2e/auth-dashboard.spec.ts`, `tests/e2e/admin.spec.ts`, `tests/e2e/exports.spec.ts`, `tests/e2e/totp.spec.ts`, `apps/web/src/lib/auth/api.ts` e `apps/api/src/auth/dto/totp-setup.dto.ts`, além da documentação vigente.
+- **Validações:** 16/16 testes Playwright aprovados contra Web `3000` e API demo `3001`; a suíte inclui os 7 cenários base, 5 administrativos, 3 de exportação e 1 ciclo completo de 2FA.
+- **Limitações/riscos:** credenciais administrativas dependem de variáveis seguras em runtime; o histórico de exportações usa dados demonstrativos quando `NEXT_PUBLIC_USE_MOCK_DATA=true`; Oracle/COMPASS não foi exercitado.
+- **Segurança:** nenhum segredo, token, senha, código TOTP ou `.env` real foi adicionado ao repositório.
+- **Commit/push:** será criado com a mensagem `test: expandir testes E2E de administracao exportacoes e 2fa` e publicado em `origin/main`; o hash será comunicado na entrega e consolidado no próximo snapshot.
+- **Próximos passos:** P1-04, adicionar o step de build no CI.
+
 ## Pendências e bloqueios
 
-| Item                                         | Estado                               | Impacto                                                                     |
-| -------------------------------------------- | ------------------------------------ | --------------------------------------------------------------------------- |
-| Integração Oracle/COMPASS                    | Bloqueada por infraestrutura         | Não há conexão produtiva nem reconciliação de KPIs                          |
-| Smoke queries e data de corte                | Pendente                             | Sem prova de consistência dos indicadores reais                             |
-| Atualização idempotente e ledger de execução | Pendente                             | Frescor, watermark e último snapshot ainda precisam de fechamento produtivo |
-| E2E expandido                                | Pendente em P1-03                    | Cobertura de filtros, exportação, administração e 2FA ainda é limitada      |
-| SMTP real                                    | Pendente em P1-05                    | Notificações produtivas continuam dependendo do modo mock                   |
-| TLS, backup, rollback e logs operacionais    | Pendentes em P0-01/P1-06/P1-07/P1-08 | Hardening e operação de produção não concluídos                             |
+| Item                                         | Estado                               | Impacto                                                                                 |
+| -------------------------------------------- | ------------------------------------ | --------------------------------------------------------------------------------------- |
+| Integração Oracle/COMPASS                    | Bloqueada por infraestrutura         | Não há conexão produtiva nem reconciliação de KPIs                                      |
+| Smoke queries e data de corte                | Pendente                             | Sem prova de consistência dos indicadores reais                                         |
+| Atualização idempotente e ledger de execução | Pendente                             | Frescor, watermark e último snapshot ainda precisam de fechamento produtivo             |
+| E2E expandido                                | Concluído em P1-03                   | 16 testes aprovados; histórico de exportação demo ainda depende de dados demonstrativos |
+| SMTP real                                    | Pendente em P1-05                    | Notificações produtivas continuam dependendo do modo mock                               |
+| TLS, backup, rollback e logs operacionais    | Pendentes em P0-01/P1-06/P1-07/P1-08 | Hardening e operação de produção não concluídos                                         |
 
 ## Protocolo de atualização
 

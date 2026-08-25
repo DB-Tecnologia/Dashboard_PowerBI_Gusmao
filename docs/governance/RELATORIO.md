@@ -5,6 +5,32 @@
 
 > As entradas anteriores a 24/08/2026 preservam os caminhos da estrutura documental vigente na data de cada registro. A estrutura atual e mantida em `docs/INDEX.md`; referencias historicas abaixo nao representam arquivos ausentes.
 
+## 2026-08-25 — P1-03: expansão dos testes E2E
+
+### Entrega
+
+- A cobertura Playwright passou de 7 para 16 testes aprovados contra a Web em `http://localhost:3000` e a API demo em `http://localhost:3001`.
+- Foram preservados os fluxos de login válido, login inválido, logout, dashboard, drill-down, seletor de dimensão e catálogo de relatórios.
+- Foram adicionados testes para login administrativo com TOTP válido e inválido, bloqueio de usuário comum, listas administrativas de usuários e grupos, criação/exclusão de grupo temporário, consulta de relatório, modal e solicitação de exportação, histórico/download e ciclo completo de 2FA.
+- Os helpers reutilizáveis exigem `E2E_ADMIN_EMAIL`, `E2E_ADMIN_PASSWORD` e `E2E_ADMIN_TOTP_SECRET` somente em runtime. As variáveis não foram adicionadas a arquivos, documentação ou logs versionados.
+
+### Correções encontradas pelo E2E
+
+- Os DTOs de login, verificação e desativação TOTP passaram a declarar os campos esperados pelo `ValidationPipe` com whitelist, evitando que os payloads fossem rejeitados ou esvaziados.
+- O cliente Web passou a enviar o Bearer da sessão nas operações autenticadas de configuração, verificação e desativação 2FA.
+- O fixture de grupos obtém o cookie CSRF pelo contexto do navegador e envia o mesmo token no cadastro; a proteção CSRF da API foi preservada.
+
+### Validações e limitações
+
+- `pnpm test:e2e:playwright`: **16/16 aprovados**.
+- A suíte demo valida a solicitação de exportação e a tela de histórico/download. Como `NEXT_PUBLIC_USE_MOCK_DATA=true`, o histórico exibido usa dados demonstrativos e não comprova a reconciliação entre o job recém-criado e um armazenamento persistente.
+- O ciclo 2FA limpa o estado temporário ao final, desativando o segundo fator ativado pelo teste.
+- `pnpm verify:workspace`, `pnpm verify:env`, `pnpm verify:docker`, `pnpm verify:docs`, `pnpm lint`, `pnpm format:check`, `pnpm typecheck`, `pnpm build` e `pnpm quality` passaram.
+- `pnpm test` passou integralmente na API com 48 suites e 313 testes. Na Web, 42 suites e 140 testes passaram; 2 asserções preexistentes de `src/components/reports/report-advanced-filters.test.tsx` continuam falhando por interação/validação de campos de data e foram mantidas fora do escopo.
+- `git diff --check` passou. A auditoria confirmou que `docs/archive/` não foi alterado, não há `test.skip` na nova cobertura, nenhum `.env` real ou secret foi incluído e o artefato `apps/web/tsconfig.tsbuildinfo` será restaurado antes do commit.
+- Nenhum secret, token, senha, código TOTP, `.env` real ou artefato gerado será versionado.
+- **Commit/push:** será criado com a mensagem `test: expandir testes E2E de administracao exportacoes e 2fa` e publicado em `origin/main`; o hash final será comunicado na entrega e consolidado no próximo snapshot.
+
 ## 2026-08-25 — Hardening P0-04 da chave TOTP
 
 - `TotpEncryptionService` passou a interromper a inicialização de produção quando `TOTP_ENCRYPTION_KEY` está ausente, vazia ou composta apenas por espaços.

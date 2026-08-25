@@ -187,7 +187,8 @@ Uma tarefa só é considerada pronta quando:
 - ✅ P1-02 concluído: formatação padronizada nos 387 arquivos identificados pelo Prettier; `pnpm format:check` aprovado em 2026-08-25.
 - ✅ P1-01 concluído: lint corrigido em 2026-08-25; `pnpm lint` passou com zero erros e zero avisos após a exclusão recursiva de artefatos gerados e a correção dos 25 achados reais.
 - ✅ P0-04 concluído: API rejeita boot de produção sem `TOTP_ENCRYPTION_KEY`; desenvolvimento e testes preservam o fallback controlado.
-- ⏳ P1-03 permanece separado: ampliar a cobertura para exportação, CRUD administrativo e 2FA.
+- ✅ P1-03 concluído: 16 testes E2E aprovados em 2026-08-25, cobrindo autenticação, dashboard, drill-down, relatórios, administração, exportação e 2FA.
+- ⚠️ A suíte demo valida o histórico de exportações com dados demonstrativos; a reconciliação do job criado com o histórico persistido depende do modo real de dados.
 - ✅ Contrato BI v1 com fonte, frescor, filtros, resumo de produção Oracle e refresh idempotente.
 - ⏳ Oracle/COMPASS bloqueado até receber rede, host, service name e credencial somente leitura.
 - ⏳ Smoke queries de algodão, algodoeira e romaneios, reconciliação de KPIs e persistência durável do ledger de refresh.
