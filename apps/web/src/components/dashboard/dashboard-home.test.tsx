@@ -55,7 +55,7 @@ describe('DashboardHome', () => {
         },
         {
           id: 'sla',
-          title: 'SLA operacional',
+          title: 'Talhoes monitorados',
           businessArea: 'algodoeira',
           sector: 'Operacoes',
           value: 0.92,
@@ -141,19 +141,22 @@ describe('DashboardHome', () => {
     });
   });
 
-  it('renderiza a aba executiva como padrao com hero, timeline e destaques', async () => {
+  it('renderiza a aba executiva com métricas únicas, linha do tempo e destaques', async () => {
     render(<DashboardHome />);
 
-    expect(await screen.findByRole('heading', { name: 'Dashboard Home' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: 'Visão geral' })).toBeInTheDocument();
     expect(screen.getByRole('tab', { name: 'Executiva' })).toHaveAttribute('aria-selected', 'true');
     expect(screen.getByRole('tab', { name: 'Analítica' })).toBeInTheDocument();
     expect(screen.getByRole('tab', { name: 'Operacional' })).toBeInTheDocument();
-    expect(screen.getByText('Principal destaque do periodo')).toBeInTheDocument();
     expect(screen.getByText('Linha do tempo principal')).toBeInTheDocument();
-    expect(screen.getByText('Maiores destaques')).toBeInTheDocument();
+    expect(screen.getByText('Destaques do período')).toBeInTheDocument();
+    expect(screen.getAllByText('KPIs monitorados')).toHaveLength(1);
+    expect(screen.getAllByText('Áreas cobertas')).toHaveLength(1);
+    expect(screen.getAllByText('Variação média')).toHaveLength(1);
     expect(screen.getAllByText('Receita mensal').length).toBeGreaterThan(0);
     expect(screen.getAllByText('Leads qualificados').length).toBeGreaterThan(0);
-    expect(screen.getAllByText('SLA operacional').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Talhões monitorados').length).toBeGreaterThan(0);
+    expect(screen.queryByText('Talhoes monitorados')).not.toBeInTheDocument();
   });
 
   it('identifica os indicadores ficticios quando a demonstracao esta ativa', async () => {
@@ -195,7 +198,7 @@ describe('DashboardHome', () => {
     render(<DashboardHome />);
 
     await user.click(
-      await screen.findByRole('button', { name: /abrir drilldown receita mensal/i }),
+      await screen.findByRole('button', { name: /abrir detalhamento de receita mensal/i }),
     );
 
     expect(fetchDashboardDrilldown).toHaveBeenCalledWith('receita', undefined);
@@ -213,11 +216,11 @@ describe('DashboardHome', () => {
     render(<DashboardHome />);
 
     await user.click(
-      await screen.findByRole('button', { name: /abrir drilldown receita mensal/i }),
+      await screen.findByRole('button', { name: /abrir detalhamento de receita mensal/i }),
     );
 
     expect(await screen.findByText('Drill-down · Receita mensal')).toBeInTheDocument();
-    expect(screen.getByLabelText('Breadcrumb')).toBeInTheDocument();
+    expect(screen.getByLabelText('Navegação estrutural')).toBeInTheDocument();
     expect(screen.getByRole('tab', { name: 'Fazenda' })).toHaveAttribute('aria-selected', 'true');
     expect(screen.getByRole('tab', { name: 'Cultura' })).toBeInTheDocument();
     expect(screen.getByRole('tab', { name: 'Tempo' })).toBeInTheDocument();
@@ -229,7 +232,7 @@ describe('DashboardHome', () => {
     render(<DashboardHome />);
 
     await user.click(
-      await screen.findByRole('button', { name: /abrir drilldown receita mensal/i }),
+      await screen.findByRole('button', { name: /abrir detalhamento de receita mensal/i }),
     );
 
     await screen.findByText('Drill-down · Receita mensal');
@@ -268,9 +271,9 @@ describe('DashboardHome', () => {
     await user.click(await screen.findByRole('tab', { name: 'Analítica' }));
 
     expect(screen.getByRole('tab', { name: 'Analítica' })).toHaveAttribute('aria-selected', 'true');
-    expect(screen.getByText('Distribuicao por setor')).toBeInTheDocument();
-    expect(screen.getByText('Performance dos KPIs')).toBeInTheDocument();
-    expect(screen.getByText('Timeline comparativa')).toBeInTheDocument();
+    expect(screen.getByText('Distribuição por setor')).toBeInTheDocument();
+    expect(screen.getByText('Variação dos indicadores')).toBeInTheDocument();
+    expect(screen.getByText('Série histórica comparativa')).toBeInTheDocument();
 
     await user.click(screen.getByRole('tab', { name: 'Operacional' }));
 
@@ -279,7 +282,7 @@ describe('DashboardHome', () => {
       'true',
     );
     expect(screen.getByText('Acompanhamento operacional')).toBeInTheDocument();
-    expect(screen.getByText('Itens que pedem atencao')).toBeInTheDocument();
+    expect(screen.getByText('Itens que pedem atenção')).toBeInTheDocument();
     expect(fetchDashboardHome).toHaveBeenCalledTimes(1);
   });
 });

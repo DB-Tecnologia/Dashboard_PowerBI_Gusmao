@@ -22,7 +22,7 @@ describe('PieChartWidget', () => {
   it('renderiza titulo e descricao', () => {
     render(
       <PieChartWidget
-        title="Distribuicao"
+        title="Distribuição"
         description="Por setor"
         data={sampleData}
         nameKey="sector"
@@ -30,7 +30,7 @@ describe('PieChartWidget', () => {
       />,
     );
 
-    expect(screen.getByText('Distribuicao')).toBeInTheDocument();
+    expect(screen.getByText('Distribuição')).toBeInTheDocument();
     expect(screen.getByText('Por setor')).toBeInTheDocument();
   });
 

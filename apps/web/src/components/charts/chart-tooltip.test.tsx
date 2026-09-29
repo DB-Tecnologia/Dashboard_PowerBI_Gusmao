@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react';
 import { ChartTooltip } from './chart-tooltip';
 
 describe('ChartTooltip', () => {
-  it('retorna null quando nao esta ativo', () => {
+  it('retorna null quando não está ativo', () => {
     const { container } = render(<ChartTooltip active={false} payload={[]} />);
     expect(container.firstChild).toBeNull();
   });

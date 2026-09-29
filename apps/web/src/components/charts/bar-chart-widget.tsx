@@ -21,12 +21,12 @@ export function BarChartWidget({
   data,
   xKey,
   yKey,
-  color = '#1d4ed8',
+  color = 'hsl(var(--chart-forest))',
   unit = 'number',
   onBarClick,
 }: BarChartWidgetProps) {
   return (
-    <Card>
+    <Card className="h-full">
       <CardHeader>
         <CardTitle>{title}</CardTitle>
         <CardDescription>{description}</CardDescription>
@@ -34,9 +34,22 @@ export function BarChartWidget({
       <CardContent>
         <ResponsiveContainer width="100%" height={280}>
           <BarChart data={data}>
-            <CartesianGrid strokeDasharray="3 3" vertical={false} />
-            <XAxis dataKey={xKey} tick={{ fontSize: 12 }} />
-            <YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
+            <CartesianGrid stroke="hsl(var(--chart-grid))" strokeDasharray="4 4" vertical={false} />
+            <XAxis
+              dataKey={xKey}
+              tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }}
+              tickLine={false}
+              axisLine={false}
+              interval="preserveStartEnd"
+              tickMargin={10}
+            />
+            <YAxis
+              tick={{ fontSize: 13, fill: 'hsl(var(--muted-foreground))' }}
+              tickLine={false}
+              axisLine={false}
+              allowDecimals={false}
+              width={48}
+            />
             <Tooltip content={<ChartTooltip unit={unit} />} />
             <Bar
               dataKey={yKey}

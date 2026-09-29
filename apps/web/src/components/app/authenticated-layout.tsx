@@ -9,7 +9,7 @@ import { useInactivityTimeout } from '@/lib/auth/use-inactivity-timeout';
 import { apiGet } from '@/lib/admin-api';
 
 import { AppHeader } from './app-header';
-import { AppSidebar } from './app-sidebar';
+import { AppMobileNavigation, AppSidebar } from './app-sidebar';
 
 type AuthenticatedLayoutProps = {
   children: ReactNode;
@@ -53,10 +53,10 @@ function TwoFactorEnforcement({ children }: { children: ReactNode }) {
 
   if (!checked) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-slate-950 px-4">
+      <main className="flex min-h-screen items-center justify-center bg-primary px-4">
         <div
           role="status"
-          className="rounded-2xl border border-slate-800 bg-white px-6 py-5 text-sm font-medium text-slate-700 shadow-xl"
+          className="rounded-2xl border border-border bg-white px-6 py-5 text-sm font-medium text-foreground shadow-panel"
         >
           Verificando autenticação...
         </div>
@@ -69,17 +69,25 @@ function TwoFactorEnforcement({ children }: { children: ReactNode }) {
 
 export function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
   const router = useRouter();
+  const [isMobileNavigationOpen, setIsMobileNavigationOpen] = useState(false);
 
   useInactivityTimeout(() => router.replace('/login'));
 
   return (
     <AuthGuard>
       <TwoFactorEnforcement>
-        <div className="min-h-screen bg-slate-100 md:flex">
+        <div className="min-h-screen bg-background text-foreground lg:flex">
           <AppSidebar />
           <div className="min-w-0 flex-1">
-            <AppHeader />
-            <main className="p-6">{children}</main>
+            <AppHeader
+              isMobileNavigationOpen={isMobileNavigationOpen}
+              onMobileNavigationToggle={() => setIsMobileNavigationOpen((isOpen) => !isOpen)}
+            />
+            <AppMobileNavigation
+              isOpen={isMobileNavigationOpen}
+              onNavigate={() => setIsMobileNavigationOpen(false)}
+            />
+            <main className="p-4 sm:p-6">{children}</main>
           </div>
         </div>
       </TwoFactorEnforcement>

@@ -18,17 +18,17 @@ export function ChartTooltip({ active, payload, label, unit = 'number' }: ChartT
   }
 
   return (
-    <div className="rounded-lg border border-slate-200 bg-white p-3 shadow-lg">
-      <p className="mb-2 text-xs font-semibold text-slate-500">{label}</p>
+    <div className="rounded-xl border border-border bg-white p-3 shadow-panel">
+      <p className="mb-2 text-sm font-semibold text-muted-foreground">{label}</p>
       <div className="space-y-1">
         {payload.map((entry, index) => (
           <div key={index} className="flex items-center gap-2">
             <span
-              className="inline-block h-2 w-2 rounded-full"
+              className="inline-block h-2.5 w-2.5 shrink-0 rounded-full ring-1 ring-black/10"
               style={{ backgroundColor: entry.color }}
             />
-            <span className="text-xs text-slate-600">{entry.name}:</span>
-            <span className="text-xs font-medium text-slate-950">
+            <span className="text-sm text-muted-foreground">{entry.name}:</span>
+            <span className="text-sm font-semibold text-foreground">
               {formatKpiValue({ value: entry.value, unit })}
             </span>
           </div>

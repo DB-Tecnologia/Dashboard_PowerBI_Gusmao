@@ -22,6 +22,7 @@ import {
   calculateKpiDelta,
   formatDelta,
   formatKpiValue,
+  localizeKpiLabel,
   type BusinessArea,
   type KpiItem,
 } from '@/lib/kpis';
@@ -187,12 +188,12 @@ export function DashboardHome({ kpis: initialKpis }: DashboardHomeProps) {
     })) ?? [];
   const distributionData =
     home?.charts.sectorDistribution.map((item) => ({
-      sector: item.sector,
+      sector: localizeKpiLabel(item.sector),
       total: item.total,
     })) ?? [];
   const performanceData =
     home?.charts.kpiPerformance.slice(0, 6).map((item) => ({
-      title: item.title,
+      title: localizeKpiLabel(item.title),
       delta: item.delta,
     })) ?? [];
   const operationalItems = [...rankedKpis]
@@ -209,7 +210,7 @@ export function DashboardHome({ kpis: initialKpis }: DashboardHomeProps) {
       const response = await fetchDashboardDrilldown(kpiId, dimension);
       setActiveDrilldown(response);
     } catch {
-      setErrorMessage('Nao foi possivel carregar o drill-down selecionado.');
+      setErrorMessage('Não foi possível carregar o detalhamento selecionado.');
     } finally {
       setIsDrilldownLoading(false);
     }
@@ -234,7 +235,7 @@ export function DashboardHome({ kpis: initialKpis }: DashboardHomeProps) {
       <Card className="border-dashed text-center">
         <CardHeader>
           <div
-            className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-slate-300 border-t-blue-700"
+            className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-border border-t-primary"
             aria-hidden="true"
           />
           <CardTitle>Carregando indicadores</CardTitle>
@@ -250,7 +251,7 @@ export function DashboardHome({ kpis: initialKpis }: DashboardHomeProps) {
 
   if (errorMessage && !home) {
     return (
-      <Card className="border-rose-200 bg-rose-50">
+      <Card className="border-danger/20 bg-danger/5">
         <CardHeader>
           <CardTitle>Falha ao carregar a home</CardTitle>
           <CardDescription>{errorMessage}</CardDescription>
@@ -276,30 +277,35 @@ export function DashboardHome({ kpis: initialKpis }: DashboardHomeProps) {
     const activeDimensionLabel =
       activeDrilldown.availableDimensions.find((d) => d.dimension === activeDrilldown.dimension)
         ?.label ?? activeDrilldown.dimension;
+    const drilldownLabel = localizeKpiLabel(activeDrilldown.label);
+    const displayDimensionLabel = localizeKpiLabel(activeDimensionLabel);
 
     return (
       <section className="space-y-6" aria-labelledby="dashboard-drilldown-title">
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-          <nav className="flex items-center gap-1 text-sm text-slate-500" aria-label="Breadcrumb">
+        <div className="rounded-2xl border border-border bg-white p-5 shadow-card sm:p-6">
+          <nav
+            className="flex flex-wrap items-center gap-1 text-sm text-muted-foreground"
+            aria-label="Navegação estrutural"
+          >
             <button
               type="button"
               onClick={closeDrilldown}
-              className="font-medium text-blue-700 hover:underline"
+              className="font-medium text-primary hover:underline"
             >
               Home
             </button>
             <ChevronRight className="h-4 w-4" aria-hidden="true" />
-            <span className="font-medium text-slate-700">{activeDrilldown.label}</span>
+            <span className="font-medium text-foreground">{drilldownLabel}</span>
             <ChevronRight className="h-4 w-4" aria-hidden="true" />
-            <span className="font-semibold text-slate-950">{activeDimensionLabel}</span>
+            <span className="font-semibold text-foreground">{displayDimensionLabel}</span>
           </nav>
 
           <div className="mt-4 flex items-center justify-between">
             <h1
               id="dashboard-drilldown-title"
-              className="text-3xl font-bold tracking-tight text-slate-950"
+              className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl"
             >
-              {`Drill-down · ${activeDrilldown.label}`}
+              {`Drill-down · ${drilldownLabel}`}
             </h1>
             <Button variant="outline" onClick={closeDrilldown} aria-label="Voltar ao resumo">
               <ArrowLeft className="mr-2 h-4 w-4" />
@@ -324,11 +330,11 @@ export function DashboardHome({ kpis: initialKpis }: DashboardHomeProps) {
                     onClick={() => void switchDimension(dim.dimension)}
                     className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
                       isActive
-                        ? 'bg-blue-700 text-white'
-                        : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                        ? 'bg-primary text-primary-foreground'
+                        : 'bg-muted text-foreground hover:bg-border'
                     }`}
                   >
-                    {dim.label}
+                    {localizeKpiLabel(dim.label)}
                   </button>
                 );
               })}
@@ -340,7 +346,7 @@ export function DashboardHome({ kpis: initialKpis }: DashboardHomeProps) {
           <Card className="border-dashed text-center">
             <CardHeader>
               <div
-                className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-slate-300 border-t-blue-700"
+                className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-border border-t-primary"
                 aria-hidden="true"
               />
               <CardTitle>Carregando drill-down</CardTitle>
@@ -353,7 +359,7 @@ export function DashboardHome({ kpis: initialKpis }: DashboardHomeProps) {
             <CardHeader>
               <CardTitle>Dados insuficientes</CardTitle>
               <CardDescription>
-                Nao ha dados para esta dimensao no periodo selecionado.
+                Não há dados para esta dimensão no período selecionado.
               </CardDescription>
             </CardHeader>
           </Card>
@@ -371,32 +377,34 @@ export function DashboardHome({ kpis: initialKpis }: DashboardHomeProps) {
                   {activeDrilldown.series.map((item) => (
                     <div
                       key={item.label}
-                      className="rounded-xl border border-slate-200 bg-slate-50 p-4"
+                      className="rounded-xl border border-border bg-background p-4"
                     >
-                      <p className="text-sm font-semibold text-slate-500">
+                      <p className="text-sm font-semibold text-muted-foreground">
                         {item.label === 'Atual' ? 'Atual' : 'Valor anterior'}
                       </p>
-                      <p className="mt-2 text-2xl font-bold text-slate-950">{item.value}</p>
+                      <p className="mt-2 text-2xl font-bold text-foreground">{item.value}</p>
                     </div>
                   ))}
                 </CardContent>
               </Card>
               <Card>
                 <CardHeader>
-                  <CardTitle>Detalhamento por {activeDimensionLabel}</CardTitle>
-                  <CardDescription>Evolucao do drill-down carregado</CardDescription>
+                  <CardTitle>Detalhamento por {displayDimensionLabel}</CardTitle>
+                  <CardDescription>Evolução do detalhamento carregado</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   {activeDrilldown.rows.map((row) => (
                     <div
                       key={row.period}
-                      className="rounded-xl border border-slate-200 bg-slate-50 p-4"
+                      className="rounded-xl border border-border bg-background p-4"
                     >
                       <div className="flex items-center justify-between gap-3">
-                        <p className="font-semibold text-slate-950">{row.period}</p>
-                        <p className="text-lg font-bold text-slate-950">{row.value}</p>
+                        <p className="font-semibold text-foreground">{row.period}</p>
+                        <p className="text-lg font-bold text-foreground">{row.value}</p>
                       </div>
-                      <p className="mt-1 text-xs text-slate-500">Delta {formatDelta(row.delta)}</p>
+                      <p className="mt-1 text-sm text-muted-foreground">
+                        Variação {formatDelta(row.delta)}
+                      </p>
                     </div>
                   ))}
                 </CardContent>
@@ -407,20 +415,22 @@ export function DashboardHome({ kpis: initialKpis }: DashboardHomeProps) {
               <CardHeader>
                 <CardTitle>Itens do drill-down</CardTitle>
                 <CardDescription>
-                  Top grupos por {activeDimensionLabel.toLowerCase()} retornados pela API.
+                  Top grupos por {displayDimensionLabel.toLowerCase()} retornados pela API.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
                 {activeDrilldown.rows.map((row) => (
                   <div
                     key={row.period}
-                    className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-4 py-3"
+                    className="flex items-center justify-between gap-3 rounded-xl border border-border bg-background px-4 py-3"
                   >
                     <div>
-                      <p className="font-semibold text-slate-950">{row.period}</p>
-                      <p className="text-xs text-slate-500">Delta {formatDelta(row.delta)}</p>
+                      <p className="font-semibold text-foreground">{row.period}</p>
+                      <p className="text-sm text-muted-foreground">
+                        Variação {formatDelta(row.delta)}
+                      </p>
                     </div>
-                    <p className="text-lg font-bold text-slate-950">{row.value}</p>
+                    <p className="text-lg font-bold text-foreground">{row.value}</p>
                   </div>
                 ))}
               </CardContent>
@@ -432,48 +442,58 @@ export function DashboardHome({ kpis: initialKpis }: DashboardHomeProps) {
   }
 
   return (
-    <section className="space-y-6" aria-labelledby="dashboard-home-title">
-      <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-blue-700">
-          {isDemoMode ? 'Demonstração · Dados fictícios para visualização' : 'Home executiva'}
-        </p>
+    <section className="space-y-5" aria-labelledby="dashboard-home-title">
+      <div className="rounded-3xl border border-border bg-white p-5 shadow-card sm:p-7">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <span
+            className={`inline-flex items-center rounded-full border px-3 py-1.5 text-sm font-semibold ${
+              isDemoMode
+                ? 'border-warning/20 bg-warning/10 text-warning-text'
+                : 'border-primary/15 bg-primary/5 text-primary'
+            }`}
+          >
+            {isDemoMode ? 'Demonstração · Dados fictícios para visualização' : 'Painel executivo'}
+          </span>
+          <span className="inline-flex items-center gap-2 rounded-full bg-secondary/10 px-3 py-1.5 text-sm font-semibold text-secondary">
+            <CalendarDays className="h-4 w-4" aria-hidden="true" />
+            Histórico: últimos 12 meses
+          </span>
+        </div>
         <h1
           id="dashboard-home-title"
-          className="mt-3 text-3xl font-bold tracking-tight text-slate-950"
+          className="mt-5 text-3xl font-bold tracking-tight text-foreground sm:text-4xl"
         >
-          Dashboard Home
+          Visão geral
         </h1>
-        <p className="mt-4 max-w-3xl text-sm leading-6 text-slate-600">
+        <p className="mt-3 max-w-4xl text-base leading-7 text-muted-foreground">
           {isDemoMode
-            ? 'Visão executiva de Produção, Comercial e Algodoeira com dados fictícios e tendências ao longo de vários períodos.'
-            : 'Visão executiva de Produção, Comercial e Algodoeira com indicadores do período selecionado.'}
+            ? 'Evolução fictícia de Produção, Comercial e Algodoeira ao longo dos últimos 12 meses.'
+            : 'Indicadores de Produção, Comercial e Algodoeira no período selecionado.'}
         </p>
-        <div className="mt-3 inline-flex items-center gap-2 rounded-full bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-800">
-          <CalendarDays className="h-4 w-4" aria-hidden="true" />
-          <span>Histórico: últimos 12 meses</span>
-        </div>
-        {errorMessage ? <p className="mt-3 text-sm text-rose-600">{errorMessage}</p> : null}
+        {errorMessage ? (
+          <p className="mt-3 text-sm font-medium text-danger">{errorMessage}</p>
+        ) : null}
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         <SummaryCard
           icon={BarChart3}
           label="KPIs monitorados"
           value={String(home.summary.totalKpis)}
         />
-        <SummaryCard icon={Layers3} label="Areas cobertas" value={String(heroAreaCount)} />
+        <SummaryCard icon={Layers3} label="Áreas cobertas" value={String(heroAreaCount)} />
         <SummaryCard
           icon={TrendingUp}
-          label="Delta medio"
+          label="Variação média"
           value={formatDelta(home.summary.averageDelta)}
         />
       </div>
 
-      <div className="rounded-2xl border border-slate-200 bg-slate-950 p-2 shadow-sm">
+      <div className="rounded-2xl border border-border bg-primary p-2 shadow-panel">
         <div
           role="tablist"
-          aria-label="Modos da home de KPIs"
-          className="grid gap-2 md:grid-cols-3"
+          aria-label="Modos de visualização dos indicadores"
+          className="grid gap-2 sm:grid-cols-3"
         >
           {(Object.entries(TAB_LABELS) as Array<[DashboardTab, string]>).map(([tabId, label]) => {
             const isActive = activeTab === tabId;
@@ -488,19 +508,19 @@ export function DashboardHome({ kpis: initialKpis }: DashboardHomeProps) {
                 aria-controls={`panel-${tabId}`}
                 id={`tab-${tabId}`}
                 onClick={() => setActiveTab(tabId)}
-                className={`rounded-xl px-4 py-3 text-left transition ${
-                  isActive
-                    ? 'bg-white text-slate-950 shadow-sm'
-                    : 'text-slate-300 hover:bg-slate-900'
+                className={`rounded-xl px-4 py-3 text-left transition focus-visible:outline-white ${
+                  isActive ? 'bg-white text-primary shadow-sm' : 'text-white hover:bg-white/10'
                 }`}
               >
                 <p className="text-sm font-semibold">{label}</p>
-                <p className={`mt-1 text-xs ${isActive ? 'text-slate-500' : 'text-slate-400'}`}>
+                <p
+                  className={`mt-1 text-sm ${isActive ? 'text-muted-foreground' : 'text-white/80'}`}
+                >
                   {tabId === 'executiva'
-                    ? 'Leitura de topo para decisao rapida'
+                    ? 'Leitura executiva para decisão rápida'
                     : tabId === 'analitica'
-                      ? 'Graficos comparativos e linha do tempo'
-                      : 'Pendencias, variacoes e acompanhamento'}
+                      ? 'Gráficos comparativos e histórico'
+                      : 'Pendências, variações e acompanhamento'}
                 </p>
               </button>
             );
@@ -515,126 +535,20 @@ export function DashboardHome({ kpis: initialKpis }: DashboardHomeProps) {
           aria-labelledby="tab-executiva"
           className="space-y-6"
         >
-          <div className="grid gap-4 xl:grid-cols-[1.6fr_1fr]">
-            <Card className="overflow-hidden border-0 bg-gradient-to-br from-slate-950 via-slate-900 to-blue-900 text-white">
-              <CardContent className="grid gap-6 p-6 lg:grid-cols-[1.2fr_0.8fr]">
-                <div className="space-y-4">
-                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-200">
-                    Principal destaque do periodo
-                  </p>
-                  <div>
-                    <h2 className="text-3xl font-bold tracking-tight">
-                      {strongestPositive?.title ?? 'Sem destaque principal'}
-                    </h2>
-                    <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-200">
-                      {strongestPositive
-                        ? `${BUSINESS_AREA_LABEL[strongestPositive.businessArea ?? inferBusinessArea(strongestPositive.sector)]} lidera o periodo com ${formatDelta(strongestPositive.delta)} sobre a base anterior.`
-                        : 'Assim que houver historico, a home destaca o melhor movimento do periodo.'}
-                    </p>
-                  </div>
-                  <div className="grid gap-3 sm:grid-cols-3">
-                    <HighlightChip
-                      icon={BarChart3}
-                      label="KPIs monitorados"
-                      value={String(home.summary.totalKpis)}
-                    />
-                    <HighlightChip
-                      icon={Layers3}
-                      label="Areas cobertas"
-                      value={String(heroAreaCount)}
-                    />
-                    <HighlightChip
-                      icon={TrendingUp}
-                      label="Delta medio"
-                      value={formatDelta(home.summary.averageDelta)}
-                    />
-                  </div>
-                </div>
-                <div className="grid gap-3">
-                  <MetricCallout
-                    title="Maior avanco"
-                    value={strongestPositive ? formatDelta(strongestPositive.delta) : '0%'}
-                    description={strongestPositive?.title ?? 'Sem KPI'}
-                    tone="positive"
-                  />
-                  <MetricCallout
-                    title="Maior atencao"
-                    value={strongestNegative ? formatDelta(strongestNegative.delta) : '0%'}
-                    description={strongestNegative?.title ?? 'Sem KPI'}
-                    tone="negative"
-                  />
-                  <MetricCallout
-                    title="Mais estavel"
-                    value={mostStable ? formatDelta(mostStable.delta) : '0%'}
-                    description={mostStable?.title ?? 'Sem KPI'}
-                    tone="neutral"
-                  />
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Maiores destaques</CardTitle>
-                <CardDescription>
-                  Leitura curta para direcao e acompanhamento executivo.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {[
-                  strongestPositive
-                    ? { label: 'Maior avanco', kpi: strongestPositive, icon: TrendingUp }
-                    : null,
-                  strongestNegative
-                    ? { label: 'Maior atencao', kpi: strongestNegative, icon: TrendingDown }
-                    : null,
-                  mostStable ? { label: 'Mais estavel', kpi: mostStable, icon: Clock3 } : null,
-                ]
-                  .filter(
-                    (item): item is { label: string; kpi: RankedKpi; icon: LucideIcon } =>
-                      item !== null,
-                  )
-                  .map((item) => {
-                    const Icon = item.icon;
-
-                    return (
-                      <div
-                        key={item.label}
-                        className="rounded-2xl border border-slate-200 bg-slate-50 p-4"
-                      >
-                        <div className="flex items-center justify-between gap-3">
-                          <div>
-                            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-                              {item.label}
-                            </p>
-                            <p className="mt-2 text-lg font-bold text-slate-950">
-                              {item.kpi.title}
-                            </p>
-                          </div>
-                          <Icon className="h-5 w-5 text-slate-500" aria-hidden="true" />
-                        </div>
-                        <p className="mt-2 text-sm text-slate-600">{formatDelta(item.kpi.delta)}</p>
-                      </div>
-                    );
-                  })}
-              </CardContent>
-            </Card>
-          </div>
-
-          <div className="grid gap-4 xl:grid-cols-[1.4fr_1fr]">
+          <div className="grid gap-4 xl:grid-cols-[1.35fr_1fr]">
             {lineData.length > 0 ? (
               <LineChartWidget
                 title="Linha do tempo principal"
-                description={featuredHistory?.label ?? 'Timeline historica'}
+                description="Indicador atual em comparação ao período anterior."
                 data={lineData}
                 xKey="period"
                 unit={featuredHistory?.unit ?? 'number'}
                 series={[
-                  { dataKey: 'atual', name: 'Atual', color: '#2563eb' },
+                  { dataKey: 'atual', name: 'Atual', color: 'hsl(var(--chart-forest))' },
                   {
                     dataKey: 'anterior',
                     name: 'Anterior',
-                    color: '#94a3b8',
+                    color: 'hsl(var(--chart-slate))',
                     strokeDasharray: '6 4',
                   },
                 ]}
@@ -644,35 +558,95 @@ export function DashboardHome({ kpis: initialKpis }: DashboardHomeProps) {
                 <CardHeader>
                   <CardTitle>Linha do tempo principal</CardTitle>
                   <CardDescription>
-                    Serie historica ainda indisponivel para o KPI em destaque.
+                    Série histórica ainda indisponível para o indicador em destaque.
                   </CardDescription>
                 </CardHeader>
               </Card>
             )}
 
-            <Card>
+            <Card className="h-full">
               <CardHeader>
-                <CardTitle>Leitura por area</CardTitle>
-                <CardDescription>KPIs agrupados por frente de negocio.</CardDescription>
+                <CardTitle>Destaques do período</CardTitle>
+                <CardDescription>
+                  Movimentos que merecem atenção na leitura executiva.
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
-                {home.businessAreas.map((area) => (
-                  <div
-                    key={area.businessArea}
-                    className="rounded-2xl border border-slate-200 bg-slate-50 p-4"
-                  >
-                    <div className="flex items-center justify-between gap-3">
-                      <p className="font-semibold text-slate-950">{area.label}</p>
-                      <p className="text-sm font-bold text-slate-950">{area.total}</p>
-                    </div>
-                    <p className="mt-2 text-sm text-slate-600">
-                      Delta medio {formatDelta(area.averageDelta)}
-                    </p>
-                  </div>
-                ))}
+                {[
+                  strongestPositive
+                    ? {
+                        label: 'Maior avanço',
+                        kpi: strongestPositive,
+                        icon: TrendingUp,
+                        tone: 'positive' as const,
+                      }
+                    : null,
+                  strongestNegative
+                    ? {
+                        label: strongestNegative.delta < 0 ? 'Maior atenção' : 'Menor variação',
+                        kpi: strongestNegative,
+                        icon: strongestNegative.delta < 0 ? AlertTriangle : TrendingDown,
+                        tone:
+                          strongestNegative.delta < 0
+                            ? ('negative' as const)
+                            : ('neutral' as const),
+                      }
+                    : null,
+                  mostStable
+                    ? {
+                        label: 'Mais estável',
+                        kpi: mostStable,
+                        icon: Clock3,
+                        tone: 'neutral' as const,
+                      }
+                    : null,
+                ]
+                  .filter(
+                    (
+                      item,
+                    ): item is {
+                      label: string;
+                      kpi: RankedKpi;
+                      icon: LucideIcon;
+                      tone: 'positive' | 'negative' | 'neutral';
+                    } => item !== null,
+                  )
+                  .map((item) => (
+                    <MetricCallout
+                      key={item.label}
+                      icon={item.icon}
+                      title={item.label}
+                      value={formatDelta(item.kpi.delta)}
+                      description={localizeKpiLabel(item.kpi.title)}
+                      tone={item.tone}
+                    />
+                  ))}
               </CardContent>
             </Card>
           </div>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Leitura por área</CardTitle>
+              <CardDescription>Indicadores agrupados por frente de negócio.</CardDescription>
+            </CardHeader>
+            <CardContent className="grid gap-3 sm:grid-cols-3">
+              {home.businessAreas.map((area) => (
+                <div
+                  key={area.businessArea}
+                  className="rounded-2xl border border-border bg-background p-4"
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <p className="font-semibold text-foreground">{localizeKpiLabel(area.label)}</p>
+                    <p className="text-lg font-bold text-primary">{area.total}</p>
+                  </div>
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    Variação média {formatDelta(area.averageDelta)}
+                  </p>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
 
           {(Object.keys(BUSINESS_AREA_LABEL) as BusinessArea[]).map((businessArea) => {
             const items = groupedKpis.get(businessArea) ?? [];
@@ -685,21 +659,27 @@ export function DashboardHome({ kpis: initialKpis }: DashboardHomeProps) {
                 <CardHeader>
                   <CardTitle>{BUSINESS_AREA_LABEL[businessArea]}</CardTitle>
                   <CardDescription>
-                    KPIs principais desta frente com acesso rapido ao drill-down.
+                    Indicadores desta frente com acesso rápido ao detalhamento.
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
                   {items.map((kpi) => (
                     <div key={kpi.id} className="space-y-3">
-                      <KpiCard kpi={kpi} />
+                      <KpiCard
+                        kpi={{
+                          ...kpi,
+                          title: localizeKpiLabel(kpi.title),
+                          sector: localizeKpiLabel(kpi.sector),
+                        }}
+                      />
                       <Button
                         variant="outline"
                         className="w-full justify-between"
                         onClick={() => void openDrilldown(kpi.id)}
                         disabled={isDrilldownLoading}
-                        aria-label={`Abrir drilldown ${kpi.title}`}
+                        aria-label={`Abrir detalhamento de ${localizeKpiLabel(kpi.title)}`}
                       >
-                        Abrir drill-down
+                        Abrir detalhamento
                         <ChevronRight className="h-4 w-4" aria-hidden="true" />
                       </Button>
                     </div>
@@ -720,41 +700,46 @@ export function DashboardHome({ kpis: initialKpis }: DashboardHomeProps) {
         >
           <div className="grid gap-4 xl:grid-cols-2">
             <PieChartWidget
-              title="Distribuicao por setor"
-              description="Participacao de KPIs por setor consolidado na home."
+              title="Distribuição por setor"
+              description="Participação dos indicadores por setor na visão geral."
               data={distributionData}
               nameKey="sector"
               valueKey="total"
             />
             <BarChartWidget
-              title="Performance dos KPIs"
-              description="Comparacao das variacoes mais relevantes do periodo."
+              title="Variação dos indicadores"
+              description="Comparação das principais mudanças do período."
               data={performanceData}
               xKey="title"
               yKey="delta"
               unit="percent"
-              color="#0f766e"
+              color="hsl(var(--chart-teal))"
             />
           </div>
 
           {lineData.length > 0 ? (
             <LineChartWidget
-              title="Timeline comparativa"
-              description="Evolucao temporal do KPI em destaque versus periodo anterior."
+              title="Série histórica comparativa"
+              description="Evolução do indicador em comparação ao período anterior."
               data={lineData}
               xKey="period"
               unit={featuredHistory?.unit ?? 'number'}
               series={[
-                { dataKey: 'atual', name: 'Atual', color: '#1d4ed8' },
-                { dataKey: 'anterior', name: 'Anterior', color: '#64748b', strokeDasharray: '5 5' },
+                { dataKey: 'atual', name: 'Atual', color: 'hsl(var(--chart-forest))' },
+                {
+                  dataKey: 'anterior',
+                  name: 'Anterior',
+                  color: 'hsl(var(--chart-slate))',
+                  strokeDasharray: '5 5',
+                },
               ]}
             />
           ) : (
             <Card>
               <CardHeader>
-                <CardTitle>Timeline comparativa</CardTitle>
+                <CardTitle>Série histórica comparativa</CardTitle>
                 <CardDescription>
-                  Sem serie historica disponivel para a comparacao visual.
+                  Sem série histórica disponível para a comparação visual.
                 </CardDescription>
               </CardHeader>
             </Card>
@@ -774,7 +759,7 @@ export function DashboardHome({ kpis: initialKpis }: DashboardHomeProps) {
               <CardHeader>
                 <CardTitle>Acompanhamento operacional</CardTitle>
                 <CardDescription>
-                  Panorama do volume atual, comparativo anterior e tendencia imediata.
+                  Panorama do volume atual, comparação anterior e tendência imediata.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
@@ -783,18 +768,18 @@ export function DashboardHome({ kpis: initialKpis }: DashboardHomeProps) {
                     key={kpi.id}
                     type="button"
                     onClick={() => void openDrilldown(kpi.id)}
-                    className="flex w-full items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-left transition hover:border-slate-300 hover:bg-white"
+                    className="flex w-full items-center justify-between gap-4 rounded-2xl border border-border bg-background px-4 py-4 text-left transition hover:border-primary/30 hover:bg-white focus-visible:outline-primary"
                   >
                     <div>
-                      <p className="font-semibold text-slate-950">{kpi.title}</p>
-                      <p className="mt-1 text-xs text-slate-500">
+                      <p className="font-semibold text-foreground">{localizeKpiLabel(kpi.title)}</p>
+                      <p className="mt-1 text-sm text-muted-foreground">
                         {BUSINESS_AREA_LABEL[kpi.businessArea ?? inferBusinessArea(kpi.sector)]} ·{' '}
-                        {kpi.sector}
+                        {localizeKpiLabel(kpi.sector)}
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className="text-lg font-bold text-slate-950">{formatKpiValue(kpi)}</p>
-                      <p className="text-xs font-semibold text-slate-500">
+                      <p className="text-lg font-bold text-foreground">{formatKpiValue(kpi)}</p>
+                      <p className="text-sm font-semibold text-muted-foreground">
                         {formatDelta(kpi.delta)}
                       </p>
                     </div>
@@ -805,25 +790,29 @@ export function DashboardHome({ kpis: initialKpis }: DashboardHomeProps) {
 
             <Card>
               <CardHeader>
-                <CardTitle>Itens que pedem atencao</CardTitle>
+                <CardTitle>Itens que pedem atenção</CardTitle>
                 <CardDescription>
-                  Foco rapido nos indicadores com maior variacao absoluta.
+                  Foco rápido nos indicadores com maior variação absoluta.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
                 {operationalItems.map((kpi) => (
-                  <div key={kpi.id} className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                  <div key={kpi.id} className="rounded-2xl border border-border bg-background p-4">
                     <div className="flex items-center justify-between gap-3">
                       <div className="flex items-center gap-3">
-                        <div className="rounded-full bg-amber-100 p-2 text-amber-700">
+                        <div className="rounded-full bg-warning/10 p-2 text-warning">
                           <AlertTriangle className="h-4 w-4" aria-hidden="true" />
                         </div>
                         <div>
-                          <p className="font-semibold text-slate-950">{kpi.title}</p>
-                          <p className="text-xs text-slate-500">{kpi.sector}</p>
+                          <p className="font-semibold text-foreground">
+                            {localizeKpiLabel(kpi.title)}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            {localizeKpiLabel(kpi.sector)}
+                          </p>
                         </div>
                       </div>
-                      <p className="text-sm font-bold text-slate-950">{formatDelta(kpi.delta)}</p>
+                      <p className="text-sm font-bold text-foreground">{formatDelta(kpi.delta)}</p>
                     </div>
                   </div>
                 ))}
@@ -844,56 +833,62 @@ type SummaryCardProps = {
 
 function SummaryCard({ icon: Icon, label, value }: SummaryCardProps) {
   return (
-    <Card>
-      <CardContent className="flex items-center gap-4 p-5">
-        <div className="rounded-2xl bg-blue-50 p-3 text-blue-700">
+    <Card className="border-border bg-white">
+      <CardContent className="flex items-center gap-4 p-4 sm:p-5">
+        <div className="rounded-2xl bg-primary/10 p-3 text-primary">
           <Icon className="h-5 w-5" aria-hidden="true" />
         </div>
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">{label}</p>
-          <p className="mt-1 text-2xl font-bold text-slate-950">{value}</p>
+          <p className="text-sm font-medium text-muted-foreground">{label}</p>
+          <p className="mt-1 text-2xl font-bold tracking-tight text-foreground">{value}</p>
         </div>
       </CardContent>
     </Card>
   );
 }
 
-function HighlightChip({ icon: Icon, label, value }: SummaryCardProps) {
-  return (
-    <div className="rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur">
-      <div className="flex items-center gap-3">
-        <div className="rounded-xl bg-white/10 p-2 text-blue-100">
-          <Icon className="h-4 w-4" aria-hidden="true" />
-        </div>
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-100">{label}</p>
-          <p className="mt-1 text-xl font-bold text-white">{value}</p>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 type MetricCalloutProps = {
+  icon: LucideIcon;
   title: string;
   value: string;
   description: string;
   tone: 'positive' | 'negative' | 'neutral';
 };
 
-function MetricCallout({ title, value, description, tone }: MetricCalloutProps) {
-  const toneClassName =
+function MetricCallout({ icon: Icon, title, value, description, tone }: MetricCalloutProps) {
+  const toneClasses =
     tone === 'positive'
-      ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-100'
+      ? {
+          container: 'border-success/20 bg-success/5',
+          icon: 'bg-success/10 text-success',
+          value: 'text-success',
+        }
       : tone === 'negative'
-        ? 'border-rose-500/30 bg-rose-500/10 text-rose-100'
-        : 'border-white/20 bg-white/10 text-slate-100';
+        ? {
+            container: 'border-danger/20 bg-danger/5',
+            icon: 'bg-danger/10 text-danger',
+            value: 'text-danger',
+          }
+        : {
+            container: 'border-border bg-background',
+            icon: 'bg-secondary/10 text-secondary',
+            value: 'text-foreground',
+          };
 
   return (
-    <div className={`rounded-2xl border p-4 ${toneClassName}`}>
-      <p className="text-xs font-semibold uppercase tracking-[0.18em]">{title}</p>
-      <p className="mt-3 text-2xl font-bold">{value}</p>
-      <p className="mt-2 text-sm opacity-90">{description}</p>
+    <div
+      className={`flex items-start justify-between gap-3 rounded-2xl border p-4 ${toneClasses.container}`}
+    >
+      <div className="flex min-w-0 items-start gap-3">
+        <span className={`rounded-xl p-2 ${toneClasses.icon}`}>
+          <Icon className="h-5 w-5" aria-hidden="true" />
+        </span>
+        <div className="min-w-0">
+          <p className="text-sm font-semibold text-foreground">{title}</p>
+          <p className="mt-1 break-words text-sm text-muted-foreground">{description}</p>
+        </div>
+      </div>
+      <p className={`shrink-0 text-lg font-bold ${toneClasses.value}`}>{value}</p>
     </div>
   );
 }

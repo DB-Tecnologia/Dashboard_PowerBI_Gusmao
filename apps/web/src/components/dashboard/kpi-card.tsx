@@ -7,6 +7,7 @@ import {
   formatDelta,
   formatKpiValue,
   getKpiTrend,
+  localizeKpiLabel,
   type KpiItem,
   type KpiTrend,
 } from '@/lib/kpis';
@@ -16,15 +17,15 @@ type KpiCardProps = {
 };
 
 const trendLabel: Record<KpiTrend, string> = {
-  positive: 'Tendencia positiva',
-  negative: 'Tendencia negativa',
-  neutral: 'Tendencia neutra',
+  positive: 'Tendência positiva',
+  negative: 'Tendência negativa',
+  neutral: 'Tendência neutra',
 };
 
 const trendClassName: Record<KpiTrend, string> = {
-  positive: 'border-emerald-200 bg-emerald-50 text-emerald-700',
-  negative: 'border-rose-200 bg-rose-50 text-rose-700',
-  neutral: 'border-slate-200 bg-slate-50 text-slate-700',
+  positive: 'border-success/20 bg-success/10 text-success',
+  negative: 'border-danger/20 bg-danger/10 text-danger',
+  neutral: 'border-border bg-muted text-muted-foreground',
 };
 
 export function KpiCard({ kpi }: KpiCardProps) {
@@ -34,21 +35,23 @@ export function KpiCard({ kpi }: KpiCardProps) {
     trend === 'positive' ? ArrowUpRight : trend === 'negative' ? ArrowDownRight : ArrowRight;
 
   return (
-    <Card className="h-full">
+    <Card>
       <CardHeader>
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <Badge className="border border-slate-200 bg-white text-slate-700">{kpi.sector}</Badge>
+          <Badge className="border border-border bg-background text-muted-foreground">
+            {localizeKpiLabel(kpi.sector)}
+          </Badge>
           <Badge className={trendClassName[trend]}>
             <TrendIcon className="mr-1 h-3 w-3" aria-hidden="true" />
             {formatDelta(delta)}
           </Badge>
         </div>
-        <CardTitle className="mt-4">{kpi.title}</CardTitle>
+        <CardTitle className="mt-4">{localizeKpiLabel(kpi.title)}</CardTitle>
         <CardDescription>{trendLabel[trend]}</CardDescription>
       </CardHeader>
       <CardContent>
-        <p className="text-3xl font-bold tracking-tight text-slate-950">{formatKpiValue(kpi)}</p>
-        <p className="mt-2 text-xs text-slate-500">Comparado ao periodo anterior</p>
+        <p className="text-3xl font-bold tracking-tight text-foreground">{formatKpiValue(kpi)}</p>
+        <p className="mt-2 text-sm text-muted-foreground">Comparado ao período anterior</p>
         <div className="mt-3">
           <SparklineChart value={kpi.value} previousValue={kpi.previousValue ?? kpi.value} />
         </div>

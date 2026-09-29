@@ -27,7 +27,7 @@ describe('KpiCard', () => {
     expect(screen.getByText('Financeiro')).toBeInTheDocument();
     expect(screen.getByText('R$ 120.000,00')).toBeInTheDocument();
     expect(screen.getByText('+20%')).toBeInTheDocument();
-    expect(screen.getByText('Tendencia positiva')).toBeInTheDocument();
+    expect(screen.getByText('Tendência positiva')).toBeInTheDocument();
   });
 
   it('renderiza delta negativo', () => {
@@ -45,10 +45,10 @@ describe('KpiCard', () => {
     );
 
     expect(screen.getByText('-15%')).toBeInTheDocument();
-    expect(screen.getByText('Tendencia negativa')).toBeInTheDocument();
+    expect(screen.getByText('Tendência negativa')).toBeInTheDocument();
   });
 
-  it('renderiza tendencia neutra quando nao ha variacao', () => {
+  it('renderiza tendência neutra quando não há variação', () => {
     render(
       <KpiCard
         kpi={{
@@ -63,7 +63,7 @@ describe('KpiCard', () => {
     );
 
     expect(screen.getByText('0%')).toBeInTheDocument();
-    expect(screen.getByText('Tendencia neutra')).toBeInTheDocument();
+    expect(screen.getByText('Tendência neutra')).toBeInTheDocument();
   });
 
   it('renderiza sparkline com valor e previousValue corretos', () => {

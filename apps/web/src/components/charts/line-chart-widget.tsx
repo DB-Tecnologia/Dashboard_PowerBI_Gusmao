@@ -30,6 +30,8 @@ type LineChartWidgetProps = {
   onPointClick?: (data: Record<string, unknown>) => void;
 };
 
+const axisTick = { fontSize: 13, fill: 'hsl(var(--muted-foreground))' };
+
 export function LineChartWidget({
   title,
   description,
@@ -40,7 +42,7 @@ export function LineChartWidget({
   onPointClick,
 }: LineChartWidgetProps) {
   return (
-    <Card>
+    <Card className="h-full">
       <CardHeader>
         <CardTitle>{title}</CardTitle>
         <CardDescription>{description}</CardDescription>
@@ -55,11 +57,18 @@ export function LineChartWidget({
               }
             }}
           >
-            <CartesianGrid strokeDasharray="3 3" vertical={false} />
-            <XAxis dataKey={xKey} tick={{ fontSize: 12 }} />
-            <YAxis tick={{ fontSize: 12 }} />
+            <CartesianGrid stroke="hsl(var(--chart-grid))" strokeDasharray="4 4" vertical={false} />
+            <XAxis
+              dataKey={xKey}
+              tick={axisTick}
+              tickLine={false}
+              axisLine={false}
+              minTickGap={16}
+              tickMargin={10}
+            />
+            <YAxis tick={axisTick} tickLine={false} axisLine={false} width={56} />
             <Tooltip content={<ChartTooltip unit={unit} />} />
-            <Legend wrapperStyle={{ fontSize: 12 }} />
+            <Legend wrapperStyle={{ fontSize: 13, color: 'hsl(var(--muted-foreground))' }} />
             {series.map((s) => (
               <Line
                 key={s.dataKey}
@@ -69,8 +78,8 @@ export function LineChartWidget({
                 stroke={s.color}
                 strokeWidth={s.strokeDasharray ? 2 : 3}
                 strokeDasharray={s.strokeDasharray}
-                dot={{ r: 4 }}
-                activeDot={{ r: 6 }}
+                dot={{ r: 3.5, strokeWidth: 1.5, fill: '#ffffff' }}
+                activeDot={{ r: 6, strokeWidth: 2, fill: '#ffffff' }}
               />
             ))}
           </LineChart>

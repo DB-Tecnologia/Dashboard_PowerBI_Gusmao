@@ -38,7 +38,7 @@ export function AreaChartWidget({
   unit = 'number',
 }: AreaChartWidgetProps) {
   return (
-    <Card>
+    <Card className="h-full">
       <CardHeader>
         <CardTitle>{title}</CardTitle>
         <CardDescription>{description}</CardDescription>
@@ -61,11 +61,23 @@ export function AreaChartWidget({
                 </linearGradient>
               ))}
             </defs>
-            <CartesianGrid strokeDasharray="3 3" vertical={false} />
-            <XAxis dataKey={xKey} tick={{ fontSize: 12 }} />
-            <YAxis tick={{ fontSize: 12 }} />
+            <CartesianGrid stroke="hsl(var(--chart-grid))" strokeDasharray="4 4" vertical={false} />
+            <XAxis
+              dataKey={xKey}
+              tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }}
+              tickLine={false}
+              axisLine={false}
+              interval="preserveStartEnd"
+              tickMargin={10}
+            />
+            <YAxis
+              tick={{ fontSize: 13, fill: 'hsl(var(--muted-foreground))' }}
+              tickLine={false}
+              axisLine={false}
+              width={48}
+            />
             <Tooltip content={<ChartTooltip unit={unit} />} />
-            <Legend wrapperStyle={{ fontSize: 12 }} />
+            <Legend wrapperStyle={{ fontSize: 13, color: 'hsl(var(--muted-foreground))' }} />
             {series.map((s) => (
               <Area
                 key={s.dataKey}

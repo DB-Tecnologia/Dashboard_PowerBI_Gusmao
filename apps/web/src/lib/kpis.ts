@@ -63,6 +63,10 @@ export function formatKpiValue({ value, unit }: Pick<KpiItem, 'value' | 'unit'>)
   return numberFormatter.format(value);
 }
 
+export function localizeKpiLabel(label: string): string {
+  return label.replace(/\bTalhoes\b/g, 'Talhões').replace(/\bOperacoes\b/g, 'Operações');
+}
+
 export function formatDelta(delta: number): string {
   const formatted = `${numberFormatter.format(Math.abs(round(delta)))}%`;
 

@@ -3,6 +3,7 @@ import {
   calculateKpiDelta,
   formatKpiValue,
   getKpiTrend,
+  localizeKpiLabel,
   summarizeKpis,
 } from './kpis';
 
@@ -62,6 +63,12 @@ describe('kpis', () => {
     expect(formatKpiValue({ value: 1250, unit: 'number' })).toBe('1.250');
     expect(formatKpiValue({ value: 0.82, unit: 'percent' })).toBe('82%');
     expect(formatKpiValue({ value: 1200, unit: 'currency' })).toBe('R$ 1.200,00');
+  });
+
+  it('corrige acentos de rótulos legados sem alterar o dado de origem', () => {
+    expect(localizeKpiLabel('Talhoes monitorados')).toBe('Talhões monitorados');
+    expect(localizeKpiLabel('Operacoes')).toBe('Operações');
+    expect(localizeKpiLabel('Produção')).toBe('Produção');
   });
 
   it('resume total de kpis, setores e media de delta', () => {

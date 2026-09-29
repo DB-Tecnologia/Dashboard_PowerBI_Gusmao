@@ -29,9 +29,14 @@ const config: Config = {
           DEFAULT: 'hsl(var(--warning))',
           foreground: 'hsl(var(--warning-foreground))',
         },
+        'warning-text': 'hsl(var(--warning-text))',
         danger: {
           DEFAULT: 'hsl(var(--danger))',
           foreground: 'hsl(var(--danger-foreground))',
+        },
+        accent: {
+          DEFAULT: 'hsl(var(--accent))',
+          foreground: 'hsl(var(--accent-foreground))',
         },
       },
       borderRadius: {
@@ -42,11 +47,18 @@ const config: Config = {
         '2xl': '1.5rem',
       },
       boxShadow: {
-        card: '0 12px 30px -18px rgb(15 23 42 / 0.35)',
-        panel: '0 18px 60px -32px rgb(15 23 42 / 0.45)',
+        card: '0 12px 30px -18px rgb(23 33 27 / 0.16)',
+        panel: '0 18px 48px -32px rgb(20 83 45 / 0.24)',
       },
       fontFamily: {
-        sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        sans: [
+          'ui-sans-serif',
+          'system-ui',
+          '-apple-system',
+          'BlinkMacSystemFont',
+          'Segoe UI',
+          'sans-serif',
+        ],
       },
     },
   },

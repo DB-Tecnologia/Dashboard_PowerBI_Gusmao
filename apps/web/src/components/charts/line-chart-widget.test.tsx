@@ -21,8 +21,8 @@ describe('LineChartWidget', () => {
   it('renderiza titulo e descricao', () => {
     render(
       <LineChartWidget
-        title="Evolucao"
-        description="Serie temporal"
+        title="Evolução"
+        description="Série temporal"
         data={sampleData}
         xKey="period"
         series={[
@@ -32,8 +32,8 @@ describe('LineChartWidget', () => {
       />,
     );
 
-    expect(screen.getByText('Evolucao')).toBeInTheDocument();
-    expect(screen.getByText('Serie temporal')).toBeInTheDocument();
+    expect(screen.getByText('Evolução')).toBeInTheDocument();
+    expect(screen.getByText('Série temporal')).toBeInTheDocument();
   });
 
   it('renderiza sem erros com dados vazios', () => {

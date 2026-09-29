@@ -4,7 +4,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 
 import { ChartTooltip } from './chart-tooltip';
 
-const COLORS = ['#1d4ed8', '#3b82f6', '#60a5fa', '#93c5fd', '#2563eb', '#1e40af'];
+const COLORS = [
+  'hsl(var(--chart-forest))',
+  'hsl(var(--chart-teal))',
+  'hsl(var(--chart-harvest))',
+  'hsl(var(--chart-slate))',
+];
 
 type PieChartWidgetProps = {
   title: string;
@@ -24,7 +29,7 @@ export function PieChartWidget({
   unit = 'number',
 }: PieChartWidgetProps) {
   return (
-    <Card>
+    <Card className="h-full">
       <CardHeader>
         <CardTitle>{title}</CardTitle>
         <CardDescription>{description}</CardDescription>
@@ -43,6 +48,8 @@ export function PieChartWidget({
               nameKey={nameKey}
               label={({ name, percent }) => `${String(name)} ${(percent * 100).toFixed(0)}%`}
               labelLine={false}
+              stroke="#ffffff"
+              strokeWidth={2}
             >
               {data.map((_, index) => (
                 <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />

@@ -6,7 +6,7 @@ type SparklineChartProps = {
 
 export function SparklineChart({ value, previousValue, color }: SparklineChartProps) {
   const isPositive = value >= previousValue;
-  const trendColor = color ?? (isPositive ? '#10b981' : '#f43f5e');
+  const trendColor = color ?? (isPositive ? 'hsl(var(--chart-forest))' : 'hsl(var(--danger))');
   const points = buildPoints(value, previousValue);
 
   return (
