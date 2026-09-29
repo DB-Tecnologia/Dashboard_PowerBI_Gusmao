@@ -34,6 +34,7 @@ A sessão do frontend agora fica em `sessionStorage`, remove a dependência oper
 - auth, perfil, dashboard, relatórios, exportações, notificações e settings usam a API NestJS como fonte oficial;
 - a Web não depende mais de leituras diretas do Supabase nesses fluxos principais da plataforma.
 - a home autenticada agora usa `GET /dashboard/home` e renderiza charts reais com Recharts (BarChart, LineChart, PieChart, AreaChart);
+- no modo demonstração, a home identifica explicitamente os dados fictícios e mostra o período de histórico; as séries sintéticas mensais de Produção, Comercial e Algodoeira cobrem 12 meses, comparando o mês atual ao anterior;
 - componentes de gráfico reutilizáveis em `components/charts/` (BarChartWidget, LineChartWidget, PieChartWidget, AreaChartWidget, ChartTooltip);
 - cada KPI da home já abre um drill-down completo consumindo `GET /dashboard/kpis/:kpiId/drilldown?dimension=...` + `GET /dashboard/kpis/:kpiId/history`, com seletor de dimensão, breadcrumb, resumo, gráfico de evolução de 12 meses e tabela comparativa;
 - a tela de detalhe do relatório já consegue solicitar exportações via modal com seleção de formato (PDF, Excel, CSV, JSON);

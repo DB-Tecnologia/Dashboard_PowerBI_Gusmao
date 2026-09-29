@@ -96,7 +96,7 @@ O `README.md` e a onda de agosto no `ROADMAP.md` descrevem o Compose demo e a in
 
 A demo foi ampliada após a auditoria inicial para facilitar a navegação entre setores e dimensões. A conta geral usa papel `viewer`, compartilha a senha local `AUTH_DEMO_USER_PASSWORD` e não tem acesso administrativo. As contas setoriais existentes continuam restritas aos próprios setores.
 
-Foram adicionados exemplos fictícios em todos os domínios visíveis: 12 KPIs, 12 notificações, 12 exportações, 8 configurações; 36 linhas financeiras, 18 comerciais, 12 de operações e 12 de diretoria no SQL Server demo; e mais categorias e séries mensais no dashboard sintético. Quando o modo mock está ativo, a home agora informa “Demonstração · Dados fictícios para visualização”. Isso melhora a inspeção visual, mas não transforma a demo em dados do negócio nem conecta Oracle/COMPASS.
+Foram adicionados exemplos fictícios em todos os domínios visíveis: 12 KPIs, 12 notificações, 14 exportações, 8 configurações; 36 linhas financeiras, 18 comerciais, 12 de operações e 12 de diretoria no SQL Server demo; e mais categorias e séries mensais no dashboard sintético. Quando o modo mock está ativo, a home informa “Demonstração · Dados fictícios para visualização”. Isso melhora a inspeção visual, mas não transforma a demo em dados do negócio nem conecta Oracle/COMPASS.
 
 ### Evidências da revalidação
 
@@ -111,3 +111,13 @@ Foram adicionados exemplos fictícios em todos os domínios visíveis: 12 KPIs, 
 | Testes focados                                    | Web dashboard 7/7 e dados 3/3; API dashboard 13/13 e auth 39/39 |
 | Typecheck e validadores workspace/env/Docker/docs | Aprovados                                                       |
 | `pnpm build` (API e Web)                          | Aprovado                                                        |
+
+## Revalidação da cronologia dos dados — 2026-09-29
+
+- O dashboard sintético agora apresenta histórico de 12 meses nos três setores. O comercial gera 144 retratos datados (12 contratos de referência em cada competência); todos os indicadores mensais comparam o mês atual ao anterior e a tela prioriza KPIs com série temporal para o gráfico de destaque.
+- Notificações e exportações cobrem pelo menos 300 dias; configurações estão distribuídas por oito meses. O seed financeiro do SQL Server usa os 12 meses móveis e foi confirmado com 36 linhas, de outubro/2025 a setembro/2026.
+- A home informa `Histórico: últimos 12 meses` e identifica os dados fictícios. As telas de eventos mantêm datas de criação, conclusão, leitura e expiração coerentes.
+- Rebuild do Compose concluído; Web `/login` e API `/health` responderam HTTP 200; SQL Server ficou saudável. Login autenticado localmente aprovou; `/dashboard/home` retornou 12 KPIs nas áreas Produção, Comercial e Algodoeira; o histórico de quantidade comercial retornou 12 períodos mensais (Set/26: 642,62; Ago/26: 631,57).
+- Conferência visual autenticada no navegador: aviso de dados fictícios e etiqueta dos 12 meses visíveis; o gráfico principal renderizou 12 pontos nas duas séries (24 pontos no SVG), e não mostrou alegação de que os KPIs vêm do Oracle.
+- Validações: API dashboard 14/14; Web app-data/dashboard 11/11; `pnpm typecheck`, `pnpm build`, `pnpm verify:docs`, `pnpm verify:docker`, `pnpm verify:env`, `pnpm verify:workspace` e `git diff --check` aprovados.
+- A senha não foi registrada na auditoria; o login demo continua usando `AUTH_DEMO_USER_PASSWORD` do `.env.demo` local. Os dados permanecem demonstrativos e não comprovam integração Oracle/COMPASS.

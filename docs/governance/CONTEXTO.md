@@ -3,6 +3,20 @@
 **Projeto:** Dashboard Power BI
 **Atualizado em:** 2026-09-29
 
+## 2026-09-29 — Realismo temporal da demonstração
+
+- A série do dashboard demo cobre 12 meses. Para manter cartões, deltas e gráfico comparáveis, KPIs com data mensal devem mostrar o mês atual e comparar com o mês anterior, enquanto o histórico permanece em 12 pontos.
+- Notificações, exportações e configurações mock devem usar datas espalhadas ao longo de vários meses; os eventos permanecem ordenados por data e respeitam a sequência de criação, conclusão, leitura e expiração.
+- A Web identifica a janela temporal da série e mantém o aviso de dados fictícios. Nenhum schema, endpoint ou fonte Oracle/COMPASS é alterado por esta tarefa.
+- Especificação e critérios: `docs/specs/transversal/SPEC-demo-dados-ampliados.md`; validação visual feita no Compose demo.
+
+### Conclusão em 2026-09-29
+
+- O fallback API agora distribui Produção, Comercial e Algodoeira em 12 competências mensais; os KPIs do demo mostram o mês atual, usam o mês anterior como comparação e mantêm as mesmas métricas na série histórica.
+- Contratos fictícios usam retratos mensais datados. Linhas vindas de fonte que não forneça `DATA_CONTRATO` continuam no comparativo anual anterior.
+- Notificações e exportações cobrem ao menos 300 dias; configurações cobrem oito competências e têm datas coerentes. O script SQL demo cria competências financeiras móveis dos últimos 12 meses.
+- A home mostra `Histórico: últimos 12 meses` e prioriza uma métrica mensal para o gráfico de destaque. Nenhum dado real ou conexão com Oracle/COMPASS foi adicionada.
+
 ## 2026-09-29 — Dados fictícios ampliados para a demo
 
 - A conta `viewer.diretoria@example.com` foi adicionada ao seed local como `viewer`, com consulta aos setores da demo e sem permissões administrativas; usa `AUTH_DEMO_USER_PASSWORD`.

@@ -1606,3 +1606,28 @@ Ambiente demo iniciado localmente com Docker Compose. A Web, API, SQL Server e R
 
 - Commit de implementação: `9ff2ffe` (`feat(demo): ampliar dados fictícios da demonstração`), local; push não solicitado nem executado.
 - Próximos passos: persistência durável, integração de notificações/exportações Web à API, Oracle/COMPASS, reconciliação e hardening operacional.
+
+## 2026-09-29 — Histórico temporal e apresentação da demo
+
+### Entrega
+
+- Notificações, exportações e configurações mock passaram a ocupar datas de diferentes meses; eventos seguem ordem decrescente e mantêm coerência de criação, leitura, conclusão e expiração. A lista demo agora tem 14 exportações.
+- O SQL financeiro demo usa as 12 competências móveis mais recentes. O dashboard sintético agora mantém 12 meses de histórico nos setores Produção, Comercial e Algodoeira; o Comercial gera 144 retratos mensais de 12 contratos de referência.
+- Cartões e gráficos usam o mês atual contra o anterior; drill-down comercial mostra o período atual; a home escolhe um KPI com série mensal como destaque e exibe `Histórico: últimos 12 meses` junto ao aviso de dados fictícios.
+
+### Arquivos e validações
+
+- Atualizados `apps/api/src/platform/dashboard/dashboard.service.ts` e seus testes, `apps/web/src/components/dashboard/dashboard-home.tsx` e testes, `apps/web/src/lib/app-data.ts` e testes, além do seed financeiro SQL.
+- API dashboard: 14/14; Web app-data/dashboard: 11/11. `pnpm typecheck`, `pnpm build`, `pnpm verify:docs`, `pnpm verify:docker`, `pnpm verify:env`, `pnpm verify:workspace` e `git diff --check` passaram.
+- Compose demo rebuildado; health da API/Web HTTP 200 e SQL Server saudável. Login local aprovado; `/dashboard/home` retornou 12 KPIs em três áreas; `/dashboard/kpis/comercial-quantidade-entregue/history` retornou 12 meses e granulação mensal. O SQL demo foi confirmado com 36 linhas e 12 competências financeiras.
+
+### Limitações e próximos passos
+
+- Todos os novos valores continuam fictícios. Oracle/COMPASS, persistência durável e reconciliação dos KPIs não foram adicionados.
+- A Web ainda usa o client local `app-data.ts` para notificações/exportações no modo demo; ligar as telas aos endpoints reais permanece pendente.
+- Usuários e parte do estado de plataforma continuam em memória no ambiente demo. O acesso de teste permanece no `.env.demo` local, sem senha copiada para a documentação.
+
+### Commit e próximos passos
+
+- Commit de implementação: `c6dc17a` (`feat(demo): distribuir dados fictícios em períodos variados`), local. A documentação acompanha a entrega em commit separado; push não solicitado.
+- Próximos passos: ligar notificações/exportações à API, persistir estado, integrar Oracle/COMPASS e reconciliar indicadores antes de uso com dados do cliente.
