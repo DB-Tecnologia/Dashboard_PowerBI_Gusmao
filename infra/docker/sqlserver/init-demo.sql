@@ -58,31 +58,96 @@ END
 GO
 
 DELETE FROM reports.financeiro_resumo;
-INSERT INTO reports.financeiro_resumo (id, indicador, valor, competencia) VALUES
-  (1, N'Receita recorrente', 120000.00, '2026-06-01'),
-  (2, N'Margem operacional', 32.00, '2026-06-01'),
-  (3, N'Inadimplencia', 4.50, '2026-06-01');
+WITH periodos AS (
+  SELECT *
+  FROM (VALUES
+    (1, CONVERT(date, '20251001'), 96500.00, 28.10, 5.10),
+    (2, CONVERT(date, '20251101'), 101200.00, 29.40, 4.90),
+    (3, CONVERT(date, '20251201'), 108300.00, 30.20, 4.70),
+    (4, CONVERT(date, '20260101'), 104800.00, 29.80, 4.80),
+    (5, CONVERT(date, '20260201'), 112600.00, 31.10, 4.60),
+    (6, CONVERT(date, '20260301'), 118900.00, 31.50, 4.40),
+    (7, CONVERT(date, '20260401'), 115400.00, 30.80, 4.50),
+    (8, CONVERT(date, '20260501'), 123700.00, 32.20, 4.20),
+    (9, CONVERT(date, '20260601'), 120000.00, 32.00, 4.50),
+    (10, CONVERT(date, '20260701'), 128500.00, 32.60, 4.10),
+    (11, CONVERT(date, '20260801'), 132100.00, 33.10, 3.90),
+    (12, CONVERT(date, '20260901'), 137800.00, 33.40, 3.80)
+  ) AS dados(mes, competencia, receita, margem, inadimplencia)
+), indicadores AS (
+  SELECT *
+  FROM (VALUES
+    (1, N'Receita recorrente'),
+    (2, N'Margem operacional'),
+    (3, N'Inadimplência')
+  ) AS dados(ordem, indicador)
+)
+INSERT INTO reports.financeiro_resumo (id, indicador, valor, competencia)
+SELECT
+  periodos.mes * 10 + indicadores.ordem,
+  indicadores.indicador,
+  CASE indicadores.ordem
+    WHEN 1 THEN periodos.receita
+    WHEN 2 THEN periodos.margem
+    ELSE periodos.inadimplencia
+  END,
+  periodos.competencia
+FROM periodos
+CROSS JOIN indicadores;
 GO
 
 DELETE FROM reports.comercial_pipeline;
 INSERT INTO reports.comercial_pipeline (id, regional, cliente, valor, etapa) VALUES
-  (1, N'Sudeste', N'Conta Alfa', 45000.00, N'Proposta'),
-  (2, N'Sul', N'Conta Beta', 32000.00, N'Negociacao'),
-  (3, N'Sudeste', N'Conta Gama', 15000.00, N'Fechamento');
+  (1, N'Sudeste', N'Cliente Demo 01', 45000.00, N'Proposta'),
+  (2, N'Sul', N'Cliente Demo 02', 32000.00, N'Negociação'),
+  (3, N'Centro-Oeste', N'Cliente Demo 03', 15000.00, N'Fechamento'),
+  (4, N'Norte', N'Cliente Demo 04', 68000.00, N'Qualificação'),
+  (5, N'Sudeste', N'Cliente Demo 05', 52000.00, N'Fechamento'),
+  (6, N'Sul', N'Cliente Demo 06', 27000.00, N'Proposta'),
+  (7, N'Centro-Oeste', N'Cliente Demo 07', 84000.00, N'Negociação'),
+  (8, N'Norte', N'Cliente Demo 08', 19000.00, N'Qualificação'),
+  (9, N'Sudeste', N'Cliente Demo 09', 73000.00, N'Negociação'),
+  (10, N'Sul', N'Cliente Demo 10', 38000.00, N'Fechamento'),
+  (11, N'Centro-Oeste', N'Cliente Demo 11', 61000.00, N'Proposta'),
+  (12, N'Norte', N'Cliente Demo 12', 44000.00, N'Negociação'),
+  (13, N'Sudeste', N'Cliente Demo 13', 92000.00, N'Qualificação'),
+  (14, N'Sul', N'Cliente Demo 14', 56000.00, N'Proposta'),
+  (15, N'Centro-Oeste', N'Cliente Demo 15', 33000.00, N'Fechamento'),
+  (16, N'Norte', N'Cliente Demo 16', 77000.00, N'Negociação'),
+  (17, N'Sudeste', N'Cliente Demo 17', 25000.00, N'Qualificação'),
+  (18, N'Sul', N'Cliente Demo 18', 88000.00, N'Proposta');
 GO
 
 DELETE FROM reports.operacoes_status;
 INSERT INTO reports.operacoes_status (id, status, fila, sla_percentual) VALUES
-  (1, N'ativo', N'Onboarding', 94.50),
-  (2, N'ativo', N'Suporte', 91.20),
-  (3, N'pausado', N'Implantacao', 78.00);
+  (1, N'ativo', N'Plantio', 94.50),
+  (2, N'ativo', N'Colheita', 91.20),
+  (3, N'pausado', N'Beneficiamento', 78.00),
+  (4, N'concluido', N'Classificação', 98.10),
+  (5, N'pendente', N'Expedição', 82.30),
+  (6, N'ativo', N'Armazenagem', 93.40),
+  (7, N'concluido', N'Pesagem', 99.20),
+  (8, N'ativo', N'Transporte', 88.60),
+  (9, N'pausado', N'Manutenção', 76.40),
+  (10, N'pendente', N'Faturamento', 85.70),
+  (11, N'ativo', N'Qualidade', 95.80),
+  (12, N'concluido', N'Conferência', 97.50);
 GO
 
 DELETE FROM reports.diretoria_estrategica;
 INSERT INTO reports.diretoria_estrategica (id, indicador, valor) VALUES
   (1, N'Projetos ativos', N'18'),
-  (2, N'Exportacoes concluidas', N'240'),
-  (3, N'SLA medio', N'92%');
+  (2, N'Exportações concluídas', N'240'),
+  (3, N'SLA médio', N'92%'),
+  (4, N'Área plantada demonstrativa', N'14820 ha'),
+  (5, N'Área colhida demonstrativa', N'11360 ha'),
+  (6, N'Contratos ativos demonstrativos', N'186'),
+  (7, N'Volume entregue demonstrativo', N'4280 t'),
+  (8, N'Fardos beneficiados demonstrativos', N'68400'),
+  (9, N'Unidades operacionais demonstrativas', N'4'),
+  (10, N'Relatórios disponíveis', N'4'),
+  (11, N'Alertas demonstrativos', N'3'),
+  (12, N'Atualização', N'Dados fictícios');
 GO
 
 CREATE OR ALTER VIEW reports.vw_financeiro_resumo AS

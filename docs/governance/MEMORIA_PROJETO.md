@@ -42,6 +42,9 @@ O ambiente demo local é o principal critério de validação atual. Ele usa SQL
 - `/api/v1/bi/production/summary` respondeu `not_configured` para `sqlserver-demo`. A home permite fallback sintético no modo demo; BI real Oracle/COMPASS ainda não foi validado.
 - O `UsersRepository` mantém usuários em mapas em memória. Sem Supabase no demo, outros domínios com fallback também não são duráveis.
 - As telas de notificações e histórico de exportações usam o cliente `app-data.ts`, com fixtures locais no demo, embora clientes/rotas da API existam.
+- Depois da ampliação, a conta `viewer.diretoria@example.com` tem papel somente leitura para os setores da demo e usa a senha local `AUTH_DEMO_USER_PASSWORD`. O fallback agrícola tem 36 linhas de plantio, 36 de colheita, 12 contratos e 24 embarques.
+- O SQL demo contém 36 linhas financeiras, 18 comerciais, 12 de operações e 12 de diretoria. A Web usa 12 KPIs, 12 notificações, 12 exportações e 8 configurações fictícias.
+- Revalidação após rebuild: login da conta geral, home com 12 KPIs e drill-down com 4 unidades, 6 variedades e 12 clientes. A home marca os valores mock como fictícios. Testes focados Web dashboard 7/7 e dados 3/3; API dashboard 13/13 e auth 39/39; typecheck, build e verificadores workspace/env/Docker/docs passaram.
 - O admin demo solicita TOTP. Como a chave de criptografia do template local fica vazia, o código demo é escrito no log; o ambiente é somente para uso local.
 - Auditoria detalhada, evidências e ordem de fechamento: [`docs/audits/AUDITORIA_LOCAL_DOCKER_2026-09-29.md`](../audits/AUDITORIA_LOCAL_DOCKER_2026-09-29.md).
 
@@ -49,8 +52,8 @@ O ambiente demo local é o principal critério de validação atual. Ele usa SQL
 
 - Branch de trabalho: `main`.
 - Remote esperado: `origin` apontando para `DB-Tecnologia/Dashboard_PowerBI_Gusmao`.
-- Último commit publicado antes desta tarefa: `67a9984` (`test: expandir testes E2E de administracao exportacoes e 2fa`).
-- O hash do commit desta tarefa será comunicado na entrega e incorporado no próximo snapshot, evitando referência circular.
+- Commit da ampliação: `f022cb3` (`feat(demo): ampliar dados ficticios da demonstracao`); uma correção visual e sua validação estão sendo consolidadas nesta sessão.
+- A branch `main` contém dois commits locais antes da consolidação final desta sessão; não houve push.
 
 ## Produto, stack e topologia
 
@@ -186,8 +189,17 @@ Na auditoria local de 2026-09-29 passaram novamente `pnpm verify:workspace`, `pn
 - **Documentação:** criado o relatório de auditoria e atualizados índice, roadmap, contexto e relatório diário.
 - **Validações:** `verify:workspace`, `verify:env`, `verify:docker`, `verify:docs`, Compose config e smoke checks HTTP aprovados. Testes do monorepo/typecheck/lint/build não executados.
 - **Segurança:** `.env.demo` local está ignorado pelo Git; nenhum segredo foi copiado para a documentação. O código demo de TOTP aparece nos logs de desenvolvimento e requer correção antes de exposição não local.
-- **Commit/push:** o commit documental será informado na entrega e consolidado no próximo snapshot; push não solicitado nem executado.
+- **Commit/push:** `668774c` (`docs(auditoria): registrar estado do Docker demo`), local; sem push.
 - **Próximos passos:** persistência durável de usuários/plataforma; integração das telas de notificações/exportações à API; Oracle/COMPASS e reconciliação; hardening operacional e alinhamento do escopo.
+
+### 2026-09-29 — Mais dados para explorar a demo
+
+- **Objetivo:** facilitar uma visão ampla do sistema sem usar dados reais nem alterar os acessos setoriais existentes.
+- **Entrega:** conta `viewer.diretoria@example.com` de consulta para os setores da demo; fallback agrícola com 36 linhas mensais por domínio de plantio e colheita, 12 contratos e 24 embarques; relatórios SQL com 12–36 linhas; fixtures Web com 12 KPIs, 12 notificações, 12 exportações e 8 configurações. A home identifica os KPIs mock como fictícios.
+- **Validações:** Web dashboard 7/7, Web dados 3/3, API dashboard 13/13 e API auth 39/39; typecheck, build e verificadores workspace/env/Docker/docs aprovados. Compose recomposto; smoke checks confirmaram login, 12 KPIs, três áreas de negócio, Web `/app` HTTP 200 e contagens SQL.
+- **Riscos e pendências:** dados fictícios; usuários e estado de plataforma não são persistidos; Oracle/COMPASS segue `not_configured`; logs locais ainda mostram o código TOTP do admin demo.
+- **Commit/push:** `f022cb3` (`feat(demo): ampliar dados fictícios da demonstracao`), local; sem push.
+- **Próximos passos:** conectar Oracle/COMPASS, persistir dados de plataforma, ligar notificações/exportações Web à API e concluir hardening operacional.
 
 ### 2026-08-25 — P0-02: validar configuração do Playwright
 
@@ -255,18 +267,18 @@ Na auditoria local de 2026-09-29 passaram novamente `pnpm verify:workspace`, `pn
 
 ## Pendências e bloqueios
 
-| Item                                         | Estado                               | Impacto                                                                                 |
-| -------------------------------------------- | ------------------------------------ | --------------------------------------------------------------------------------------- |
-| Integração Oracle/COMPASS                    | Bloqueada por infraestrutura         | Não há conexão produtiva nem reconciliação de KPIs                                      |
-| Smoke queries e data de corte                | Pendente                             | Sem prova de consistência dos indicadores reais                                         |
-| Atualização idempotente e ledger de execução | Pendente                             | Frescor, watermark e último snapshot ainda precisam de fechamento produtivo             |
-| E2E expandido                                | Concluído em P1-03                   | 16 testes aprovados; histórico de exportação demo ainda depende de dados demonstrativos |
-| Persistência durável de usuários             | Pendente                             | `UsersRepository` usa mapas em memória no runtime atual                                  |
-| Notificações e histórico de exportação na Web | Pendente                            | As telas usam `app-data.ts`; ligar aos clientes e endpoints centralizados da API         |
-| Instalação Docker por lockfile               | Pendente                             | Dockerfiles usam instalação sem lockfile imutável                                        |
-| Alinhamento da documentação de escopo        | Pendente                             | O escopo histórico diverge das capacidades e integrações atuais                          |
-| SMTP real                                    | Pendente em P1-05                    | Notificações produtivas continuam dependendo do modo mock                               |
-| TLS, backup, rollback e logs operacionais    | Pendentes em P0-01/P1-06/P1-07/P1-08 | Hardening e operação de produção não concluídos                                         |
+| Item                                          | Estado                               | Impacto                                                                                 |
+| --------------------------------------------- | ------------------------------------ | --------------------------------------------------------------------------------------- |
+| Integração Oracle/COMPASS                     | Bloqueada por infraestrutura         | Não há conexão produtiva nem reconciliação de KPIs                                      |
+| Smoke queries e data de corte                 | Pendente                             | Sem prova de consistência dos indicadores reais                                         |
+| Atualização idempotente e ledger de execução  | Pendente                             | Frescor, watermark e último snapshot ainda precisam de fechamento produtivo             |
+| E2E expandido                                 | Concluído em P1-03                   | 16 testes aprovados; histórico de exportação demo ainda depende de dados demonstrativos |
+| Persistência durável de usuários              | Pendente                             | `UsersRepository` usa mapas em memória no runtime atual                                 |
+| Notificações e histórico de exportação na Web | Pendente                             | As telas usam `app-data.ts`; ligar aos clientes e endpoints centralizados da API        |
+| Instalação Docker por lockfile                | Pendente                             | Dockerfiles usam instalação sem lockfile imutável                                       |
+| Alinhamento da documentação de escopo         | Pendente                             | O escopo histórico diverge das capacidades e integrações atuais                         |
+| SMTP real                                     | Pendente em P1-05                    | Notificações produtivas continuam dependendo do modo mock                               |
+| TLS, backup, rollback e logs operacionais     | Pendentes em P0-01/P1-06/P1-07/P1-08 | Hardening e operação de produção não concluídos                                         |
 
 ## Protocolo de atualização
 

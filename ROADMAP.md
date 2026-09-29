@@ -196,6 +196,7 @@ Uma tarefa só é considerada pronta quando:
 ### Auditoria do runtime demo — 2026-09-29
 
 - ✅ Compose demo iniciado e validado: Web HTTP 200, API e SQL Server saudáveis, login demo e consulta de relatório de exemplo retornando três linhas.
+- ✅ Dados sintéticos ampliados para exploração: dashboard com mais categorias e períodos, quatro relatórios SQL com 12 a 36 linhas, listas com 12 notificações e 12 exportações, e conta de consulta geral sem papel administrativo.
 - ⏳ Integrar Oracle/COMPASS de verdade: o endpoint de produção permanece `not_configured` com a fonte SQL Server demo; o refresh atual só executa smoke check e mantém o estado em memória.
 - ⏳ Tornar durável a persistência de usuários e fechar a integração de notificações e histórico de exportação da Web com os endpoints da API.
 - ⏳ Tornar as imagens Docker reprodutíveis com instalação pelo lockfile.

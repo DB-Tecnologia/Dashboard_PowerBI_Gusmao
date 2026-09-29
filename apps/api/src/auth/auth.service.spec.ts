@@ -73,6 +73,24 @@ describe('AuthService', () => {
     expect(result.expiresIn).toBe(900);
   });
 
+  it('deve fornecer conta demo somente leitura com acesso aos setores', async () => {
+    const user = await usersRepository.findByEmail('viewer.diretoria@example.com');
+
+    expect(user).toMatchObject({
+      roles: ['viewer'],
+      sectors: ['diretoria', 'financeiro', 'comercial', 'operacoes'],
+      isTwoFactorEnabled: false,
+    });
+
+    const result = await authService.login(
+      'viewer.diretoria@example.com',
+      'Admin123!',
+      '127.0.0.1',
+    );
+
+    expect(result).toMatchObject({ tokenType: 'Bearer' });
+  });
+
   it('deve rejeitar senha inválida', async () => {
     await expect(
       authService.login('admin@example.com', 'SenhaErrada123!', '127.0.0.1'),

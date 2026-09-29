@@ -16,16 +16,16 @@ O arquivo local `infra/env/.env.demo` foi criado a partir do exemplo e é ignora
 
 ## Evidências observadas
 
-| Verificação | Resultado |
-| --- | --- |
-| `http://localhost:3000` | HTTP 200 |
-| `GET http://localhost:3001/health` | `ok` |
-| `GET http://localhost:3001/health/sql` | `ok` |
-| Login de usuário demo comum | Token emitido |
-| `GET /dashboard/home` autenticado | 3 KPIs retornados |
-| Consulta do relatório demo financeiro | 3 linhas retornadas do SQL Server local |
-| `GET /api/v1/bi/production/summary` | `not_configured`, origem `sqlserver-demo` |
-| Login da conta demo administrativa | Solicita segundo fator (TOTP) |
+| Verificação                                                           | Resultado                                                                   |
+| --------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| `http://localhost:3000`                                               | HTTP 200                                                                    |
+| `GET http://localhost:3001/health`                                    | `ok`                                                                        |
+| `GET http://localhost:3001/health/sql`                                | `ok`                                                                        |
+| Login de usuário demo comum                                           | Token emitido                                                               |
+| `GET /dashboard/home` autenticado                                     | 3 KPIs retornados                                                           |
+| Consulta do relatório demo financeiro                                 | 3 linhas retornadas do SQL Server local                                     |
+| `GET /api/v1/bi/production/summary`                                   | `not_configured`, origem `sqlserver-demo`                                   |
+| Login da conta demo administrativa                                    | Solicita segundo fator (TOTP)                                               |
 | `pnpm verify:workspace`, `verify:env`, `verify:docker`, `verify:docs` | Aprovados; `verify:docs` passou novamente após os registros desta auditoria |
 
 Essas verificações são smoke checks do ambiente. A suíte completa de testes, typecheck, lint e build do monorepo não foi executada nesta auditoria.
@@ -91,3 +91,23 @@ O `README.md` e a onda de agosto no `ROADMAP.md` descrevem o Compose demo e a in
 2. Integrar Oracle/COMPASS com acesso somente leitura, contratos reais dos domínios agrícolas, snapshot durável e reconciliação dos KPIs.
 3. Fechar a operação de produção: segredos, TOTP, e-mail, HTTPS/TLS, backups, restauração, logs e alertas.
 4. Rodar testes automatizados e E2E com dados reais de aceite; revisar a matriz de 18 telas e 6 módulos e alinhar a documentação.
+
+## Revalidação da demonstração após ampliação — 2026-09-29
+
+A demo foi ampliada após a auditoria inicial para facilitar a navegação entre setores e dimensões. A conta geral usa papel `viewer`, compartilha a senha local `AUTH_DEMO_USER_PASSWORD` e não tem acesso administrativo. As contas setoriais existentes continuam restritas aos próprios setores.
+
+Foram adicionados exemplos fictícios em todos os domínios visíveis: 12 KPIs, 12 notificações, 12 exportações, 8 configurações; 36 linhas financeiras, 18 comerciais, 12 de operações e 12 de diretoria no SQL Server demo; e mais categorias e séries mensais no dashboard sintético. Quando o modo mock está ativo, a home agora informa “Demonstração · Dados fictícios para visualização”. Isso melhora a inspeção visual, mas não transforma a demo em dados do negócio nem conecta Oracle/COMPASS.
+
+### Evidências da revalidação
+
+| Verificação após a ampliação                      | Resultado                                                       |
+| ------------------------------------------------- | --------------------------------------------------------------- |
+| Rebuild do Compose demo                           | Web, API, SQL Server e Redis ativos; SQL Server saudável        |
+| `GET http://localhost:3000/app`                   | HTTP 200                                                        |
+| Login como `viewer.diretoria@example.com`         | Sucesso; papel somente leitura                                  |
+| `GET /dashboard/home` com a conta geral           | 12 KPIs e três áreas de negócio                                 |
+| Drill-down de produção                            | 4 unidades, 6 variedades e 12 clientes no drill-down comercial  |
+| Tabelas SQL demo                                  | Financeiro 36; comercial 18; operações 12; diretoria 12 linhas  |
+| Testes focados                                    | Web dashboard 7/7 e dados 3/3; API dashboard 13/13 e auth 39/39 |
+| Typecheck e validadores workspace/env/Docker/docs | Aprovados                                                       |
+| `pnpm build` (API e Web)                          | Aprovado                                                        |

@@ -1571,4 +1571,38 @@ Ambiente demo iniciado localmente com Docker Compose. A Web, API, SQL Server e R
 - Persistir usuários e estado da plataforma, ligar telas de notificações/exportações à API, integrar Oracle/COMPASS e reconciliar indicadores.
 - Corrigir gestão de segredo/log TOTP do demo antes de qualquer exposição fora do computador local.
 - Alinhar escopo e matriz de aceite ao runtime. Não publicar nem usar dados de demonstração como dados do negócio.
-- Commit local desta auditoria será informado na entrega; push não solicitado e não executado.
+- Commit `668774c` (`docs(auditoria): registrar estado do Docker demo`), local; push não solicitado e não executado.
+
+## 2026-09-29 — Ampliação dos dados da demonstração
+
+### Entrega
+
+- Criada a conta `viewer.diretoria@example.com`, somente leitura, para explorar os setores da demo com a senha local `AUTH_DEMO_USER_PASSWORD`.
+- O fallback agrícola agora tem 36 linhas por domínio (plantio e colheita), 12 contratos e 24 embarques; drill-downs agrupados mostram até 12 categorias.
+- O SQL Server demo tem 36 linhas financeiras, 18 comerciais, 12 de operações e 12 de diretoria. As fixtures Web passaram a 12 KPIs, 12 notificações, 12 exportações e 8 configurações com datas recentes geradas em runtime.
+- A home identifica os indicadores mock com o aviso “Demonstração · Dados fictícios para visualização”; o texto não afirma que os números vêm do Oracle.
+- Os dados são fictícios; nenhuma conexão Oracle/COMPASS ou fonte produtiva foi adicionada.
+
+### Arquivos criados e modificados
+
+- Atualizados `apps/api/src/platform/dashboard/dashboard.service.ts`, o seed de usuários e testes de dashboard/autenticação.
+- Atualizados `apps/web/src/lib/app-data.ts` e seus testes; `infra/docker/sqlserver/init-demo.sql` recebeu o conjunto de demonstração ampliado.
+- Criada a especificação `docs/specs/transversal/SPEC-demo-dados-ampliados.md`; README, ROADMAP, auditoria e contexto atualizados.
+
+### Validações
+
+- Testes focados: Web dashboard 7/7, Web dados 3/3, API dashboard 13/13 e API auth 39/39 aprovados.
+- `pnpm typecheck`, `pnpm build`, `pnpm verify:workspace`, `pnpm verify:env`, `pnpm verify:docker` e `pnpm verify:docs` aprovados.
+- Compose demo rebuildado; Web `/app` HTTP 200; login de consulta geral aprovado; home retorna 12 KPIs; drill-down mostra 4 unidades, 6 variedades e 12 clientes.
+- SQL Server demo confirmou financeiro 36, comercial 18, operações 12 e diretoria 12 linhas.
+
+### Débitos remanescentes
+
+- BI v1 produtivo continua `not_configured` até integrar Oracle/COMPASS e reconciliar os indicadores.
+- A conta e partes da plataforma usam repositórios em memória; notificações e histórico de exportação Web continuam no client mock até serem ligados aos endpoints da API.
+- A senha demo permanece somente no `.env.demo` local ignorado; não compartilhar fora da máquina de desenvolvimento.
+
+### Commit e próximos passos
+
+- Commit de implementação: será consolidado nesta sessão em `feat(demo): ampliar dados fictícios da demonstração`; push não solicitado nem executado.
+- Próximos passos: persistência durável, integração de notificações/exportações Web à API, Oracle/COMPASS, reconciliação e hardening operacional.

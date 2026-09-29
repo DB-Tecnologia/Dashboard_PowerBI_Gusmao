@@ -124,6 +124,8 @@ Acesse:
 - Healthcheck: `http://localhost:3001/health`
 - Fonte de dados: `http://localhost:3001/health/sql`
 
+Para navegar por todos os setores sem permissões administrativas, entre com `viewer.diretoria@example.com`. A senha é a mesma configurada em `AUTH_DEMO_USER_PASSWORD` no arquivo local `infra/env/.env.demo` e usada pelas outras contas demo. A home e os drill-downs usam dados fictícios variados; os relatórios SQL também são preenchidos com linhas de demonstração. Nenhum desses valores representa o negócio real.
+
 No ambiente demo, `/api/v1/bi/production/summary` informa `not_configured` quando a base local não possui dados de produção. O contrato não mascara essa condição com números sintéticos.
 
 ### Checklist de setup local

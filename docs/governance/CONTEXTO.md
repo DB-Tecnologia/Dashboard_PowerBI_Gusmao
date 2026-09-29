@@ -3,6 +3,14 @@
 **Projeto:** Dashboard Power BI
 **Atualizado em:** 2026-09-29
 
+## 2026-09-29 — Dados fictícios ampliados para a demo
+
+- A conta `viewer.diretoria@example.com` foi adicionada ao seed local como `viewer`, com consulta aos setores da demo e sem permissões administrativas; usa `AUTH_DEMO_USER_PASSWORD`.
+- O fallback da home agora oferece 36 registros mensais por conjunto de plantio/colheita, 12 contratos, 24 embarques e mais categorias nos drill-downs. O limite de categorias agrupadas passou de 8 para 12.
+- SQL Server demo: financeiro tem 36 linhas mensais; comercial 18; operações 12; diretoria 12. As telas mockadas da Web têm 12 KPIs, notificações e exportações; configurações têm 8 exemplos.
+- Tudo foi gerado como dado fictício; não muda Oracle/COMPASS nem o contrato BI v1. A senha continua em `.env.demo` local e não é escrita na documentação.
+- A especificação SDD está em `docs/specs/transversal/SPEC-demo-dados-ampliados.md`. Testes focados de dashboard, autenticação e fixtures Web, typecheck, build e validadores do workspace/env/Docker/docs passaram; smoke checks após rebuild confirmaram login geral, 12 KPIs, dimensões ampliadas e contagens SQL.
+
 ## 2026-09-29 — Auditoria do ambiente local Docker
 
 - O Compose demo foi construído e iniciado localmente com Web, API, SQL Server demo e Redis; Web, API e healthcheck SQL responderam, e uma consulta autenticada leu três linhas da view financeira de demonstração.

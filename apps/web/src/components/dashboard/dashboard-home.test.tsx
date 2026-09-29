@@ -30,7 +30,7 @@ describe('DashboardHome', () => {
         averageDelta: 10.5,
       },
       businessAreas: [
-        { businessArea: 'producao', label: 'Producao', total: 1, averageDelta: 11.11 },
+        { businessArea: 'producao', label: 'Produção', total: 1, averageDelta: 11.11 },
         { businessArea: 'comercial', label: 'Comercial', total: 1, averageDelta: 11.11 },
         { businessArea: 'algodoeira', label: 'Algodoeira', total: 1, averageDelta: 10.84 },
       ],
@@ -146,7 +146,7 @@ describe('DashboardHome', () => {
 
     expect(await screen.findByRole('heading', { name: 'Dashboard Home' })).toBeInTheDocument();
     expect(screen.getByRole('tab', { name: 'Executiva' })).toHaveAttribute('aria-selected', 'true');
-    expect(screen.getByRole('tab', { name: 'Analitica' })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'Analítica' })).toBeInTheDocument();
     expect(screen.getByRole('tab', { name: 'Operacional' })).toBeInTheDocument();
     expect(screen.getByText('Principal destaque do periodo')).toBeInTheDocument();
     expect(screen.getByText('Linha do tempo principal')).toBeInTheDocument();
@@ -156,6 +156,26 @@ describe('DashboardHome', () => {
     expect(screen.getAllByText('SLA operacional').length).toBeGreaterThan(0);
   });
 
+  it('identifica os indicadores ficticios quando a demonstracao esta ativa', async () => {
+    const previousMockMode = process.env.NEXT_PUBLIC_USE_MOCK_DATA;
+    process.env.NEXT_PUBLIC_USE_MOCK_DATA = 'true';
+
+    try {
+      render(<DashboardHome />);
+
+      expect(
+        await screen.findByText('Demonstração · Dados fictícios para visualização'),
+      ).toBeInTheDocument();
+      expect(screen.queryByText(/KPIs reais do Oracle/i)).not.toBeInTheDocument();
+    } finally {
+      if (previousMockMode === undefined) {
+        delete process.env.NEXT_PUBLIC_USE_MOCK_DATA;
+      } else {
+        process.env.NEXT_PUBLIC_USE_MOCK_DATA = previousMockMode;
+      }
+    }
+  });
+
   it('renderiza fallback quando a carga falha', async () => {
     (fetchDashboardHome as jest.Mock).mockRejectedValueOnce(new Error('falha'));
 
@@ -163,7 +183,7 @@ describe('DashboardHome', () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText('Nao foi possivel carregar os indicadores de BI.'),
+        screen.getByText('Não foi possível carregar os indicadores de BI.'),
       ).toBeInTheDocument();
     });
   });
@@ -244,9 +264,9 @@ describe('DashboardHome', () => {
 
     render(<DashboardHome />);
 
-    await user.click(await screen.findByRole('tab', { name: 'Analitica' }));
+    await user.click(await screen.findByRole('tab', { name: 'Analítica' }));
 
-    expect(screen.getByRole('tab', { name: 'Analitica' })).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getByRole('tab', { name: 'Analítica' })).toHaveAttribute('aria-selected', 'true');
     expect(screen.getByText('Distribuicao por setor')).toBeInTheDocument();
     expect(screen.getByText('Performance dos KPIs')).toBeInTheDocument();
     expect(screen.getByText('Timeline comparativa')).toBeInTheDocument();

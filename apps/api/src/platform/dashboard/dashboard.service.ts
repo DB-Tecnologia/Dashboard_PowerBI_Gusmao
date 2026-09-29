@@ -192,7 +192,7 @@ type DashboardKpiDefinition = {
 };
 
 const BUSINESS_AREA_LABEL: Record<BusinessArea, string> = {
-  producao: 'Producao',
+  producao: 'Produção',
   comercial: 'Comercial',
   algodoeira: 'Algodoeira',
 };
@@ -341,7 +341,7 @@ export class DashboardService {
 
     if (provider !== 'oracle' || !this.sqlQueryService?.executeView) {
       throw new ServiceUnavailableException(
-        'Dados agricolas indisponiveis: configure Oracle/COMPASS ou habilite DATA_MODE=mock apenas no demo.',
+        'Dados agrícolas indisponíveis: configure Oracle/COMPASS ou habilite DATA_MODE=mock apenas no demo.',
       );
     }
 
@@ -453,79 +453,103 @@ export class DashboardService {
     const currentDate = new Date();
     const currentYear = currentDate.getFullYear();
     const monthDates = getTrailingMonthDates(currentDate, this.rangeMonths);
+    const farms = [
+      'Unidade Demo Norte',
+      'Unidade Demo Sul',
+      'Unidade Demo Leste',
+      'Unidade Demo Oeste',
+    ];
+    const varieties = ['FM 911', 'FM 945', 'NS75', '8010 VIP', 'FM 985', 'Demo 700'];
+    const crops = ['Milho', 'Algodão', 'Soja'];
+    const contractSeeds = [
+      { client: 'Cliente Demo 01', product: 'Soja em Grãos', quantity: 250000, shipped: 36420 },
+      { client: 'Cliente Demo 02', product: 'Milho em Grãos', quantity: 180000, shipped: 28000 },
+      { client: 'Cliente Demo 03', product: 'Algodão em Pluma', quantity: 150000, shipped: 35707 },
+      { client: 'Cliente Demo 04', product: 'Soja em Grãos', quantity: 210000, shipped: 84000 },
+      { client: 'Cliente Demo 05', product: 'Feijão em Grãos', quantity: 95000, shipped: 12500 },
+      { client: 'Cliente Demo 06', product: 'Milho em Grãos', quantity: 275000, shipped: 110000 },
+      { client: 'Cliente Demo 07', product: 'Sorgo em Grãos', quantity: 125000, shipped: 0 },
+      { client: 'Cliente Demo 08', product: 'Algodão em Pluma', quantity: 195000, shipped: 58500 },
+      { client: 'Cliente Demo 09', product: 'Soja em Grãos', quantity: 320000, shipped: 224000 },
+      { client: 'Cliente Demo 10', product: 'Milho em Grãos', quantity: 160000, shipped: 48000 },
+      { client: 'Cliente Demo 11', product: 'Feijão em Grãos', quantity: 110000, shipped: 22000 },
+      { client: 'Cliente Demo 12', product: 'Sorgo em Grãos', quantity: 140000, shipped: 42000 },
+    ];
 
     return {
-      plantio: monthDates.map((date, index) => ({
-        DESCRICAO_SAFRA: `${date.getFullYear()}/${date.getFullYear() + 1}`,
-        DESC_FAZENDA: index % 2 === 0 ? 'Fazenda Ceu Azul' : 'Fazenda Novo Horizonte',
-        NUMERO_TALHAO: `P-${String(index + 1).padStart(2, '0')}`,
-        DESC_VARIEDADE: index % 3 === 0 ? 'FM 911' : index % 3 === 1 ? 'FM 945' : 'NS75',
-        DESC_CULTURA: index % 4 === 0 ? 'Milho' : 'Algodao',
-        QTD_HA_EFETIVO: 24 + index * 3.75,
-        DATA_PLANTIO: new Date(date.getFullYear(), date.getMonth(), 10 + (index % 10)),
+      plantio: monthDates.flatMap((date, monthIndex) =>
+        Array.from({ length: 3 }, (_, slot) => {
+          const index = monthIndex * 3 + slot;
+
+          return {
+            DESCRICAO_SAFRA: `${date.getFullYear()}/${date.getFullYear() + 1}`,
+            DESC_FAZENDA: farms[(monthIndex + slot) % farms.length]!,
+            NUMERO_TALHAO: `P-${String(index + 1).padStart(3, '0')}`,
+            DESC_VARIEDADE: varieties[(monthIndex + slot) % varieties.length]!,
+            DESC_CULTURA: crops[(monthIndex + slot) % crops.length]!,
+            QTD_HA_EFETIVO: 24 + index * 1.85,
+            DATA_PLANTIO: new Date(
+              date.getFullYear(),
+              date.getMonth(),
+              5 + ((monthIndex + slot * 7) % 20),
+            ),
+          };
+        }),
+      ),
+      colheita: monthDates.flatMap((date, monthIndex) =>
+        Array.from({ length: 3 }, (_, slot) => {
+          const index = monthIndex * 3 + slot;
+
+          return {
+            DESCRICAO_SAFRA: `${date.getFullYear()}/${date.getFullYear() + 1}`,
+            DESC_FAZENDA: farms[(monthIndex + slot + 1) % farms.length]!,
+            NUMERO_TALHAO: `C-${String(index + 1).padStart(3, '0')}`,
+            DESC_VARIEDADE: varieties[(monthIndex + slot + 2) % varieties.length]!,
+            DESC_CULTURA: crops[(monthIndex + slot + 1) % crops.length]!,
+            QTD_HA_EFETIVO: 18 + index * 1.45,
+            DATA_LANCAMENTO: new Date(
+              date.getFullYear(),
+              date.getMonth(),
+              7 + ((monthIndex + slot * 5) % 20),
+            ),
+          };
+        }),
+      ),
+      contratos: contractSeeds.map((contract, index) => ({
+        SEQ_PLA_CONTRATO: `DEMO-${String(index + 1).padStart(4, '0')}`,
+        NOME_CLIENTE: contract.client,
+        DESCRICAO_PRODUTO: contract.product,
+        QUANTIDADE: contract.quantity,
+        QTDE_EMBARC: contract.shipped,
+        QTDE_TON: contract.quantity / 1000,
+        QTDE_EMBARC_TON: contract.shipped / 1000,
+        SALDO: contract.quantity - contract.shipped,
+        SALDO_TON: (contract.quantity - contract.shipped) / 1000,
+        DEVOLUCAO: 0,
+        STATUS: index % 4 === 3 ? 'C' : 'A',
       })),
-      colheita: monthDates.map((date, index) => ({
-        DESCRICAO_SAFRA: `${date.getFullYear()}/${date.getFullYear() + 1}`,
-        DESC_FAZENDA: index % 2 === 0 ? 'Fazenda Herminia' : 'Fazenda Santa Luzia',
-        NUMERO_TALHAO: `C-${String(index + 1).padStart(2, '0')}`,
-        DESC_VARIEDADE: index % 2 === 0 ? '8010 VIP' : 'FM 985',
-        DESC_CULTURA: index % 3 === 0 ? 'Milho' : 'Algodao',
-        QTD_HA_EFETIVO: 18 + index * 2.9,
-        DATA_LANCAMENTO: new Date(date.getFullYear(), date.getMonth(), 12 + (index % 8)),
-      })),
-      contratos: [
-        {
-          SEQ_PLA_CONTRATO: '25040802',
-          NOME_CLIENTE: 'Clodoveu Franciosi',
-          DESCRICAO_PRODUTO: 'Soja em Graos',
-          QUANTIDADE: 250000,
-          QTDE_EMBARC: 36420,
-          QTDE_TON: 250,
-          QTDE_EMBARC_TON: 36.42,
-          SALDO: 213580,
-          SALDO_TON: 213.58,
-          DEVOLUCAO: 0,
-          STATUS: 'A',
-        },
-        {
-          SEQ_PLA_CONTRATO: '29046702',
-          NOME_CLIENTE: 'Rogerio Augusto Franciosi',
-          DESCRICAO_PRODUTO: 'Soja em Graos',
-          QUANTIDADE: 250000,
-          QTDE_EMBARC: 0,
-          QTDE_TON: 250,
-          QTDE_EMBARC_TON: 0,
-          SALDO: 250000,
-          SALDO_TON: 250,
-          DEVOLUCAO: 0,
-          STATUS: 'C',
-        },
-        {
-          SEQ_PLA_CONTRATO: '17526302',
-          NOME_CLIENTE: 'Agricola Ferrari Ltda',
-          DESCRICAO_PRODUTO: 'Painco em Graos Preto',
-          QUANTIDADE: 150000,
-          QTDE_EMBARC: 35707,
-          QTDE_TON: 150,
-          QTDE_EMBARC_TON: 35.707,
-          SALDO: 114293,
-          SALDO_TON: 114.293,
-          DEVOLUCAO: 0,
-          STATUS: 'A',
-        },
-      ],
-      embarques: monthDates.map((date, index) => ({
-        SEQ_PLA_INSTRUCAO: `7331${String(index + 1).padStart(3, '0')}`,
-        SEQ_PLA_CONTRATO: `7328${String((index % 4) + 1).padStart(3, '0')}`,
-        NR_INSTRUCAO: `INST-${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`,
-        COD_SAFRA: currentYear,
-        DATA_INSTRUCAO: new Date(date.getFullYear(), date.getMonth(), 5 + (index % 12)),
-        QUANTIDADE: 45000 + index * 2000,
-        FARDOS: 180 + index * 12,
-        CLIENTE_DESTINO: index % 2 === 0 ? 'Destino 1' : 'Destino 2',
-        CUMPRIDA: 'N',
-        CANCELADO: 'N',
-      })),
+      embarques: monthDates.flatMap((date, monthIndex) =>
+        Array.from({ length: 2 }, (_, slot) => {
+          const index = monthIndex * 2 + slot;
+
+          return {
+            SEQ_PLA_INSTRUCAO: `DEMO-EMB-${String(index + 1).padStart(3, '0')}`,
+            SEQ_PLA_CONTRATO: `DEMO-${String((index % contractSeeds.length) + 1).padStart(4, '0')}`,
+            NR_INSTRUCAO: `INST-${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${slot + 1}`,
+            COD_SAFRA: currentYear,
+            DATA_INSTRUCAO: new Date(
+              date.getFullYear(),
+              date.getMonth(),
+              5 + ((monthIndex + slot * 6) % 20),
+            ),
+            QUANTIDADE: 22000 + index * 1800,
+            FARDOS: 120 + index * 9,
+            CLIENTE_DESTINO: `Destino Demo ${((monthIndex + slot) % 4) + 1}`,
+            CUMPRIDA: index % 4 === 0 ? 'S' : 'N',
+            CANCELADO: 'N',
+          };
+        }),
+      ),
     };
   }
 
@@ -544,7 +568,7 @@ export class DashboardService {
 const KPI_DEFINITIONS: DashboardKpiDefinition[] = [
   {
     id: 'producao-plantio-area',
-    title: 'Area plantada',
+    title: 'Área plantada',
     businessArea: 'producao',
     unit: 'number',
     getValue: (dataset) => sumBy(dataset.plantio, (row) => toNumber(row.QTD_HA_EFETIVO)),
@@ -630,7 +654,7 @@ const KPI_DEFINITIONS: DashboardKpiDefinition[] = [
   },
   {
     id: 'producao-operacoes-plantio',
-    title: 'Operacoes de plantio',
+    title: 'Operações de plantio',
     businessArea: 'producao',
     unit: 'number',
     getValue: (dataset) => dataset.plantio.length,
@@ -685,7 +709,7 @@ const KPI_DEFINITIONS: DashboardKpiDefinition[] = [
   },
   {
     id: 'producao-colheita-area',
-    title: 'Area colhida',
+    title: 'Área colhida',
     businessArea: 'producao',
     unit: 'number',
     getValue: (dataset) => sumBy(dataset.colheita, (row) => toNumber(row.QTD_HA_EFETIVO)),
@@ -1204,7 +1228,7 @@ const KPI_DEFINITIONS: DashboardKpiDefinition[] = [
   },
   {
     id: 'algodoeira-fardos',
-    title: 'Producao de fardos',
+    title: 'Produção de fardos',
     businessArea: 'algodoeira',
     unit: 'number',
     getValue: (dataset) => sumBy(dataset.embarques, (row) => toNumber(row.FARDOS)),
@@ -1578,7 +1602,7 @@ function buildGroupedRows(grouped: Map<string, number>): DashboardDrilldownRespo
   const rows = Array.from(grouped.entries())
     .map(([period, value]) => ({ period, value: round(value) }))
     .sort((a, b) => b.value - a.value)
-    .slice(0, 8);
+    .slice(0, 12);
 
   let previousValue = 0;
 

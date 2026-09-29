@@ -176,6 +176,13 @@ export class UsersRepository {
       ['viewer'],
       ['comercial'],
     );
+    this.addUser(
+      'demo-viewer-diretoria',
+      'viewer.diretoria@example.com',
+      password,
+      ['viewer'],
+      ['diretoria', 'financeiro', 'comercial', 'operacoes'],
+    );
   }
 
   private addUser(

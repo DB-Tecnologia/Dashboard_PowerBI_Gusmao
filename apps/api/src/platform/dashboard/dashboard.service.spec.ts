@@ -16,14 +16,14 @@ describe('DashboardService', () => {
     expect(home.kpis).toHaveLength(12);
     expect(home.businessAreas).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ businessArea: 'producao', label: 'Producao', total: 5 }),
+        expect.objectContaining({ businessArea: 'producao', label: 'Produção', total: 5 }),
         expect.objectContaining({ businessArea: 'comercial', label: 'Comercial', total: 4 }),
         expect.objectContaining({ businessArea: 'algodoeira', label: 'Algodoeira', total: 3 }),
       ]),
     );
     expect(home.charts.sectorDistribution).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ sector: 'Producao', total: 5 }),
+        expect.objectContaining({ sector: 'Produção', total: 5 }),
         expect.objectContaining({ sector: 'Comercial', total: 4 }),
         expect.objectContaining({ sector: 'Algodoeira', total: 3 }),
       ]),
@@ -32,7 +32,7 @@ describe('DashboardService', () => {
       expect.arrayContaining([
         expect.objectContaining({
           id: 'producao-plantio-area',
-          title: 'Area plantada',
+          title: 'Área plantada',
           businessArea: 'producao',
         }),
       ]),
@@ -184,6 +184,18 @@ describe('DashboardService', () => {
     expect(drilldown.rows[0]).toEqual(
       expect.objectContaining({ period: expect.any(String), value: expect.any(Number) }),
     );
+  });
+
+  it('oferece mais categorias para explorar os dados sintéticos', async () => {
+    const service = new DashboardService({} as never, {} as never);
+
+    const farms = await service.getKpiDrilldown('producao-plantio-area', [], 'fazenda');
+    const varieties = await service.getKpiDrilldown('producao-plantio-area', [], 'variedade');
+    const customers = await service.getKpiDrilldown('comercial-contratos', [], 'cliente');
+
+    expect(farms.rows.length).toBeGreaterThanOrEqual(4);
+    expect(varieties.rows.length).toBeGreaterThanOrEqual(6);
+    expect(customers.rows.length).toBeGreaterThanOrEqual(10);
   });
 
   it('retorna fallback para primeira dimensão quando dimensão inválida', async () => {

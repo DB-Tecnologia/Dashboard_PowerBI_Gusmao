@@ -37,14 +37,14 @@ import {
 import { KpiCard } from './kpi-card';
 
 const BUSINESS_AREA_LABEL: Record<BusinessArea, string> = {
-  producao: 'Producao',
+  producao: 'Produção',
   comercial: 'Comercial',
   algodoeira: 'Algodoeira',
 };
 
 const TAB_LABELS = {
   executiva: 'Executiva',
-  analitica: 'Analitica',
+  analitica: 'Analítica',
   operacional: 'Operacional',
 } as const;
 
@@ -59,6 +59,7 @@ type RankedKpi = KpiItem & {
 };
 
 export function DashboardHome({ kpis: initialKpis }: DashboardHomeProps) {
+  const isDemoMode = process.env.NEXT_PUBLIC_USE_MOCK_DATA === 'true';
   const [home, setHome] = useState<DashboardHomeResponse | null>(
     initialKpis
       ? {
@@ -88,7 +89,7 @@ export function DashboardHome({ kpis: initialKpis }: DashboardHomeProps) {
       const response = await fetchDashboardHome();
       setHome(response);
     } catch {
-      setErrorMessage('Nao foi possivel carregar os indicadores de BI.');
+      setErrorMessage('Não foi possível carregar os indicadores de BI.');
       setHome(null);
     } finally {
       setIsLoading(false);
@@ -219,7 +220,9 @@ export function DashboardHome({ kpis: initialKpis }: DashboardHomeProps) {
           />
           <CardTitle>Carregando indicadores</CardTitle>
           <CardDescription>
-            Consultando KPIs do Oracle e consolidando a home executiva.
+            {isDemoMode
+              ? 'Carregando os dados fictícios da demonstração.'
+              : 'Carregando os indicadores do período configurado.'}
           </CardDescription>
         </CardHeader>
       </Card>
@@ -241,9 +244,9 @@ export function DashboardHome({ kpis: initialKpis }: DashboardHomeProps) {
     return (
       <Card className="border-dashed text-center">
         <CardHeader>
-          <CardTitle>Nenhum KPI disponivel</CardTitle>
+          <CardTitle>Nenhum KPI disponível</CardTitle>
           <CardDescription>
-            Conecte a fonte Oracle para visualizar os indicadores executivos.
+            Verifique se há dados e se as permissões do seu perfil estão configuradas.
           </CardDescription>
         </CardHeader>
       </Card>
@@ -413,7 +416,7 @@ export function DashboardHome({ kpis: initialKpis }: DashboardHomeProps) {
     <section className="space-y-6" aria-labelledby="dashboard-home-title">
       <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
         <p className="text-sm font-semibold uppercase tracking-[0.2em] text-blue-700">
-          Oracle · Home executiva
+          {isDemoMode ? 'Demonstração · Dados fictícios para visualização' : 'Home executiva'}
         </p>
         <h1
           id="dashboard-home-title"
@@ -422,8 +425,9 @@ export function DashboardHome({ kpis: initialKpis }: DashboardHomeProps) {
           Dashboard Home
         </h1>
         <p className="mt-4 max-w-3xl text-sm leading-6 text-slate-600">
-          Visao executiva consolidada para Producao, Comercial e Algodoeira, com KPIs reais do
-          Oracle.
+          {isDemoMode
+            ? 'Visão executiva de Produção, Comercial e Algodoeira com dados fictícios para explorar indicadores e tendências.'
+            : 'Visão executiva de Produção, Comercial e Algodoeira com indicadores do período selecionado.'}
         </p>
         {errorMessage ? <p className="mt-3 text-sm text-rose-600">{errorMessage}</p> : null}
       </div>
