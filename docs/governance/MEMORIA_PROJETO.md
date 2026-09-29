@@ -52,8 +52,8 @@ O ambiente demo local é o principal critério de validação atual. Ele usa SQL
 
 - Branch de trabalho: `main`.
 - Remote esperado: `origin` apontando para `DB-Tecnologia/Dashboard_PowerBI_Gusmao`.
-- Commit da ampliação: `f022cb3` (`feat(demo): ampliar dados ficticios da demonstracao`); uma correção visual e sua validação estão sendo consolidadas nesta sessão.
-- A branch `main` contém dois commits locais antes da consolidação final desta sessão; não houve push.
+- Commit da ampliação: `9ff2ffe` (`feat(demo): ampliar dados fictícios da demonstração`), local.
+- Após o registro documental desta sessão, a branch `main` contém três commits locais à frente de `origin/main`; não houve push.
 
 ## Produto, stack e topologia
 

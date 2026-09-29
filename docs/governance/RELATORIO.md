@@ -1604,5 +1604,5 @@ Ambiente demo iniciado localmente com Docker Compose. A Web, API, SQL Server e R
 
 ### Commit e próximos passos
 
-- Commit de implementação: será consolidado nesta sessão em `feat(demo): ampliar dados fictícios da demonstração`; push não solicitado nem executado.
+- Commit de implementação: `9ff2ffe` (`feat(demo): ampliar dados fictícios da demonstração`), local; push não solicitado nem executado.
 - Próximos passos: persistência durável, integração de notificações/exportações Web à API, Oracle/COMPASS, reconciliação e hardening operacional.
