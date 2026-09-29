@@ -78,7 +78,7 @@ Nenhuma credencial real é criada, exposta ou versionada neste repositório.
 ## O que já está disponível
 
 - Autenticação, sessão e autorização por perfil, setor e permissão.
-- Dashboard inicial e home com KPIs e gráficos.
+- Home executiva de BI responsiva com KPIs sem repetição, séries históricas, destaque do período e identificação explícita dos dados de demonstração.
 - Catálogo, filtros, visualização e execução de relatórios.
 - Exportações controladas e auditadas.
 - Administração de usuários, grupos, permissões e configurações.

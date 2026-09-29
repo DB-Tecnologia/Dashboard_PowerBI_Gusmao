@@ -3,6 +3,15 @@
 **Projeto:** Dashboard Power BI
 **Atualizado em:** 2026-09-29
 
+## 2026-09-29 — Refinamento visual agro corporativo da home BI
+
+- A home autenticada usa fundo natural claro, cartões brancos, verde floresta, verde petróleo e âmbar; a fonte é a pilha nativa do sistema. A paleta é provisória porque a marca oficial não forneceu tokens.
+- A navegação autenticada vira menu acessível abaixo de 1024 px e barra lateral compacta fixa a partir desse ponto. A home apresenta cada resumo uma vez, identifica dados fictícios e período, e organiza gráfico principal, destaques, áreas e KPIs.
+- Gráficos e componentes compartilhados usam cores, legendas, tooltips, eixos e foco alinhados. Rótulos legados “Talhoes” e “Operacoes” são normalizados somente na apresentação.
+- Uma revisão em telas pequenas identificou que a altura integral de um cartão de KPI encobria os botões de drill-down; o estilo foi removido e o fluxo móvel foi coberto por E2E.
+- Nenhum endpoint, banco, contrato ou valor de dado foi alterado. Especificação e critérios: `docs/specs/bi/SPEC-dashboard-visual-agro-corporativo.md`.
+- Validação final: Web 43 suítes/147 testes, typecheck, build e E2E 8/8 aprovados; revisão visual a 390, 640, 1024 e 1440 px sem rolagem horizontal. Cores de texto medidas atendem contraste WCAG AA.
+
 ## 2026-09-29 — Realismo temporal da demonstração
 
 - A série do dashboard demo cobre 12 meses. Para manter cartões, deltas e gráfico comparáveis, KPIs com data mensal devem mostrar o mês atual e comparar com o mês anterior, enquanto o histórico permanece em 12 pontos.

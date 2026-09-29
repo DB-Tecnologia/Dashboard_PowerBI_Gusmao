@@ -205,6 +205,13 @@ Uma tarefa só é considerada pronta quando:
 
 Os detalhes e evidências estão em [Auditoria do ambiente local Docker](docs/audits/AUDITORIA_LOCAL_DOCKER_2026-09-29.md).
 
+### Refinamento visual da home BI — 2026-09-29
+
+- ✅ Concluída a home executiva com hierarquia única para os KPIs, identificação de dados fictícios e janela temporal, gráfico principal e destaques lado a lado, leitura por área e cartões de indicador.
+- ✅ Navegação autenticada compacta em telas grandes e recolhida em menu acessível abaixo de 1024 px; cores, tipografia, acentuação e gráficos foram padronizados.
+- ✅ Abas, drill-down e estados existentes preservados; sem alteração de API, banco ou valores dos dados.
+- ✅ Especificação, testes, revisão em 390/640/1024/1440 px, typecheck, build e Playwright registrados em `docs/specs/bi/SPEC-dashboard-visual-agro-corporativo.md`.
+
 ---
 
 _Este ROADMAP é a fonte única de verdade. Toda mudança de escopo ou prioridade deve ser refletida aqui e nos documentos vinculados em `docs/roadmap/`._

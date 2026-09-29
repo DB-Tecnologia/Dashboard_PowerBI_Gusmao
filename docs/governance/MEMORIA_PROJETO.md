@@ -36,6 +36,15 @@ O ambiente demo local é o principal critério de validação atual. Ele usa SQL
 - **Produção:** não liberada; a exigência da chave TOTP no boot foi concluída, mas ainda faltam integração Oracle/COMPASS, hardening operacional, SMTP real e demais itens do roadmap.
 - **BI de produção:** ainda não reconciliado com a fonte Oracle; não declarar KPIs produtivos como validados antes do smoke test e da reconciliação.
 
+### Entrega visual da home BI em 2026-09-29
+
+- A home executiva foi reorganizada para exibir uma única vez os KPIs de resumo, identificar dados fictícios e período, aproximar gráfico principal e destaques, e mostrar abaixo leitura por área e cartões de indicadores.
+- O shell autenticado combina barra lateral compacta fixa a partir de 1024 px com menu acessível em telas menores. Tokens agro corporativos, fontes do sistema, acentuação, tooltips, eixos e legendas foram padronizados.
+- A normalização dos rótulos “Talhões” e “Operações” atua somente na camada visual; API, banco, contratos e valores dos dados permaneceram inalterados.
+- Revisão responsiva: 390, 640, 1024 e 1440 px sem rolagem horizontal; foco e menu móvel exercitados; contrastes principais entre 5,02:1 e 15,36:1.
+- Validação: Web 43 suítes/147 testes; typecheck; build; E2E dashboard 8/8; especificação em `docs/specs/bi/SPEC-dashboard-visual-agro-corporativo.md`.
+- Risco remanescente: os tokens agro corporativos são direção provisória até receber identidade visual oficial. Nenhuma integração de BI real foi adicionada nesta entrega.
+
 ### Auditoria local em 2026-09-29
 
 - O Compose demo subiu com Web, API, SQL Server e Redis. HTTP da Web, healthchecks da API/SQL, login demo e uma consulta SQL autenticada foram validados.
@@ -52,8 +61,8 @@ O ambiente demo local é o principal critério de validação atual. Ele usa SQL
 
 - Branch de trabalho: `main`.
 - Remote esperado: `origin` apontando para `DB-Tecnologia/Dashboard_PowerBI_Gusmao`.
-- Commit de implementação mais recente: `c6dc17a` (`feat(demo): distribuir dados fictícios em períodos variados`), local.
-- Após o registro documental desta sessão, a branch `main` contém cinco commits locais à frente de `origin/main`; não houve push.
+- Commit de implementação mais recente: `d619af5` (`style(web): renovar visual do dashboard`), local.
+- A documentação da entrega visual será registrada em commit separado nesta sessão. A branch `main` está seis commits à frente de `origin/main`; não houve push.
 
 ## Produto, stack e topologia
 
@@ -180,6 +189,16 @@ Na auditoria local de 2026-09-29 passaram novamente `pnpm verify:workspace`, `pn
 | 2026-08-25 | Cliente Web envia Bearer nas operações autenticadas de 2FA          | Corrigir chamadas de perfil que chegavam à API sem autenticação           | Setup, verificação e desativação 2FA passam a funcionar no navegador    |
 
 ## Linha do tempo de tarefas
+
+### 2026-09-29 — Refinar visual do dashboard
+
+- **Objetivo:** melhorar a leitura executiva e a apresentação ao cliente da home BI, navegação autenticada e gráficos compartilhados.
+- **Entrega:** identidade agro corporativa provisória; sidebar compacta em desktop e menu móvel acessível; resumo sem KPIs repetidos; identificação de dados fictícios e histórico; gráficos e textos padronizados. Removida a altura que encobria a ação de drill-down em cartões móveis.
+- **Escopo:** somente frontend e testes. API, banco, contratos e valores de dados não foram alterados. Critérios e impactos: `docs/specs/bi/SPEC-dashboard-visual-agro-corporativo.md`.
+- **Validações:** Web 43 suítes/147 testes; typecheck; build; Playwright 8/8; revisão em 390, 640, 1024 e 1440 px sem rolagem horizontal; contraste de texto acima de 4,5:1.
+- **Risco:** paleta provisória até a entrega dos tokens da marca oficial.
+- **Commit/push:** `d619af5` (`style(web): renovar visual do dashboard`), local; commit documental separado nesta sessão; sem push.
+- **Próximos passos:** alinhar a paleta com a marca oficial quando recebida; seguir com integração Oracle/COMPASS, persistência durável e fechamento das lacunas V1.
 
 ### 2026-09-29 — Montagem local no Docker e auditoria do runtime
 

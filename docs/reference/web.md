@@ -35,6 +35,10 @@ A sessão do frontend agora fica em `sessionStorage`, remove a dependência oper
 - a Web não depende mais de leituras diretas do Supabase nesses fluxos principais da plataforma.
 - a home autenticada agora usa `GET /dashboard/home` e renderiza charts reais com Recharts (BarChart, LineChart, PieChart, AreaChart);
 - no modo demonstração, a home identifica explicitamente os dados fictícios e mostra o período de histórico; as séries sintéticas mensais de Produção, Comercial e Algodoeira cobrem 12 meses, comparando o mês atual ao anterior;
+- a home BI tem hierarquia executiva: título “Visão geral”, KPIs de resumo sem repetição, identificação de demonstração e período, linha do tempo ao lado dos destaques, leitura por área e cartões de KPI; as abas Executiva, Analítica e Operacional e o drill-down são preservados;
+- a navegação autenticada usa uma barra lateral compacta fixa a partir de 1024 px e um menu móvel acessível em larguras menores; o layout foi revisado a 390, 640, 1024 e 1440 px sem rolagem horizontal;
+- a identidade da home usa fundo `#F6F7F2`, cartões brancos, texto `#17211B`, floresta `#14532D`, petróleo `#0F766E` e âmbar `#B45309`; a fonte é nativa do sistema. A paleta permanece provisória até a entrega da identidade visual oficial;
+- os gráficos compartilhados receberam tokens de cor, rótulos, eixos, legendas e tooltips padronizados; rótulos legados de KPI são normalizados apenas na camada de exibição;
 - componentes de gráfico reutilizáveis em `components/charts/` (BarChartWidget, LineChartWidget, PieChartWidget, AreaChartWidget, ChartTooltip);
 - cada KPI da home já abre um drill-down completo consumindo `GET /dashboard/kpis/:kpiId/drilldown?dimension=...` + `GET /dashboard/kpis/:kpiId/history`, com seletor de dimensão, breadcrumb, resumo, gráfico de evolução de 12 meses e tabela comparativa;
 - a tela de detalhe do relatório já consegue solicitar exportações via modal com seleção de formato (PDF, Excel, CSV, JSON);

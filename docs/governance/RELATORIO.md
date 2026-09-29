@@ -1,9 +1,32 @@
 # RELATORIO.md — Registro Diário de Desenvolvimento
 
 **Projeto:** Dashboard Power BI
-**Atualizado em:** 2026-08-25
+**Atualizado em:** 2026-09-29
 
 > As entradas anteriores a 24/08/2026 preservam os caminhos da estrutura documental vigente na data de cada registro. A estrutura atual e mantida em `docs/INDEX.md`; referencias historicas abaixo nao representam arquivos ausentes.
+
+## 2026-09-29 — Refinamento visual da home BI
+
+### Entrega
+
+- A home agora tem leitura executiva: KPIs de resumo aparecem uma vez, dados fictícios e janela temporal estão visíveis, e a linha do tempo fica junto aos destaques antes da leitura por área e dos cartões de KPI.
+- A navegação autenticada usa barra lateral fixa compacta em telas grandes e menu móvel acessível abaixo de 1024 px. Cores, foco, tipografia, acentuação, eixos, legendas e tooltips seguem a identidade agro corporativa definida na especificação.
+- Corrigido um cartão de KPI que cobria o botão de drill-down em telas estreitas; a jornada móvel também entrou na cobertura E2E.
+- Arquivos criados/modificados: especificação SDD da home BI, README, roadmap, contexto, memória, relatório diário, referência Web; componentes da home, shell autenticado, botões, gráficos, tokens CSS/Tailwind, helpers de rótulos, testes de componentes e E2E.
+- Não houve alteração da API, banco, contrato ou valores dos dados. A paleta é provisória e deve ser alinhada à marca oficial quando fornecida.
+
+### Validações
+
+- Web: **43 suítes / 147 testes aprovados**.
+- `pnpm typecheck`: aprovado; `pnpm build`: aprovado.
+- Playwright em Chromium, `tests/e2e/auth-dashboard.spec.ts`: **8/8 aprovados**, com menu móvel e drill-down.
+- Revisão visual a 390, 640, 1024 e 1440 px sem rolagem horizontal; contraste medido para as cores de texto acima de 4,5:1.
+- A revisão de estados de carregamento/erro/vazio foi feita nos componentes já existentes e suas coberturas foram preservadas.
+
+### Commits
+
+- Implementação: `d619af5` — `style(web): renovar visual do dashboard` (local).
+- Documentação: commit separado nesta sessão; hash informado na entrega. Sem push.
 
 ## 2026-08-25 — P1-03: expansão dos testes E2E
 
