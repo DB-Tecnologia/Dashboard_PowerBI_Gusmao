@@ -30,6 +30,7 @@ Este indice separa a documentacao vigente do historico preservado. Os quatro doc
 
 ## Auditorias
 
+- [Auditoria do ambiente local Docker (2026-09-29)](audits/AUDITORIA_LOCAL_DOCKER_2026-09-29.md)
 - [Analise de aderencia V1](audits/ANALISE_ESCOPO_V1.md)
 - [Auditoria completa](audits/AUDITORIA_PROJETO.md)
 - [Falhas identificadas](audits/FALHAS.md)

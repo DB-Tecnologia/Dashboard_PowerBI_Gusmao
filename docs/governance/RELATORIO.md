@@ -1541,3 +1541,34 @@ Implementado editor visual drag-and-drop completo para dashboards personalizados
 1. Conectar widget `table` a relatórios reais
 2. Adicionar whitelist de URLs para widgets `iframe`
 3. Fase 4: Hardening de sessão e 2FA por role
+
+## 2026-09-29 — Montagem local no Docker e auditoria do runtime
+
+### Resumo
+
+Ambiente demo iniciado localmente com Docker Compose. A Web, API, SQL Server e Redis estão ativos. A verificação HTTP confirmou Web 200, API `health=ok`, SQL `health=ok`, login demo e leitura autenticada de três linhas da view SQL demo.
+
+### Achados registrados
+
+- O BI agrícola de produção permanece indisponível na demo: `/api/v1/bi/production/summary` respondeu `not_configured` para `sqlserver-demo`; o refresh atual só faz smoke check.
+- Usuários são mantidos em memória no runtime atual. Notificações e histórico de exportações na Web ainda chamam `app-data.ts` e exibem fixtures no modo demo, apesar de existirem endpoints da API.
+- Dados do dashboard no modo `DATA_MODE=mock` são sintéticos. O TOTP da conta admin demo e seus logs não são apropriados para fora de um ambiente local isolado.
+- Dockerfiles não instalam com lockfile imutável; a documentação de escopo tem estados antigos. Evidências e próximos passos estão em `docs/audits/AUDITORIA_LOCAL_DOCKER_2026-09-29.md`.
+
+### Arquivos criados/modificados
+
+- Criado relatório de auditoria local; atualizado índice, roadmap, contexto e relatório diário.
+- Criado `infra/env/.env.demo` local a partir do template; o arquivo é ignorado pelo Git.
+- Nenhum código funcional foi alterado.
+
+### Validações
+
+- Aprovados: `pnpm verify:workspace`, `pnpm verify:env`, `pnpm verify:docker`, configuração do Compose e smoke checks HTTP.
+- Testes do monorepo, typecheck, lint e build não foram executados nesta auditoria.
+
+### Riscos e próximos passos
+
+- Persistir usuários e estado da plataforma, ligar telas de notificações/exportações à API, integrar Oracle/COMPASS e reconciliar indicadores.
+- Corrigir gestão de segredo/log TOTP do demo antes de qualquer exposição fora do computador local.
+- Alinhar escopo e matriz de aceite ao runtime. Não publicar nem usar dados de demonstração como dados do negócio.
+- Commit local desta auditoria será informado na entrega; push não solicitado e não executado.

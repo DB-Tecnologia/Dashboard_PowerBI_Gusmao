@@ -1,7 +1,16 @@
 # CONTEXTO.md — Contexto Vivo do Projeto
 
 **Projeto:** Dashboard Power BI
-**Atualizado em:** 2026-08-25
+**Atualizado em:** 2026-09-29
+
+## 2026-09-29 — Auditoria do ambiente local Docker
+
+- O Compose demo foi construído e iniciado localmente com Web, API, SQL Server demo e Redis; Web, API e healthcheck SQL responderam, e uma consulta autenticada leu três linhas da view financeira de demonstração.
+- A home permite dados sintéticos no `DATA_MODE=mock`; o contrato BI v1 corretamente respondeu `not_configured` para a fonte `sqlserver-demo`. Oracle/COMPASS, snapshots e reconciliação seguem pendentes.
+- `UsersRepository` mantém usuários em memória. No Compose demo, Supabase não está configurado e telas de notificações e histórico de exportações ainda usam o cliente legado de `app-data.ts`, em modo mock.
+- Risco de demonstração: TOTP da conta admin é pré-ativado; com a chave de criptografia vazia no template demo, o código atual é escrito no log. O ambiente e as credenciais são exclusivamente locais.
+- Divergência documental registrada: `docs/product/ESCOPO.md` ainda marca recursos presentes no runtime como pendentes. A auditoria e a ordem das lacunas foram registradas em `docs/audits/AUDITORIA_LOCAL_DOCKER_2026-09-29.md`.
+- Nenhuma mudança funcional foi feita. Os validadores workspace, env, Docker e docs passaram antes desta edição; o smoke check da aplicação passou. Testes automatizados, typecheck, lint e build completos não foram executados nesta tarefa.
 
 ## 2026-08-25 — Hardening P0-04 da chave TOTP
 

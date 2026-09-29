@@ -2,7 +2,7 @@
 
 **Projeto:** Dashboard Power BI Gusmão
 
-**Última atualização:** 2026-08-25
+**Última atualização:** 2026-09-29
 **Finalidade:** contexto consolidado e histórico de handoff técnico para agentes e colaboradores.
 
 ## Objetivo e leitura
@@ -36,11 +36,20 @@ O ambiente demo local é o principal critério de validação atual. Ele usa SQL
 - **Produção:** não liberada; a exigência da chave TOTP no boot foi concluída, mas ainda faltam integração Oracle/COMPASS, hardening operacional, SMTP real e demais itens do roadmap.
 - **BI de produção:** ainda não reconciliado com a fonte Oracle; não declarar KPIs produtivos como validados antes do smoke test e da reconciliação.
 
+### Auditoria local em 2026-09-29
+
+- O Compose demo subiu com Web, API, SQL Server e Redis. HTTP da Web, healthchecks da API/SQL, login demo e uma consulta SQL autenticada foram validados.
+- `/api/v1/bi/production/summary` respondeu `not_configured` para `sqlserver-demo`. A home permite fallback sintético no modo demo; BI real Oracle/COMPASS ainda não foi validado.
+- O `UsersRepository` mantém usuários em mapas em memória. Sem Supabase no demo, outros domínios com fallback também não são duráveis.
+- As telas de notificações e histórico de exportações usam o cliente `app-data.ts`, com fixtures locais no demo, embora clientes/rotas da API existam.
+- O admin demo solicita TOTP. Como a chave de criptografia do template local fica vazia, o código demo é escrito no log; o ambiente é somente para uso local.
+- Auditoria detalhada, evidências e ordem de fechamento: [`docs/audits/AUDITORIA_LOCAL_DOCKER_2026-09-29.md`](../audits/AUDITORIA_LOCAL_DOCKER_2026-09-29.md).
+
 ### Estado do Git
 
 - Branch de trabalho: `main`.
 - Remote esperado: `origin` apontando para `DB-Tecnologia/Dashboard_PowerBI_Gusmao`.
-- Último commit publicado antes desta tarefa: `aca4c2d` (`security: exigir chave TOTP no boot de producao`).
+- Último commit publicado antes desta tarefa: `67a9984` (`test: expandir testes E2E de administracao exportacoes e 2fa`).
 - O hash do commit desta tarefa será comunicado na entrega e incorporado no próximo snapshot, evitando referência circular.
 
 ## Produto, stack e topologia
@@ -127,14 +136,14 @@ As regras completas estão em [`AGENTS.md`](../../AGENTS.md). Em resumo:
 
 ## Roadmap e próximas prioridades
 
-As tarefas P0-02, P0-03, P1-02, P1-01 e P0-04 estão concluídas. As prioridades vigentes são:
+As tarefas P0-02, P0-03, P1-01, P1-02, P1-03 e P0-04 estão concluídas. A auditoria de 2026-09-29 confirmou estas prioridades:
 
-1. **P1-03:** ampliar E2E para filtros, exportação, administração e 2FA quando os fluxos existirem no runtime.
-2. **P1-04:** consolidar build e qualidade no CI.
-3. **P0-01:** preparar TLS/HTTPS de produção.
-4. **P1-05:** implementar SMTP real; o modo mock continua sendo uma limitação documentada.
-5. **P1-06 a P1-08:** logs estruturados, backup e rollback operacional.
-6. **Integração Oracle/COMPASS:** executar quando a infraestrutura fornecer os dados de conexão e acesso somente leitura.
+1. Persistir usuários e demais domínios da plataforma, eliminando fallback em memória em produção.
+2. Ligar as telas de notificações e histórico de exportações aos endpoints da API.
+3. Integrar Oracle/COMPASS com acesso somente leitura, implementar snapshots/frescor persistidos e reconciliar os KPIs.
+4. **P1-04:** consolidar build e qualidade no CI; corrigir instalação dos Dockerfiles para usar lockfile imutável.
+5. **P0-01/P1-05/P1-06 a P1-08:** preparar TLS/HTTPS, SMTP real, logs estruturados, backup e rollback operacional.
+6. Alinhar escopo, matriz de aceite e documentação à diferença entre interface, fluxo conectado, persistência e dado produtivo.
 
 A ordem final deve ser confirmada no `ROADMAP.md` e pode ser ajustada pelo risco de lançamento.
 
@@ -151,6 +160,8 @@ No último ciclo concluído, foram aprovados os gates abaixo:
 
 Essas evidências comprovam a base demo e a qualidade do código no ciclo registrado. Elas não substituem a validação Oracle, a reconciliação de KPIs nem o teste de produção.
 
+Na auditoria local de 2026-09-29 passaram novamente `pnpm verify:workspace`, `pnpm verify:env`, `pnpm verify:docker`, `pnpm verify:docs` e smoke checks HTTP de Web/API/SQL, login e consulta de relatório demo. A suíte completa, typecheck, lint e build não foram executados nessa tarefa.
+
 ## Decisões técnicas relevantes
 
 | Data       | Decisão                                                             | Motivo                                                                    | Impacto                                                                 |
@@ -166,6 +177,17 @@ Essas evidências comprovam a base demo e a qualidade do código no ciclo regist
 | 2026-08-25 | Cliente Web envia Bearer nas operações autenticadas de 2FA          | Corrigir chamadas de perfil que chegavam à API sem autenticação           | Setup, verificação e desativação 2FA passam a funcionar no navegador    |
 
 ## Linha do tempo de tarefas
+
+### 2026-09-29 — Montagem local no Docker e auditoria do runtime
+
+- **Objetivo:** iniciar o projeto localmente e comparar a demo, as rotas e os repositórios com o estado documentado.
+- **Resultado:** quatro serviços Docker ativos; healthchecks da API e SQL OK; Web HTTP 200; uma consulta SQL demo retornou três linhas.
+- **Lacunas confirmadas:** Oracle/COMPASS ainda não configurado; refresh BI apenas smoke check e estado em memória; usuários em memória; notificações e histórico de exportações da Web usam `app-data.ts` em modo demo; imagens Docker não fixam dependências com lockfile imutável.
+- **Documentação:** criado o relatório de auditoria e atualizados índice, roadmap, contexto e relatório diário.
+- **Validações:** `verify:workspace`, `verify:env`, `verify:docker`, `verify:docs`, Compose config e smoke checks HTTP aprovados. Testes do monorepo/typecheck/lint/build não executados.
+- **Segurança:** `.env.demo` local está ignorado pelo Git; nenhum segredo foi copiado para a documentação. O código demo de TOTP aparece nos logs de desenvolvimento e requer correção antes de exposição não local.
+- **Commit/push:** o commit documental será informado na entrega e consolidado no próximo snapshot; push não solicitado nem executado.
+- **Próximos passos:** persistência durável de usuários/plataforma; integração das telas de notificações/exportações à API; Oracle/COMPASS e reconciliação; hardening operacional e alinhamento do escopo.
 
 ### 2026-08-25 — P0-02: validar configuração do Playwright
 
@@ -239,6 +261,10 @@ Essas evidências comprovam a base demo e a qualidade do código no ciclo regist
 | Smoke queries e data de corte                | Pendente                             | Sem prova de consistência dos indicadores reais                                         |
 | Atualização idempotente e ledger de execução | Pendente                             | Frescor, watermark e último snapshot ainda precisam de fechamento produtivo             |
 | E2E expandido                                | Concluído em P1-03                   | 16 testes aprovados; histórico de exportação demo ainda depende de dados demonstrativos |
+| Persistência durável de usuários             | Pendente                             | `UsersRepository` usa mapas em memória no runtime atual                                  |
+| Notificações e histórico de exportação na Web | Pendente                            | As telas usam `app-data.ts`; ligar aos clientes e endpoints centralizados da API         |
+| Instalação Docker por lockfile               | Pendente                             | Dockerfiles usam instalação sem lockfile imutável                                        |
+| Alinhamento da documentação de escopo        | Pendente                             | O escopo histórico diverge das capacidades e integrações atuais                          |
 | SMTP real                                    | Pendente em P1-05                    | Notificações produtivas continuam dependendo do modo mock                               |
 | TLS, backup, rollback e logs operacionais    | Pendentes em P0-01/P1-06/P1-07/P1-08 | Hardening e operação de produção não concluídos                                         |
 

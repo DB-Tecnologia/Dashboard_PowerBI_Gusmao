@@ -1,7 +1,7 @@
 # ROADMAP.md — Roadmap de Desenvolvimento
 
 **Projeto:** Dashboard Power BI
-**Atualizado em:** 2026-08-25
+**Atualizado em:** 2026-09-29
 **Metodologia:** Specification-Driven Development (SDD) + Test-Driven Development (TDD)
 
 **Fonte única de verdade para acompanhamento do projeto com base no escopo V1.**
@@ -192,6 +192,16 @@ Uma tarefa só é considerada pronta quando:
 - ✅ Contrato BI v1 com fonte, frescor, filtros, resumo de produção Oracle e refresh idempotente.
 - ⏳ Oracle/COMPASS bloqueado até receber rede, host, service name e credencial somente leitura.
 - ⏳ Smoke queries de algodão, algodoeira e romaneios, reconciliação de KPIs e persistência durável do ledger de refresh.
+
+### Auditoria do runtime demo — 2026-09-29
+
+- ✅ Compose demo iniciado e validado: Web HTTP 200, API e SQL Server saudáveis, login demo e consulta de relatório de exemplo retornando três linhas.
+- ⏳ Integrar Oracle/COMPASS de verdade: o endpoint de produção permanece `not_configured` com a fonte SQL Server demo; o refresh atual só executa smoke check e mantém o estado em memória.
+- ⏳ Tornar durável a persistência de usuários e fechar a integração de notificações e histórico de exportação da Web com os endpoints da API.
+- ⏳ Tornar as imagens Docker reprodutíveis com instalação pelo lockfile.
+- ⏳ Alinhar escopo e matriz de aceite às capacidades do runtime e distinguir protótipo visual de fluxo persistente com dado real.
+
+Os detalhes e evidências estão em [Auditoria do ambiente local Docker](docs/audits/AUDITORIA_LOCAL_DOCKER_2026-09-29.md).
 
 ---
 
