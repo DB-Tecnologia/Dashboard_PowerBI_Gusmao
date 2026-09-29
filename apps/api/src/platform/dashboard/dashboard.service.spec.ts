@@ -98,18 +98,53 @@ describe('DashboardService', () => {
     );
   });
 
-  it('retorna comparativo anual para KPI comercial', async () => {
+  it('alinha o valor e a comparacao dos KPIs temporais com os dois meses mais recentes', async () => {
+    const service = new DashboardService({} as never, {} as never);
+    const monthlyKpiIds = [
+      'producao-plantio-area',
+      'producao-operacoes-plantio',
+      'producao-colheita-area',
+      'producao-variedades',
+      'producao-talhoes',
+      'comercial-contratos',
+      'comercial-quantidade-entregue',
+      'comercial-quantidade-pendente',
+      'comercial-quantidade-devolvida',
+      'algodoeira-contratos',
+      'algodoeira-embarques',
+      'algodoeira-fardos',
+    ];
+
+    const home = await service.getHome();
+
+    for (const kpiId of monthlyKpiIds) {
+      const kpi = home.kpis.find((item) => item.id === kpiId);
+      const history = await service.getKpiHistory(kpiId);
+      const currentMonth = history.periods[history.periods.length - 1];
+
+      expect(history.periods).toHaveLength(12);
+      if (kpiId !== 'comercial-contratos') {
+        expect(new Set(history.periods.map((period) => period.value)).size).toBeGreaterThan(1);
+      }
+      expect(kpi?.value).toBe(currentMonth?.value);
+      expect(kpi?.previousValue).toBe(currentMonth?.previousValue);
+    }
+  });
+
+  it('retorna historico mensal para KPI comercial sintetico', async () => {
     const service = new DashboardService({} as never, {} as never);
 
     const history = await service.getKpiHistory('comercial-quantidade-entregue');
 
     expect(history.kpiId).toBe('comercial-quantidade-entregue');
-    expect(history.granularity).toBe('annual-comparative');
+    expect(history.granularity).toBe('monthly');
     expect(history.rangeMonths).toBe(12);
+    expect(history.periods).toHaveLength(12);
+    expect(new Set(history.periods.map((period) => period.value)).size).toBeGreaterThan(1);
     expect(history.periods).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          period: expect.stringMatching(/^\d{4}$/),
+          period: expect.stringMatching(/^[A-Za-zÀ-ú]{3}\/\d{2}$/),
           value: expect.any(Number),
           previousValue: expect.any(Number),
           delta: expect.any(Number),

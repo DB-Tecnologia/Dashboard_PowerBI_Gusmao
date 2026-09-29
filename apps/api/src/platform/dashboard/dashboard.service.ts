@@ -140,6 +140,7 @@ type ColheitaRow = {
 };
 
 type ContratoRow = {
+  DATA_CONTRATO?: string | Date | null;
   SEQ_PLA_CONTRATO: string | null;
   NOME_CLIENTE: string | null;
   DESCRICAO_PRODUTO: string | null;
@@ -188,7 +189,7 @@ type DashboardKpiDefinition = {
   getPreviousValue: (dataset: OracleDashboardDataset, currentValue: number) => number;
   drilldownDimensions: DrilldownDimensionConfig[];
   getHistory: (dataset: OracleDashboardDataset, currentValue: number) => KpiHistoryItem[];
-  getHistoryGranularity: () => KpiHistoryResponse['granularity'];
+  getHistoryGranularity: (dataset: OracleDashboardDataset) => KpiHistoryResponse['granularity'];
 };
 
 const BUSINESS_AREA_LABEL: Record<BusinessArea, string> = {
@@ -327,7 +328,7 @@ export class DashboardService {
       kpiId: kpi.id,
       label: kpi.title,
       unit: kpi.unit,
-      granularity: definition.getHistoryGranularity(),
+      granularity: definition.getHistoryGranularity(dataset),
       rangeMonths: 12,
       periods: definition.getHistory(dataset, kpi.value),
     };
@@ -451,8 +452,10 @@ export class DashboardService {
 
   private getFallbackDataset(): OracleDashboardDataset {
     const currentDate = new Date();
-    const currentYear = currentDate.getFullYear();
     const monthDates = getTrailingMonthDates(currentDate, this.rangeMonths);
+    const plantioRowsByMonth = [2, 3, 4, 2, 3, 4, 2, 3, 4, 3, 3, 3];
+    const colheitaRowsByMonth = [3, 2, 4, 3, 2, 4, 3, 2, 4, 3, 3, 3];
+    const embarqueRowsByMonth = [2, 1, 3, 2, 1, 3, 2, 1, 3, 2, 2, 2];
     const farms = [
       'Unidade Demo Norte',
       'Unidade Demo Sul',
@@ -478,8 +481,13 @@ export class DashboardService {
 
     return {
       plantio: monthDates.flatMap((date, monthIndex) =>
-        Array.from({ length: 3 }, (_, slot) => {
-          const index = monthIndex * 3 + slot;
+        Array.from({ length: plantioRowsByMonth[monthIndex] ?? 3 }, (_, slot) => {
+          const index = monthIndex * 4 + slot;
+          const latestDay =
+            date.getFullYear() === currentDate.getFullYear() &&
+            date.getMonth() === currentDate.getMonth()
+              ? currentDate.getDate()
+              : 28;
 
           return {
             DESCRICAO_SAFRA: `${date.getFullYear()}/${date.getFullYear() + 1}`,
@@ -487,18 +495,23 @@ export class DashboardService {
             NUMERO_TALHAO: `P-${String(index + 1).padStart(3, '0')}`,
             DESC_VARIEDADE: varieties[(monthIndex + slot) % varieties.length]!,
             DESC_CULTURA: crops[(monthIndex + slot) % crops.length]!,
-            QTD_HA_EFETIVO: 24 + index * 1.85,
+            QTD_HA_EFETIVO: 24 + index * 1.85 + Math.sin(monthIndex * 0.8) * 3.5,
             DATA_PLANTIO: new Date(
               date.getFullYear(),
               date.getMonth(),
-              5 + ((monthIndex + slot * 7) % 20),
+              Math.min(5 + ((monthIndex + slot * 7) % 20), latestDay),
             ),
           };
         }),
       ),
       colheita: monthDates.flatMap((date, monthIndex) =>
-        Array.from({ length: 3 }, (_, slot) => {
-          const index = monthIndex * 3 + slot;
+        Array.from({ length: colheitaRowsByMonth[monthIndex] ?? 3 }, (_, slot) => {
+          const index = monthIndex * 4 + slot;
+          const latestDay =
+            date.getFullYear() === currentDate.getFullYear() &&
+            date.getMonth() === currentDate.getMonth()
+              ? currentDate.getDate()
+              : 28;
 
           return {
             DESCRICAO_SAFRA: `${date.getFullYear()}/${date.getFullYear() + 1}`,
@@ -506,41 +519,77 @@ export class DashboardService {
             NUMERO_TALHAO: `C-${String(index + 1).padStart(3, '0')}`,
             DESC_VARIEDADE: varieties[(monthIndex + slot + 2) % varieties.length]!,
             DESC_CULTURA: crops[(monthIndex + slot + 1) % crops.length]!,
-            QTD_HA_EFETIVO: 18 + index * 1.45,
+            QTD_HA_EFETIVO: 18 + index * 1.45 + Math.cos(monthIndex * 0.7) * 2.5,
             DATA_LANCAMENTO: new Date(
               date.getFullYear(),
               date.getMonth(),
-              7 + ((monthIndex + slot * 5) % 20),
+              Math.min(7 + ((monthIndex + slot * 5) % 20), latestDay),
             ),
           };
         }),
       ),
-      contratos: contractSeeds.map((contract, index) => ({
-        SEQ_PLA_CONTRATO: `DEMO-${String(index + 1).padStart(4, '0')}`,
-        NOME_CLIENTE: contract.client,
-        DESCRICAO_PRODUTO: contract.product,
-        QUANTIDADE: contract.quantity,
-        QTDE_EMBARC: contract.shipped,
-        QTDE_TON: contract.quantity / 1000,
-        QTDE_EMBARC_TON: contract.shipped / 1000,
-        SALDO: contract.quantity - contract.shipped,
-        SALDO_TON: (contract.quantity - contract.shipped) / 1000,
-        DEVOLUCAO: 0,
-        STATUS: index % 4 === 3 ? 'C' : 'A',
-      })),
+      contratos: monthDates.flatMap((date, monthIndex) =>
+        contractSeeds.map((contract, index) => {
+          const isCurrentMonth =
+            date.getFullYear() === currentDate.getFullYear() &&
+            date.getMonth() === currentDate.getMonth();
+          const latestDay = isCurrentMonth ? currentDate.getDate() : 28;
+          const seasonalFactor = Math.sin(monthIndex * 0.83 + index * 0.37);
+          const trendFactor = 0.88 + (monthIndex / Math.max(monthDates.length - 1, 1)) * 0.1;
+          const quantity = Math.round(contract.quantity * (trendFactor + seasonalFactor * 0.045));
+          const shipped = Math.round(
+            Math.min(
+              quantity * 0.86,
+              contract.shipped * (0.82 + monthIndex * 0.012 + seasonalFactor * 0.08),
+            ),
+          );
+          const returned = index % 4 === 1 ? round((shipped / 1000) * 0.018) : 0;
+
+          return {
+            DATA_CONTRATO: new Date(
+              date.getFullYear(),
+              date.getMonth(),
+              Math.min(3 + ((monthIndex * 5 + index * 2) % 24), latestDay),
+            ),
+            SEQ_PLA_CONTRATO: `DEMO-${date.getFullYear()}${String(date.getMonth() + 1).padStart(2, '0')}-${String(index + 1).padStart(4, '0')}`,
+            NOME_CLIENTE: contract.client,
+            DESCRICAO_PRODUTO: contract.product,
+            QUANTIDADE: quantity,
+            QTDE_EMBARC: shipped,
+            QTDE_TON: quantity / 1000,
+            QTDE_EMBARC_TON: shipped / 1000,
+            SALDO: quantity - shipped,
+            SALDO_TON: (quantity - shipped) / 1000,
+            DEVOLUCAO: returned,
+            STATUS:
+              isCurrentMonth || monthIndex > monthDates.length - 3
+                ? (index + monthIndex) % 4 === 3
+                  ? 'C'
+                  : 'A'
+                : (index + monthIndex) % 3 === 0
+                  ? 'C'
+                  : 'A',
+          };
+        }),
+      ),
       embarques: monthDates.flatMap((date, monthIndex) =>
-        Array.from({ length: 2 }, (_, slot) => {
-          const index = monthIndex * 2 + slot;
+        Array.from({ length: embarqueRowsByMonth[monthIndex] ?? 2 }, (_, slot) => {
+          const index = monthIndex * 3 + slot;
+          const latestDay =
+            date.getFullYear() === currentDate.getFullYear() &&
+            date.getMonth() === currentDate.getMonth()
+              ? currentDate.getDate()
+              : 28;
 
           return {
             SEQ_PLA_INSTRUCAO: `DEMO-EMB-${String(index + 1).padStart(3, '0')}`,
-            SEQ_PLA_CONTRATO: `DEMO-${String((index % contractSeeds.length) + 1).padStart(4, '0')}`,
+            SEQ_PLA_CONTRATO: `DEMO-${date.getFullYear()}${String(date.getMonth() + 1).padStart(2, '0')}-${String((index % contractSeeds.length) + 1).padStart(4, '0')}`,
             NR_INSTRUCAO: `INST-${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${slot + 1}`,
-            COD_SAFRA: currentYear,
+            COD_SAFRA: date.getFullYear(),
             DATA_INSTRUCAO: new Date(
               date.getFullYear(),
               date.getMonth(),
-              5 + ((monthIndex + slot * 6) % 20),
+              Math.min(5 + ((monthIndex + slot * 6) % 20), latestDay),
             ),
             QUANTIDADE: 22000 + index * 1800,
             FARDOS: 120 + index * 9,
@@ -571,7 +620,12 @@ const KPI_DEFINITIONS: DashboardKpiDefinition[] = [
     title: 'Área plantada',
     businessArea: 'producao',
     unit: 'number',
-    getValue: (dataset) => sumBy(dataset.plantio, (row) => toNumber(row.QTD_HA_EFETIVO)),
+    getValue: (dataset) =>
+      sumForCurrentMonth(
+        dataset.plantio,
+        (row) => row.DATA_PLANTIO,
+        (row) => toNumber(row.QTD_HA_EFETIVO),
+      ),
     getPreviousValue: (dataset, currentValue) =>
       getPreviousPeriodValue(
         dataset.plantio,
@@ -657,7 +711,7 @@ const KPI_DEFINITIONS: DashboardKpiDefinition[] = [
     title: 'Operações de plantio',
     businessArea: 'producao',
     unit: 'number',
-    getValue: (dataset) => dataset.plantio.length,
+    getValue: (dataset) => countForCurrentMonth(dataset.plantio, (row) => row.DATA_PLANTIO),
     getPreviousValue: (dataset, currentValue) =>
       getPreviousPeriodCount(dataset.plantio, (row) => row.DATA_PLANTIO, currentValue),
     drilldownDimensions: [
@@ -712,7 +766,12 @@ const KPI_DEFINITIONS: DashboardKpiDefinition[] = [
     title: 'Área colhida',
     businessArea: 'producao',
     unit: 'number',
-    getValue: (dataset) => sumBy(dataset.colheita, (row) => toNumber(row.QTD_HA_EFETIVO)),
+    getValue: (dataset) =>
+      sumForCurrentMonth(
+        dataset.colheita,
+        (row) => row.DATA_LANCAMENTO,
+        (row) => toNumber(row.QTD_HA_EFETIVO),
+      ),
     getPreviousValue: (dataset, currentValue) =>
       getPreviousPeriodValue(
         dataset.colheita,
@@ -799,8 +858,18 @@ const KPI_DEFINITIONS: DashboardKpiDefinition[] = [
     businessArea: 'producao',
     unit: 'number',
     getValue: (dataset) =>
-      countDistinct(dataset.plantio, (row) => normalizeLabel(row.DESC_VARIEDADE)),
-    getPreviousValue: (_, currentValue) => fallbackPreviousValue(currentValue),
+      countDistinctForCurrentMonth(
+        dataset.plantio,
+        (row) => row.DATA_PLANTIO,
+        (row) => normalizeLabel(row.DESC_VARIEDADE),
+      ),
+    getPreviousValue: (dataset, currentValue) =>
+      getPreviousPeriodDistinctCount(
+        dataset.plantio,
+        (row) => row.DATA_PLANTIO,
+        (row) => normalizeLabel(row.DESC_VARIEDADE),
+        currentValue,
+      ),
     drilldownDimensions: [
       {
         dimension: 'variedade',
@@ -858,8 +927,18 @@ const KPI_DEFINITIONS: DashboardKpiDefinition[] = [
     businessArea: 'producao',
     unit: 'number',
     getValue: (dataset) =>
-      countDistinct(dataset.plantio, (row) => normalizeLabel(row.NUMERO_TALHAO)),
-    getPreviousValue: (_, currentValue) => fallbackPreviousValue(currentValue),
+      countDistinctForCurrentMonth(
+        dataset.plantio,
+        (row) => row.DATA_PLANTIO,
+        (row) => normalizeLabel(row.NUMERO_TALHAO),
+      ),
+    getPreviousValue: (dataset, currentValue) =>
+      getPreviousPeriodDistinctCount(
+        dataset.plantio,
+        (row) => row.DATA_PLANTIO,
+        (row) => normalizeLabel(row.NUMERO_TALHAO),
+        currentValue,
+      ),
     drilldownDimensions: [
       {
         dimension: 'fazenda',
@@ -916,9 +995,8 @@ const KPI_DEFINITIONS: DashboardKpiDefinition[] = [
     title: 'Contratos comerciais',
     businessArea: 'comercial',
     unit: 'number',
-    getValue: (dataset) =>
-      countDistinct(dataset.contratos, (row) => normalizeLabel(row.SEQ_PLA_CONTRATO)),
-    getPreviousValue: (_, currentValue) => fallbackPreviousValue(currentValue),
+    getValue: (dataset) => countCommercialContracts(dataset),
+    getPreviousValue: (dataset, currentValue) => previousCommercialContracts(dataset, currentValue),
     drilldownDimensions: [
       {
         dimension: 'cliente',
@@ -926,7 +1004,7 @@ const KPI_DEFINITIONS: DashboardKpiDefinition[] = [
         getRows: (dataset) =>
           buildGroupedRows(
             groupDistinctCountBy(
-              dataset.contratos,
+              currentCommercialRows(dataset),
               (row) => normalizeLabel(row.NOME_CLIENTE),
               (row) => normalizeLabel(row.SEQ_PLA_CONTRATO),
             ),
@@ -938,7 +1016,7 @@ const KPI_DEFINITIONS: DashboardKpiDefinition[] = [
         getRows: (dataset) =>
           buildGroupedRows(
             groupDistinctCountBy(
-              dataset.contratos,
+              currentCommercialRows(dataset),
               (row) => normalizeLabel(row.DESCRICAO_PRODUTO),
               (row) => normalizeLabel(row.SEQ_PLA_CONTRATO),
             ),
@@ -950,19 +1028,16 @@ const KPI_DEFINITIONS: DashboardKpiDefinition[] = [
         getRows: (dataset) =>
           buildGroupedRows(
             groupDistinctCountBy(
-              dataset.contratos,
+              currentCommercialRows(dataset),
               (row) => normalizeLabel(row.STATUS),
               (row) => normalizeLabel(row.SEQ_PLA_CONTRATO),
             ),
           ),
       },
     ],
-    getHistory: (dataset, currentValue) =>
-      buildAnnualComparativeHistory(
-        groupAnnualDistinctCount(dataset.contratos, (row) => normalizeLabel(row.SEQ_PLA_CONTRATO)),
-        currentValue,
-      ),
-    getHistoryGranularity: () => 'annual-comparative',
+    getHistory: (dataset, currentValue) => commercialContractsHistory(dataset, currentValue),
+    getHistoryGranularity: (dataset) =>
+      hasDatedCommercialRows(dataset) ? 'monthly' : 'annual-comparative',
   },
   {
     id: 'comercial-quantidade-entregue',
@@ -970,8 +1045,13 @@ const KPI_DEFINITIONS: DashboardKpiDefinition[] = [
     businessArea: 'comercial',
     unit: 'number',
     getValue: (dataset) =>
-      sumBy(dataset.contratos, (row) => firstNonZero(row.QTDE_EMBARC_TON, row.QTDE_EMBARC)),
-    getPreviousValue: (_, currentValue) => fallbackPreviousValue(currentValue),
+      currentCommercialSum(dataset, (row) => firstNonZero(row.QTDE_EMBARC_TON, row.QTDE_EMBARC)),
+    getPreviousValue: (dataset, currentValue) =>
+      previousCommercialSum(
+        dataset,
+        (row) => firstNonZero(row.QTDE_EMBARC_TON, row.QTDE_EMBARC),
+        currentValue,
+      ),
     drilldownDimensions: [
       {
         dimension: 'produto',
@@ -979,7 +1059,7 @@ const KPI_DEFINITIONS: DashboardKpiDefinition[] = [
         getRows: (dataset) =>
           buildGroupedRows(
             groupSumBy(
-              dataset.contratos,
+              currentCommercialRows(dataset),
               (row) => normalizeLabel(row.DESCRICAO_PRODUTO),
               (row) => firstNonZero(row.QTDE_EMBARC_TON, row.QTDE_EMBARC),
             ),
@@ -991,7 +1071,7 @@ const KPI_DEFINITIONS: DashboardKpiDefinition[] = [
         getRows: (dataset) =>
           buildGroupedRows(
             groupSumBy(
-              dataset.contratos,
+              currentCommercialRows(dataset),
               (row) => normalizeLabel(row.NOME_CLIENTE),
               (row) => firstNonZero(row.QTDE_EMBARC_TON, row.QTDE_EMBARC),
             ),
@@ -1003,7 +1083,7 @@ const KPI_DEFINITIONS: DashboardKpiDefinition[] = [
         getRows: (dataset) =>
           buildGroupedRows(
             groupSumBy(
-              dataset.contratos,
+              currentCommercialRows(dataset),
               (row) => normalizeLabel(row.STATUS),
               (row) => firstNonZero(row.QTDE_EMBARC_TON, row.QTDE_EMBARC),
             ),
@@ -1011,13 +1091,13 @@ const KPI_DEFINITIONS: DashboardKpiDefinition[] = [
       },
     ],
     getHistory: (dataset, currentValue) =>
-      buildAnnualComparativeHistory(
-        groupAnnualSum(dataset.contratos, (row) =>
-          firstNonZero(row.QTDE_EMBARC_TON, row.QTDE_EMBARC),
-        ),
+      commercialSumHistory(
+        dataset,
+        (row) => firstNonZero(row.QTDE_EMBARC_TON, row.QTDE_EMBARC),
         currentValue,
       ),
-    getHistoryGranularity: () => 'annual-comparative',
+    getHistoryGranularity: (dataset) =>
+      hasDatedCommercialRows(dataset) ? 'monthly' : 'annual-comparative',
   },
   {
     id: 'comercial-quantidade-pendente',
@@ -1025,8 +1105,9 @@ const KPI_DEFINITIONS: DashboardKpiDefinition[] = [
     businessArea: 'comercial',
     unit: 'number',
     getValue: (dataset) =>
-      sumBy(dataset.contratos, (row) => firstNonZero(row.SALDO_TON, row.SALDO)),
-    getPreviousValue: (_, currentValue) => fallbackPreviousValue(currentValue),
+      currentCommercialSum(dataset, (row) => firstNonZero(row.SALDO_TON, row.SALDO)),
+    getPreviousValue: (dataset, currentValue) =>
+      previousCommercialSum(dataset, (row) => firstNonZero(row.SALDO_TON, row.SALDO), currentValue),
     drilldownDimensions: [
       {
         dimension: 'cliente',
@@ -1034,7 +1115,7 @@ const KPI_DEFINITIONS: DashboardKpiDefinition[] = [
         getRows: (dataset) =>
           buildGroupedRows(
             groupSumBy(
-              dataset.contratos,
+              currentCommercialRows(dataset),
               (row) => normalizeLabel(row.NOME_CLIENTE),
               (row) => firstNonZero(row.SALDO_TON, row.SALDO),
             ),
@@ -1046,7 +1127,7 @@ const KPI_DEFINITIONS: DashboardKpiDefinition[] = [
         getRows: (dataset) =>
           buildGroupedRows(
             groupSumBy(
-              dataset.contratos,
+              currentCommercialRows(dataset),
               (row) => normalizeLabel(row.DESCRICAO_PRODUTO),
               (row) => firstNonZero(row.SALDO_TON, row.SALDO),
             ),
@@ -1058,7 +1139,7 @@ const KPI_DEFINITIONS: DashboardKpiDefinition[] = [
         getRows: (dataset) =>
           buildGroupedRows(
             groupSumBy(
-              dataset.contratos,
+              currentCommercialRows(dataset),
               (row) => normalizeLabel(row.STATUS),
               (row) => firstNonZero(row.SALDO_TON, row.SALDO),
             ),
@@ -1066,19 +1147,18 @@ const KPI_DEFINITIONS: DashboardKpiDefinition[] = [
       },
     ],
     getHistory: (dataset, currentValue) =>
-      buildAnnualComparativeHistory(
-        groupAnnualSum(dataset.contratos, (row) => firstNonZero(row.SALDO_TON, row.SALDO)),
-        currentValue,
-      ),
-    getHistoryGranularity: () => 'annual-comparative',
+      commercialSumHistory(dataset, (row) => firstNonZero(row.SALDO_TON, row.SALDO), currentValue),
+    getHistoryGranularity: (dataset) =>
+      hasDatedCommercialRows(dataset) ? 'monthly' : 'annual-comparative',
   },
   {
     id: 'comercial-quantidade-devolvida',
     title: 'Quantidade devolvida',
     businessArea: 'comercial',
     unit: 'number',
-    getValue: (dataset) => sumBy(dataset.contratos, (row) => toNumber(row.DEVOLUCAO)),
-    getPreviousValue: (_, currentValue) => fallbackPreviousValue(currentValue),
+    getValue: (dataset) => currentCommercialSum(dataset, (row) => toNumber(row.DEVOLUCAO)),
+    getPreviousValue: (dataset, currentValue) =>
+      previousCommercialSum(dataset, (row) => toNumber(row.DEVOLUCAO), currentValue),
     drilldownDimensions: [
       {
         dimension: 'produto',
@@ -1086,7 +1166,7 @@ const KPI_DEFINITIONS: DashboardKpiDefinition[] = [
         getRows: (dataset) =>
           buildGroupedRows(
             groupSumBy(
-              dataset.contratos,
+              currentCommercialRows(dataset),
               (row) => normalizeLabel(row.DESCRICAO_PRODUTO),
               (row) => toNumber(row.DEVOLUCAO),
             ),
@@ -1098,7 +1178,7 @@ const KPI_DEFINITIONS: DashboardKpiDefinition[] = [
         getRows: (dataset) =>
           buildGroupedRows(
             groupSumBy(
-              dataset.contratos,
+              currentCommercialRows(dataset),
               (row) => normalizeLabel(row.NOME_CLIENTE),
               (row) => toNumber(row.DEVOLUCAO),
             ),
@@ -1110,7 +1190,7 @@ const KPI_DEFINITIONS: DashboardKpiDefinition[] = [
         getRows: (dataset) =>
           buildGroupedRows(
             groupSumBy(
-              dataset.contratos,
+              currentCommercialRows(dataset),
               (row) => normalizeLabel(row.STATUS),
               (row) => toNumber(row.DEVOLUCAO),
             ),
@@ -1118,11 +1198,9 @@ const KPI_DEFINITIONS: DashboardKpiDefinition[] = [
       },
     ],
     getHistory: (dataset, currentValue) =>
-      buildAnnualComparativeHistory(
-        groupAnnualSum(dataset.contratos, (row) => toNumber(row.DEVOLUCAO)),
-        currentValue,
-      ),
-    getHistoryGranularity: () => 'annual-comparative',
+      commercialSumHistory(dataset, (row) => toNumber(row.DEVOLUCAO), currentValue),
+    getHistoryGranularity: (dataset) =>
+      hasDatedCommercialRows(dataset) ? 'monthly' : 'annual-comparative',
   },
   {
     id: 'algodoeira-contratos',
@@ -1130,7 +1208,11 @@ const KPI_DEFINITIONS: DashboardKpiDefinition[] = [
     businessArea: 'algodoeira',
     unit: 'number',
     getValue: (dataset) =>
-      countDistinct(dataset.embarques, (row) => normalizeLabel(row.SEQ_PLA_CONTRATO)),
+      countDistinctForCurrentMonth(
+        dataset.embarques,
+        (row) => row.DATA_INSTRUCAO,
+        (row) => normalizeLabel(row.SEQ_PLA_CONTRATO),
+      ),
     getPreviousValue: (dataset, currentValue) =>
       getPreviousPeriodDistinctCount(
         dataset.embarques,
@@ -1192,7 +1274,7 @@ const KPI_DEFINITIONS: DashboardKpiDefinition[] = [
     title: 'Embarques programados',
     businessArea: 'algodoeira',
     unit: 'number',
-    getValue: (dataset) => dataset.embarques.length,
+    getValue: (dataset) => countForCurrentMonth(dataset.embarques, (row) => row.DATA_INSTRUCAO),
     getPreviousValue: (dataset, currentValue) =>
       getPreviousPeriodCount(dataset.embarques, (row) => row.DATA_INSTRUCAO, currentValue),
     drilldownDimensions: [
@@ -1231,7 +1313,12 @@ const KPI_DEFINITIONS: DashboardKpiDefinition[] = [
     title: 'Produção de fardos',
     businessArea: 'algodoeira',
     unit: 'number',
-    getValue: (dataset) => sumBy(dataset.embarques, (row) => toNumber(row.FARDOS)),
+    getValue: (dataset) =>
+      sumForCurrentMonth(
+        dataset.embarques,
+        (row) => row.DATA_INSTRUCAO,
+        (row) => toNumber(row.FARDOS),
+      ),
     getPreviousValue: (dataset, currentValue) =>
       getPreviousPeriodValue(
         dataset.embarques,
@@ -1406,6 +1493,43 @@ function groupMonthlySum<T>(
   return Array.from(grouped.entries()).map(([period, value]) => ({ period, value }));
 }
 
+function rowsForCurrentMonth<T>(
+  rows: T[],
+  getDate: (row: T) => string | Date | null | undefined,
+  referenceDate = new Date(),
+) {
+  return rows.filter((row) => {
+    const date = toDate(getDate(row));
+
+    return Boolean(
+      date &&
+      date.getFullYear() === referenceDate.getFullYear() &&
+      date.getMonth() === referenceDate.getMonth(),
+    );
+  });
+}
+
+function sumForCurrentMonth<T>(
+  rows: T[],
+  getDate: (row: T) => string | Date | null | undefined,
+  getValue: (row: T) => number,
+) {
+  const currentMonthRows = rowsForCurrentMonth(rows, getDate);
+  return groupMonthlySum(currentMonthRows, getDate, getValue)[0]?.value ?? 0;
+}
+
+function countForCurrentMonth<T>(rows: T[], getDate: (row: T) => string | Date | null | undefined) {
+  return rowsForCurrentMonth(rows, getDate).length;
+}
+
+function countDistinctForCurrentMonth<T>(
+  rows: T[],
+  getDate: (row: T) => string | Date | null | undefined,
+  getKey: (row: T) => string,
+) {
+  return countDistinct(rowsForCurrentMonth(rows, getDate), getKey);
+}
+
 function groupMonthlyCount<T>(rows: T[], getDate: (row: T) => string | Date | null | undefined) {
   return groupMonthlySum(rows, getDate, () => 1);
 }
@@ -1449,6 +1573,81 @@ function groupAnnualDistinctCount<T>(rows: T[], getKey: (row: T) => string) {
       value: countDistinct(rows, getKey),
     },
   ];
+}
+
+function hasDatedCommercialRows(dataset: OracleDashboardDataset) {
+  return dataset.contratos.some((row) => Boolean(toDate(row.DATA_CONTRATO)));
+}
+
+function currentCommercialRows(dataset: OracleDashboardDataset) {
+  return hasDatedCommercialRows(dataset)
+    ? rowsForCurrentMonth(dataset.contratos, (row) => row.DATA_CONTRATO)
+    : dataset.contratos;
+}
+
+function countCommercialContracts(dataset: OracleDashboardDataset) {
+  return countDistinct(currentCommercialRows(dataset), (row) =>
+    normalizeLabel(row.SEQ_PLA_CONTRATO),
+  );
+}
+
+function previousCommercialContracts(dataset: OracleDashboardDataset, currentValue: number) {
+  return hasDatedCommercialRows(dataset)
+    ? getPreviousPeriodDistinctCount(
+        dataset.contratos,
+        (row) => row.DATA_CONTRATO,
+        (row) => normalizeLabel(row.SEQ_PLA_CONTRATO),
+        currentValue,
+      )
+    : fallbackPreviousValue(currentValue);
+}
+
+function commercialContractsHistory(dataset: OracleDashboardDataset, currentValue: number) {
+  return hasDatedCommercialRows(dataset)
+    ? buildHistoryFromTimeline(
+        groupMonthlyDistinctCount(
+          dataset.contratos,
+          (row) => row.DATA_CONTRATO,
+          (row) => normalizeLabel(row.SEQ_PLA_CONTRATO),
+        ),
+        currentValue,
+      )
+    : buildAnnualComparativeHistory(
+        groupAnnualDistinctCount(dataset.contratos, (row) => normalizeLabel(row.SEQ_PLA_CONTRATO)),
+        currentValue,
+      );
+}
+
+function currentCommercialSum(
+  dataset: OracleDashboardDataset,
+  getValue: (row: ContratoRow) => number,
+) {
+  return hasDatedCommercialRows(dataset)
+    ? sumForCurrentMonth(dataset.contratos, (row) => row.DATA_CONTRATO, getValue)
+    : sumBy(dataset.contratos, getValue);
+}
+
+function previousCommercialSum(
+  dataset: OracleDashboardDataset,
+  getValue: (row: ContratoRow) => number,
+  currentValue: number,
+) {
+  return hasDatedCommercialRows(dataset)
+    ? getPreviousPeriodValue(dataset.contratos, (row) => row.DATA_CONTRATO, getValue, currentValue)
+    : fallbackPreviousValue(currentValue);
+}
+
+function commercialSumHistory(
+  dataset: OracleDashboardDataset,
+  getValue: (row: ContratoRow) => number,
+  currentValue: number,
+) {
+  return hasDatedCommercialRows(dataset)
+    ? buildHistoryFromTimeline(
+        groupMonthlySum(dataset.contratos, (row) => row.DATA_CONTRATO, getValue),
+        currentValue,
+      )
+    : buildAnnualComparativeHistory(groupAnnualSum(dataset.contratos, getValue), currentValue);
 }
 
 function buildHistoryFromTimeline(
@@ -1527,7 +1726,9 @@ function getPreviousPeriodValue<T>(
   getValue: (row: T) => number,
   currentValue: number,
 ) {
-  const timeline = groupMonthlySum(rows, getDate, getValue);
+  const timeline = groupMonthlySum(rows, getDate, getValue).sort((left, right) =>
+    comparePeriodLabels(left.period, right.period),
+  );
   return timeline.length > 1
     ? round(timeline[timeline.length - 2]!.value)
     : fallbackPreviousValue(currentValue);
@@ -1538,7 +1739,9 @@ function getPreviousPeriodCount<T>(
   getDate: (row: T) => string | Date | null | undefined,
   currentValue: number,
 ) {
-  const timeline = groupMonthlyCount(rows, getDate);
+  const timeline = groupMonthlyCount(rows, getDate).sort((left, right) =>
+    comparePeriodLabels(left.period, right.period),
+  );
   return timeline.length > 1
     ? round(timeline[timeline.length - 2]!.value)
     : fallbackPreviousValue(currentValue);
@@ -1550,7 +1753,9 @@ function getPreviousPeriodDistinctCount<T>(
   getKey: (row: T) => string,
   currentValue: number,
 ) {
-  const timeline = groupMonthlyDistinctCount(rows, getDate, getKey);
+  const timeline = groupMonthlyDistinctCount(rows, getDate, getKey).sort((left, right) =>
+    comparePeriodLabels(left.period, right.period),
+  );
   return timeline.length > 1
     ? round(timeline[timeline.length - 2]!.value)
     : fallbackPreviousValue(currentValue);

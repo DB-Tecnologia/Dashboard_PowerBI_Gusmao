@@ -4,6 +4,7 @@ import {
   AlertTriangle,
   ArrowLeft,
   ChartBar as BarChart3,
+  CalendarDays,
   ChevronRight,
   Clock3,
   Layers as Layers3,
@@ -47,6 +48,21 @@ const TAB_LABELS = {
   analitica: 'Analítica',
   operacional: 'Operacional',
 } as const;
+
+const MONTHLY_TREND_KPI_IDS = new Set([
+  'producao-plantio-area',
+  'producao-operacoes-plantio',
+  'producao-colheita-area',
+  'producao-variedades',
+  'producao-talhoes',
+  'comercial-contratos',
+  'comercial-quantidade-entregue',
+  'comercial-quantidade-pendente',
+  'comercial-quantidade-devolvida',
+  'algodoeira-contratos',
+  'algodoeira-embarques',
+  'algodoeira-fardos',
+]);
 
 type DashboardTab = keyof typeof TAB_LABELS;
 
@@ -128,11 +144,14 @@ export function DashboardHome({ kpis: initialKpis }: DashboardHomeProps) {
     [home?.kpis],
   );
 
-  const strongestPositive = rankedKpis[0] ?? null;
+  const monthlyTrendKpis = rankedKpis.filter((kpi) => MONTHLY_TREND_KPI_IDS.has(kpi.id));
+  const spotlightKpis = monthlyTrendKpis.length > 0 ? monthlyTrendKpis : rankedKpis;
+  const strongestPositive = spotlightKpis[0] ?? null;
   const strongestNegative =
-    [...rankedKpis].sort((left, right) => left.delta - right.delta)[0] ?? null;
+    [...spotlightKpis].sort((left, right) => left.delta - right.delta)[0] ?? null;
   const mostStable =
-    [...rankedKpis].sort((left, right) => Math.abs(left.delta) - Math.abs(right.delta))[0] ?? null;
+    [...spotlightKpis].sort((left, right) => Math.abs(left.delta) - Math.abs(right.delta))[0] ??
+    null;
 
   useEffect(() => {
     if (!strongestPositive) {
@@ -426,9 +445,13 @@ export function DashboardHome({ kpis: initialKpis }: DashboardHomeProps) {
         </h1>
         <p className="mt-4 max-w-3xl text-sm leading-6 text-slate-600">
           {isDemoMode
-            ? 'Visão executiva de Produção, Comercial e Algodoeira com dados fictícios para explorar indicadores e tendências.'
+            ? 'Visão executiva de Produção, Comercial e Algodoeira com dados fictícios e tendências ao longo de vários períodos.'
             : 'Visão executiva de Produção, Comercial e Algodoeira com indicadores do período selecionado.'}
         </p>
+        <div className="mt-3 inline-flex items-center gap-2 rounded-full bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-800">
+          <CalendarDays className="h-4 w-4" aria-hidden="true" />
+          <span>Histórico: últimos 12 meses</span>
+        </div>
         {errorMessage ? <p className="mt-3 text-sm text-rose-600">{errorMessage}</p> : null}
       </div>
 

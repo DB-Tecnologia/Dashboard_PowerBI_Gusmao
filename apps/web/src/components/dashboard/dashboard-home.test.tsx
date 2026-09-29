@@ -166,6 +166,7 @@ describe('DashboardHome', () => {
       expect(
         await screen.findByText('Demonstração · Dados fictícios para visualização'),
       ).toBeInTheDocument();
+      expect(screen.getByText('Histórico: últimos 12 meses')).toBeInTheDocument();
       expect(screen.queryByText(/KPIs reais do Oracle/i)).not.toBeInTheDocument();
     } finally {
       if (previousMockMode === undefined) {

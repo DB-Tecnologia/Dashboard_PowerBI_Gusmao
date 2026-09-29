@@ -27,6 +27,42 @@ describe('app-data demo client', () => {
     expect(demoSystemSettings).toHaveLength(8);
   });
 
+  it('deve distribuir eventos mock em varios meses com datas cronologicas coerentes', () => {
+    const minimumSpanInMilliseconds = 300 * 24 * 60 * 60 * 1000;
+    const notificationDates = demoNotifications.map((item) => Date.parse(item.created_at));
+    const exportDates = demoExportJobs.map((item) => Date.parse(item.created_at));
+    const settingDates = demoSystemSettings.map((item) => Date.parse(item.updated_at));
+
+    expect(Math.max(...notificationDates) - Math.min(...notificationDates)).toBeGreaterThanOrEqual(
+      minimumSpanInMilliseconds,
+    );
+    expect(Math.max(...exportDates) - Math.min(...exportDates)).toBeGreaterThanOrEqual(
+      minimumSpanInMilliseconds,
+    );
+    expect(Math.max(...settingDates) - Math.min(...settingDates)).toBeGreaterThanOrEqual(
+      180 * 24 * 60 * 60 * 1000,
+    );
+
+    for (const dates of [notificationDates, exportDates]) {
+      expect(dates).toEqual([...dates].sort((left, right) => right - left));
+    }
+
+    for (const notification of demoNotifications) {
+      if (notification.read_at) {
+        expect(Date.parse(notification.read_at)).toBeGreaterThanOrEqual(
+          Date.parse(notification.created_at),
+        );
+      }
+    }
+
+    for (const job of demoExportJobs) {
+      expect(Date.parse(job.expires_at)).toBeGreaterThan(Date.parse(job.created_at));
+      if (job.completed_at) {
+        expect(Date.parse(job.completed_at)).toBeGreaterThanOrEqual(Date.parse(job.created_at));
+      }
+    }
+  });
+
   it('deve permitir marcar notificacao isolada e em lote no client demo', async () => {
     const client = createAppDataClient({
       useMockData: true,

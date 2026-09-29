@@ -150,6 +150,30 @@ function demoTimestamp(dayOffset: number, hour = 9): string {
   return date.toISOString();
 }
 
+function demoMonthlyTimestamp(monthsAgo: number, hour = 9): string {
+  const now = new Date();
+
+  if (monthsAgo === 0) {
+    now.setUTCHours(Math.min(hour, now.getUTCHours()), 0, 0, 0);
+    return now.toISOString();
+  }
+
+  const date = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - monthsAgo, 1));
+  const lastDayOfMonth = new Date(
+    Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + 1, 0),
+  ).getUTCDate();
+  date.setUTCDate(Math.min(now.getUTCDate(), lastDayOfMonth));
+  date.setUTCHours(hour, 0, 0, 0);
+
+  return date.toISOString();
+}
+
+function addDemoDays(timestamp: string, dayOffset: number): string {
+  const date = new Date(timestamp);
+  date.setUTCDate(date.getUTCDate() + dayOffset);
+  return date.toISOString();
+}
+
 export const demoNotifications: NotificationItem[] = [
   {
     id: 'notif-1',
@@ -158,7 +182,7 @@ export const demoNotifications: NotificationItem[] = [
     message: 'O relatório financeiro mensal fictício já pode ser baixado.',
     related_resource_id: 'export-1',
     is_read: false,
-    created_at: demoTimestamp(0, 9),
+    created_at: demoMonthlyTimestamp(0, 9),
   },
   {
     id: 'notif-2',
@@ -167,8 +191,8 @@ export const demoNotifications: NotificationItem[] = [
     message: 'O perfil de demonstração pode consultar o dashboard Comercial.',
     related_resource_id: 'group-2',
     is_read: true,
-    read_at: demoTimestamp(-1, 16),
-    created_at: demoTimestamp(-1, 15),
+    read_at: demoMonthlyTimestamp(1, 16),
+    created_at: demoMonthlyTimestamp(1, 15),
   },
   {
     id: 'notif-3',
@@ -176,7 +200,7 @@ export const demoNotifications: NotificationItem[] = [
     title: 'Carga de KPI realizada',
     message: 'Os indicadores fictícios da demonstração foram atualizados.',
     is_read: false,
-    created_at: demoTimestamp(-2, 11),
+    created_at: demoMonthlyTimestamp(2, 11),
   },
   {
     id: 'notif-4',
@@ -185,8 +209,8 @@ export const demoNotifications: NotificationItem[] = [
     message: 'O relatório de filas fictícias está disponível para consulta.',
     related_resource_id: 'report-3',
     is_read: true,
-    read_at: demoTimestamp(-3, 13),
-    created_at: demoTimestamp(-3, 12),
+    read_at: demoMonthlyTimestamp(3, 13),
+    created_at: demoMonthlyTimestamp(3, 12),
   },
   {
     id: 'notif-5',
@@ -195,7 +219,7 @@ export const demoNotifications: NotificationItem[] = [
     message: 'O arquivo demonstrativo de contratos foi gerado.',
     related_resource_id: 'export-5',
     is_read: false,
-    created_at: demoTimestamp(-4, 10),
+    created_at: demoMonthlyTimestamp(4, 10),
   },
   {
     id: 'notif-6',
@@ -203,7 +227,7 @@ export const demoNotifications: NotificationItem[] = [
     title: 'SLA abaixo da meta de demonstração',
     message: 'Uma fila fictícia foi incluída para mostrar alertas na tela.',
     is_read: false,
-    created_at: demoTimestamp(-5, 8),
+    created_at: demoMonthlyTimestamp(5, 8),
   },
   {
     id: 'notif-7',
@@ -212,8 +236,8 @@ export const demoNotifications: NotificationItem[] = [
     message: 'A conta de demonstração recebeu acesso de leitura aos setores.',
     related_resource_id: 'demo-viewer-diretoria',
     is_read: true,
-    read_at: demoTimestamp(-6, 14),
-    created_at: demoTimestamp(-6, 13),
+    read_at: demoMonthlyTimestamp(6, 14),
+    created_at: demoMonthlyTimestamp(6, 13),
   },
   {
     id: 'notif-8',
@@ -222,7 +246,7 @@ export const demoNotifications: NotificationItem[] = [
     message: 'O conjunto fictício de competências mensais foi atualizado.',
     related_resource_id: 'report-1',
     is_read: false,
-    created_at: demoTimestamp(-7, 10),
+    created_at: demoMonthlyTimestamp(7, 10),
   },
   {
     id: 'notif-9',
@@ -231,8 +255,8 @@ export const demoNotifications: NotificationItem[] = [
     message: 'O arquivo de indicadores de demonstração está disponível.',
     related_resource_id: 'export-9',
     is_read: true,
-    read_at: demoTimestamp(-8, 16),
-    created_at: demoTimestamp(-8, 15),
+    read_at: demoMonthlyTimestamp(8, 16),
+    created_at: demoMonthlyTimestamp(8, 15),
   },
   {
     id: 'notif-10',
@@ -240,8 +264,8 @@ export const demoNotifications: NotificationItem[] = [
     title: 'Atualização simulada concluída',
     message: 'A atualização de dados fictícios terminou sem alterar dados reais.',
     is_read: true,
-    read_at: demoTimestamp(-9, 12),
-    created_at: demoTimestamp(-9, 11),
+    read_at: demoMonthlyTimestamp(9, 12),
+    created_at: demoMonthlyTimestamp(9, 11),
   },
   {
     id: 'notif-11',
@@ -250,7 +274,7 @@ export const demoNotifications: NotificationItem[] = [
     message: 'Indicadores sintéticos estão disponíveis para consulta.',
     related_resource_id: 'report-4',
     is_read: false,
-    created_at: demoTimestamp(-10, 10),
+    created_at: demoMonthlyTimestamp(10, 10),
   },
   {
     id: 'notif-12',
@@ -259,8 +283,8 @@ export const demoNotifications: NotificationItem[] = [
     message: 'O acesso de leitura da demonstração continua ativo.',
     related_resource_id: 'demo-viewer-diretoria',
     is_read: true,
-    read_at: demoTimestamp(-11, 10),
-    created_at: demoTimestamp(-11, 9),
+    read_at: demoMonthlyTimestamp(11, 10),
+    created_at: demoMonthlyTimestamp(11, 9),
   },
 ];
 
@@ -272,34 +296,34 @@ export const demoExportJobs: ExportJobItem[] = [
     status: 'completed',
     file_url: '/demo-downloads/financeiro-mensal.pdf',
     file_size_bytes: 184320,
-    created_at: demoTimestamp(0, 8),
-    completed_at: demoTimestamp(0, 8),
-    expires_at: demoTimestamp(7, 8),
+    created_at: demoMonthlyTimestamp(0, 14),
+    completed_at: demoMonthlyTimestamp(0, 14),
+    expires_at: addDemoDays(demoMonthlyTimestamp(0, 14), 7),
   },
   {
     id: 'export-2',
     report_id: 'report-2',
     export_format: 'excel',
     status: 'processing',
-    created_at: demoTimestamp(0, 8),
-    expires_at: demoTimestamp(7, 8),
+    created_at: demoMonthlyTimestamp(0, 12),
+    expires_at: addDemoDays(demoMonthlyTimestamp(0, 12), 7),
   },
   {
     id: 'export-3',
     report_id: 'report-3',
     export_format: 'csv',
-    status: 'failed',
-    error_message: 'Falha simulada para validação da interface.',
-    created_at: demoTimestamp(-1, 13),
-    expires_at: demoTimestamp(6, 13),
+    status: 'pending',
+    created_at: demoTimestamp(-1, 10),
+    expires_at: addDemoDays(demoTimestamp(-1, 10), 7),
   },
   {
     id: 'export-4',
     report_id: 'report-4',
     export_format: 'json',
-    status: 'pending',
-    created_at: demoTimestamp(-1, 12),
-    expires_at: demoTimestamp(6, 12),
+    status: 'failed',
+    error_message: 'Falha simulada para validação da interface.',
+    created_at: demoMonthlyTimestamp(1, 13),
+    expires_at: addDemoDays(demoMonthlyTimestamp(1, 13), 7),
   },
   {
     id: 'export-5',
@@ -307,9 +331,9 @@ export const demoExportJobs: ExportJobItem[] = [
     export_format: 'excel',
     status: 'completed',
     file_size_bytes: 248832,
-    created_at: demoTimestamp(-2, 11),
-    completed_at: demoTimestamp(-2, 11),
-    expires_at: demoTimestamp(5, 11),
+    created_at: demoMonthlyTimestamp(2, 12),
+    completed_at: demoMonthlyTimestamp(2, 12),
+    expires_at: addDemoDays(demoMonthlyTimestamp(2, 12), 7),
   },
   {
     id: 'export-6',
@@ -317,9 +341,9 @@ export const demoExportJobs: ExportJobItem[] = [
     export_format: 'csv',
     status: 'completed',
     file_size_bytes: 32768,
-    created_at: demoTimestamp(-3, 10),
-    completed_at: demoTimestamp(-3, 10),
-    expires_at: demoTimestamp(4, 10),
+    created_at: demoMonthlyTimestamp(3, 10),
+    completed_at: demoMonthlyTimestamp(3, 10),
+    expires_at: addDemoDays(demoMonthlyTimestamp(3, 10), 7),
   },
   {
     id: 'export-7',
@@ -327,34 +351,38 @@ export const demoExportJobs: ExportJobItem[] = [
     export_format: 'pdf',
     status: 'failed',
     error_message: 'Falha simulada para demonstrar o estado de erro.',
-    created_at: demoTimestamp(-4, 9),
-    expires_at: demoTimestamp(3, 9),
+    created_at: demoMonthlyTimestamp(4, 9),
+    expires_at: addDemoDays(demoMonthlyTimestamp(4, 9), 7),
   },
   {
     id: 'export-8',
     report_id: 'report-4',
     export_format: 'json',
-    status: 'processing',
-    created_at: demoTimestamp(-5, 8),
-    expires_at: demoTimestamp(2, 8),
+    status: 'completed',
+    file_size_bytes: 106496,
+    created_at: demoMonthlyTimestamp(5, 14),
+    completed_at: demoMonthlyTimestamp(5, 14),
+    expires_at: addDemoDays(demoMonthlyTimestamp(5, 14), 7),
   },
   {
     id: 'export-9',
     report_id: 'report-4',
     export_format: 'excel',
     status: 'completed',
-    file_size_bytes: 106496,
-    created_at: demoTimestamp(-6, 14),
-    completed_at: demoTimestamp(-6, 14),
-    expires_at: demoTimestamp(1, 14),
+    file_size_bytes: 139264,
+    created_at: demoMonthlyTimestamp(6, 14),
+    completed_at: demoMonthlyTimestamp(6, 14),
+    expires_at: addDemoDays(demoMonthlyTimestamp(6, 14), 7),
   },
   {
     id: 'export-10',
     report_id: 'report-2',
     export_format: 'csv',
-    status: 'pending',
-    created_at: demoTimestamp(-7, 13),
-    expires_at: demoTimestamp(0, 13),
+    status: 'completed',
+    file_size_bytes: 61440,
+    created_at: demoMonthlyTimestamp(7, 13),
+    completed_at: demoMonthlyTimestamp(7, 13),
+    expires_at: addDemoDays(demoMonthlyTimestamp(7, 13), 7),
   },
   {
     id: 'export-11',
@@ -362,9 +390,9 @@ export const demoExportJobs: ExportJobItem[] = [
     export_format: 'json',
     status: 'completed',
     file_size_bytes: 49152,
-    created_at: demoTimestamp(-8, 12),
-    completed_at: demoTimestamp(-8, 12),
-    expires_at: demoTimestamp(-1, 12),
+    created_at: demoMonthlyTimestamp(8, 12),
+    completed_at: demoMonthlyTimestamp(8, 12),
+    expires_at: addDemoDays(demoMonthlyTimestamp(8, 12), 7),
   },
   {
     id: 'export-12',
@@ -372,9 +400,29 @@ export const demoExportJobs: ExportJobItem[] = [
     export_format: 'pdf',
     status: 'completed',
     file_size_bytes: 196608,
-    created_at: demoTimestamp(-9, 11),
-    completed_at: demoTimestamp(-9, 11),
-    expires_at: demoTimestamp(-2, 11),
+    created_at: demoMonthlyTimestamp(9, 11),
+    completed_at: demoMonthlyTimestamp(9, 11),
+    expires_at: addDemoDays(demoMonthlyTimestamp(9, 11), 7),
+  },
+  {
+    id: 'export-13',
+    report_id: 'report-2',
+    export_format: 'excel',
+    status: 'completed',
+    file_size_bytes: 212992,
+    created_at: demoMonthlyTimestamp(10, 10),
+    completed_at: demoMonthlyTimestamp(10, 10),
+    expires_at: addDemoDays(demoMonthlyTimestamp(10, 10), 7),
+  },
+  {
+    id: 'export-14',
+    report_id: 'report-4',
+    export_format: 'csv',
+    status: 'completed',
+    file_size_bytes: 77824,
+    created_at: demoMonthlyTimestamp(11, 9),
+    completed_at: demoMonthlyTimestamp(11, 9),
+    expires_at: addDemoDays(demoMonthlyTimestamp(11, 9), 7),
   },
 ];
 
@@ -385,7 +433,7 @@ export const demoSystemSettings: SystemSettingItem[] = [
     setting_value: 'demo',
     description: 'Modo de execução atual da plataforma.',
     is_sensitive: false,
-    updated_at: demoTimestamp(0, 8),
+    updated_at: demoMonthlyTimestamp(0, 8),
   },
   {
     id: 'setting-2',
@@ -393,7 +441,7 @@ export const demoSystemSettings: SystemSettingItem[] = [
     setting_value: 'mock',
     description: 'Entrega de e-mail desabilitada nesta demonstração.',
     is_sensitive: false,
-    updated_at: demoTimestamp(0, 8),
+    updated_at: demoMonthlyTimestamp(1, 8),
   },
   {
     id: 'setting-3',
@@ -401,7 +449,7 @@ export const demoSystemSettings: SystemSettingItem[] = [
     setting_value: 'Server=sqlserver;Database=DashboardPowerBI;',
     description: 'Conexão sanitizada do banco local de demonstração.',
     is_sensitive: true,
-    updated_at: demoTimestamp(0, 8),
+    updated_at: demoMonthlyTimestamp(2, 8),
   },
   {
     id: 'setting-4',
@@ -409,7 +457,7 @@ export const demoSystemSettings: SystemSettingItem[] = [
     setting_value: 'sqlserver-demo',
     description: 'Fonte fictícia usada para os relatórios de exemplo.',
     is_sensitive: false,
-    updated_at: demoTimestamp(0, 8),
+    updated_at: demoMonthlyTimestamp(3, 8),
   },
   {
     id: 'setting-5',
@@ -417,7 +465,7 @@ export const demoSystemSettings: SystemSettingItem[] = [
     setting_value: 50000,
     description: 'Limite demonstrativo de linhas por exportação.',
     is_sensitive: false,
-    updated_at: demoTimestamp(0, 8),
+    updated_at: demoMonthlyTimestamp(4, 8),
   },
   {
     id: 'setting-6',
@@ -425,7 +473,7 @@ export const demoSystemSettings: SystemSettingItem[] = [
     setting_value: 30,
     description: 'Tempo de inatividade configurado para a sessão demo.',
     is_sensitive: false,
-    updated_at: demoTimestamp(0, 8),
+    updated_at: demoMonthlyTimestamp(5, 8),
   },
   {
     id: 'setting-7',
@@ -433,7 +481,7 @@ export const demoSystemSettings: SystemSettingItem[] = [
     setting_value: 300,
     description: 'Duração demonstrativa do cache de consultas.',
     is_sensitive: false,
-    updated_at: demoTimestamp(0, 8),
+    updated_at: demoMonthlyTimestamp(6, 8),
   },
   {
     id: 'setting-8',
@@ -441,7 +489,7 @@ export const demoSystemSettings: SystemSettingItem[] = [
     setting_value: true,
     description: 'Notificações fictícias habilitadas na demonstração.',
     is_sensitive: false,
-    updated_at: demoTimestamp(0, 8),
+    updated_at: demoMonthlyTimestamp(7, 8),
   },
 ];
 
