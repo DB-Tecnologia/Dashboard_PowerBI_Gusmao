@@ -9,7 +9,7 @@
 - O demo tem Web, API, SQL Server e Redis ativos. Oracle/COMPASS não está configurado; Supabase não está configurado no Compose; BI demo usa valores sintéticos; parte dos repositórios tem fallback em memória.
 - As rotas de notificações/exportações existem, mas as listas Web ainda usam fixtures. Export worker usa BullMQ/Redis; seus arquivos são locais. Refresh BI encerra `skipped`, sem snapshot ou watermark durável.
 - Roadmap passou a classificar as 18 telas e seis módulos como parciais para V1 de produção. Auditorias antigas e planos datados foram preservados com aviso de histórico.
-- Validações desta alteração documental e o commit/push devem ser registrados no relatório diário e na memória após a execução.
+- `pnpm verify:docs`, Prettier direcionado aos Markdown alterados e `git diff --check` passaram. Commit documental `f94a3f3` foi enviado a `origin/main` em 2026-09-29.
 
 ## 2026-09-29 — Refinamento visual agro corporativo da home BI
 

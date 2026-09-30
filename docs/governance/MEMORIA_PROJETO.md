@@ -41,7 +41,7 @@ O ambiente demo local é o principal critério de validação atual. Ele usa SQL
 - O estado por serviço, tela, integração, risco, prioridade e validação está consolidado em `docs/audits/ESTADO_REAL_PROJETO_2026-09-29.md`; ele prevalece sobre os estados encontrados nos snapshots históricos.
 - README, PRD, escopo, ROADMAP, especificações, referências Web/API, arquitetura e banco foram alinhados às diferenças entre demo funcional e produção.
 - Auditorias antigas, roadmap detalhado e backlog de agosto foram preservados e marcados como históricos, sem apagar o histórico de decisões.
-- Após validação e push, registrar aqui o identificador do commit documental e a confirmação de publicação.
+- Commit documental `f94a3f3` (`docs(governanca): alinhar documentação ao runtime atual`) criado e enviado para `origin/main` em 2026-09-29; o push publicou também sete commits locais anteriores que já estavam na branch.
 
 ### Entrega visual da home BI em 2026-09-29
 
@@ -68,8 +68,9 @@ O ambiente demo local é o principal critério de validação atual. Ele usa SQL
 
 - Branch de trabalho: `main`.
 - Remote esperado: `origin` apontando para `DB-Tecnologia/Dashboard_PowerBI_Gusmao`.
-- Commit de implementação mais recente: `d619af5` (`style(web): renovar visual do dashboard`), local.
-- A documentação da entrega visual será registrada em commit separado nesta sessão. A branch `main` está seis commits à frente de `origin/main`; não houve push.
+- Commit principal da reconciliação: `f94a3f3` (`docs(governanca): alinhar documentação ao runtime atual`), publicado em `origin/main`.
+- Um commit de governança posterior registrará esta confirmação. O push de 2026-09-29 sincroniza a branch `main` com `origin/main` e publica os sete commits locais anteriores junto ao commit documental.
+- `.playwright-cli/` permanece como diretório temporário não rastreado e não foi incluído no commit.
 
 ## Produto, stack e topologia
 

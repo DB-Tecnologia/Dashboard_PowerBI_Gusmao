@@ -23,7 +23,7 @@
 
 ### Entrega Git
 
-- Commit e push serão anotados após confirmar os resultados do GitHub.
+- Commit `f94a3f3` — `docs(governanca): alinhar documentação ao runtime atual`; enviado para `origin/main` em 2026-09-29. O push também publicou os sete commits locais que já estavam na branch.
 - Nenhum `.env` real ou diretório temporário `.playwright-cli/` foi incluído.
 
 ## 2026-09-29 — Refinamento visual da home BI
