@@ -1,7 +1,26 @@
 # CONTEXTO.md — Contexto Vivo do Projeto
 
 **Projeto:** Dashboard Power BI
-**Atualizado em:** 2026-09-29
+**Atualizado em:** 2026-09-30
+
+## 2026-09-30 — Prévia temporária publicada na VPS adicional
+
+- Publicada a prévia em `https://srv1728931.hstgr.cloud`, com Caddy/Let's Encrypt, Web, API, SQL Server Express demo e Redis. Somente TCP 80/443 estão publicados; API, banco e Redis não têm bindings de host.
+- O cliente acessa com usuário geral `viewer` e quatro setores; o seed administrativo com TOTP fixo não é executado. A home tem 12 KPIs de 12 períodos e os quatro relatórios SQL usam apenas dados fictícios.
+- A aplicação Docker anterior foi removida a pedido do usuário, incluindo containers, arquivos, imagens e dados nos containers; nenhum backup foi criado. Debian, Docker e a nova stack foram preservados.
+- O root SSH agora aceita apenas a chave validada; a senha e a autenticação interativa foram desativadas para SSH. O arquivo real `.env.preview` fica no host com modo `0600` e nunca deve ir para o Git.
+- Builds da API/Web, cinco healthchecks, HTTPS, login viewer, dashboard, catálogo e consulta SQL foram confirmados. O CI executou qualidade e testes unitários; com Redis no job, três suítes E2E ainda falham com respostas 401/403 inesperadas. A causa não foi determinada e continua pendente antes de integrar o PR; não altera a prévia publicada.
+- Limites: hostname temporário do provedor, dados fictícios, repositórios em memória em partes do runtime, sem backup/restore ou observabilidade e sem Oracle/COMPASS. Não classificar como produção.
+- O workflow GitHub `Deploy VPS` dispara em push para `main` e usa secrets do ambiente produtivo. Estes commits foram publicados na branch `codex/vps-preview-2026-09-30`, com PR [#24](https://github.com/DB-Tecnologia/Dashboard_PowerBI_Gusmao/pull/24); `main` não foi alterada e o PR ainda não foi integrado.
+- Detalhes: [auditoria da prévia](../audits/VIABILIDADE_VPS_PREVIEW_2026-09-30.md) e [especificação SDD](../specs/transversal/SPEC-preview-vps-temporaria.md).
+
+## 2026-09-30 — Auditoria preliminar da VPS antes do deploy
+
+- A VPS tem recursos suficientes para uma instância Docker isolada. A chave SSH pública foi instalada e validada; uma aplicação Docker existente foi mantida intacta.
+- A topologia atual do projeto não deve ser publicada diretamente: o Compose demo é de desenvolvimento e publica dependências internas; o Compose de produção não tem TLS, SQL Server demo nem modo sintético da Web configurável no build atual.
+- Decisão: criar um perfil de prévia próprio com domínio/HTTPS, rede isolada, segredos externos, conta de consulta e portas internas restritas; confirmar primeiro como persistem os dados do Compose já existente.
+- Nenhum endereço IP, fingerprint, senha, arquivo `.env`, log ou dado do outro projeto foi registrado. Nenhum deploy, hardening de SSH, mudança de firewall ou limpeza Docker foi feito.
+- Detalhes e próximos passos: [viabilidade da VPS](../audits/VIABILIDADE_VPS_PREVIEW_2026-09-30.md).
 
 ## 2026-09-29 — Reconciliação documental com o runtime
 

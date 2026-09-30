@@ -17,7 +17,9 @@ RUN pnpm install --no-frozen-lockfile
 FROM base AS builder
 
 ARG NEXT_PUBLIC_API_URL=/api
+ARG NEXT_PUBLIC_USE_MOCK_DATA=false
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_USE_MOCK_DATA=$NEXT_PUBLIC_USE_MOCK_DATA
 
 COPY --from=deps /workspace/ /workspace/
 COPY . .

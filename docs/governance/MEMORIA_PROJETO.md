@@ -2,7 +2,7 @@
 
 **Projeto:** Dashboard Power BI Gusmão
 
-**Última atualização:** 2026-09-29
+**Última atualização:** 2026-09-30
 **Finalidade:** contexto consolidado e histórico de handoff técnico para agentes e colaboradores.
 
 ## Objetivo e leitura
@@ -27,7 +27,7 @@ Depois da leitura, confira o snapshot contra o código, os comandos de validaç�
 
 O produto é uma plataforma web interna de relatórios e BI em estado funcional parcial. A base disponível contempla autenticação, sessão, perfil, dashboard inicial, catálogo e visualização de relatórios, administração de usuários e grupos, permissões, notificações, exportações, auditoria e configurações.
 
-O ambiente demo local é o principal critério de validação atual. Ele usa SQL Server como fonte demonstrativa e pode ser executado com a topologia Docker documentada. A integração produtiva com Oracle 19c/COMPASS ainda depende de informações de infraestrutura e de consultas de reconciliação.
+O ambiente demo local e a prévia temporária HTTPS na VPS adicional permitem validar o produto com SQL Server e dados fictícios. A integração produtiva com Oracle 19c/COMPASS ainda depende de informações de infraestrutura e de consultas de reconciliação.
 
 **Nível de prontidão atual:**
 
@@ -35,6 +35,23 @@ O ambiente demo local é o principal critério de validação atual. Ele usa SQL
 - **Qualidade automatizada:** na última validação registrada, Web teve 43 suítes/147 testes; `typecheck`, `build`, `lint` e `verify:docs` passaram; o E2E `auth-dashboard.spec.ts` passou 8/8. A suíte completa da API e a suíte completa de E2E não foram executadas nesta atualização documental.
 - **Produção:** não liberada; além da chave TOTP obrigatória no boot de produção, faltam Oracle/COMPASS e reconciliação, persistência durável validada, storage de exportações, SMTP real e hardening operacional.
 - **BI de produção:** ainda não reconciliado com a fonte Oracle; não declarar KPIs produtivos como validados antes do smoke test e da reconciliação.
+
+### Prévia externa temporária em 2026-09-30
+
+- A VPS adicional serve `https://srv1728931.hstgr.cloud` por Caddy/Let's Encrypt; a URL temporária pertence ao provedor. Só TCP 80/443 estão publicados; os cinco serviços da prévia estão saudáveis.
+- A aplicação Docker anterior foi removida conforme pedido: containers, arquivos, imagens associadas e dados nos containers, sem backup. Debian, Docker, a nova stack e a chave SSH foram preservados.
+- Root SSH aceita apenas a chave pública validada; `PasswordAuthentication` e login interativo estão desativados. O `.env.preview` real no servidor tem modo `0600` e não está no Git.
+- A única conta compartilhável é `viewer` com quatro setores. API e Web usam modo demo; home tem 12 KPIs e 12 períodos; catálogo tem quatro relatórios; consulta SQL demo retornou cinco linhas.
+- Build API/Web local e Docker de API/Web/SQL Server no host aprovados; Compose/env configurados; HTTP redireciona para HTTPS; health SQL OK. No CI, qualidade e testes unitários passaram; após adicionar Redis, três suítes E2E ainda falham com respostas 401/403 inesperadas. A causa não foi determinada e fica pendente antes da integração do PR.
+- Limites: não é produção; dados fictícios, parte do estado em memória, seed SQL repõe exemplos no reinício, sem domínio próprio, backup/restore, observabilidade ou Oracle/COMPASS reconciliado.
+- Implementação: commits `d031235` (`feat(infra): preparar perfil de prévia segura`) e `9ab167e` (`fix(infra): tornar seed SQL repetível`); documentação inicial em `1851f4f` (`docs(infra): documentar prévia temporária da VPS`). Auditoria: `docs/audits/VIABILIDADE_VPS_PREVIEW_2026-09-30.md`.
+- O workflow de CI oferece Redis para inicialização BullMQ nas suítes E2E da API; commit `ac8bd4b`. Essa correção elimina `ECONNREFUSED`, mas não resolve as falhas E2E subsequentes; nenhum teste foi executado manualmente.
+
+### Preparação preliminar da VPS em 2026-09-30
+
+- O inventário inicial encontrou Debian 13, Docker/Compose e uma aplicação anterior com containers, arquivos e dados no servidor. A chave SSH foi instalada após conferir a identidade do host com o painel do provedor.
+- Antes do deploy, essa etapa concluiu que o Compose existente não era adequado para acesso externo e recomendou perfil isolado, dados mock explícitos, conta de consulta e HTTPS.
+- As evidências finais e a substituição autorizada estão em `docs/audits/VIABILIDADE_VPS_PREVIEW_2026-09-30.md`.
 
 ### Reconciliação documental em 2026-09-29
 
@@ -66,10 +83,11 @@ O ambiente demo local é o principal critério de validação atual. Ele usa SQL
 
 ### Estado do Git
 
-- Branch de trabalho: `main`.
+- Branch de trabalho publicada: `codex/vps-preview-2026-09-30`, acompanhando `origin/codex/vps-preview-2026-09-30`.
 - Remote esperado: `origin` apontando para `DB-Tecnologia/Dashboard_PowerBI_Gusmao`.
-- Commit principal da reconciliação: `f94a3f3` (`docs(governanca): alinhar documentação ao runtime atual`), publicado em `origin/main`.
-- Um commit de governança posterior registrará esta confirmação. O push de 2026-09-29 sincroniza a branch `main` com `origin/main` e publica os sete commits locais anteriores junto ao commit documental.
+- Último commit sincronizado com `origin/main`: `f33def6` (`docs(governanca): registrar publicação da auditoria`), publicado em 2026-09-29.
+- A branch publicada contém `c5fb0d8`, `e740913`, `d031235`, `9ab167e`, `1851f4f` e commits posteriores da prévia/CI. O PR [#24](https://github.com/DB-Tecnologia/Dashboard_PowerBI_Gusmao/pull/24) está aberto e ainda não foi integrado.
+- `main` não recebeu push: `.github/workflows/deploy-vps.yml` faria deploy automático ao ambiente produtivo ao receber commits nessa branch. A publicação isolada não acionou esse workflow.
 - `.playwright-cli/` permanece como diretório temporário não rastreado e não foi incluído no commit.
 
 ## Produto, stack e topologia
@@ -197,6 +215,14 @@ Na auditoria local de 2026-09-29 passaram novamente `pnpm verify:workspace`, `pn
 | 2026-08-25 | Cliente Web envia Bearer nas operações autenticadas de 2FA          | Corrigir chamadas de perfil que chegavam à API sem autenticação           | Setup, verificação e desativação 2FA passam a funcionar no navegador    |
 
 ## Linha do tempo de tarefas
+
+### 2026-09-30 — Inventário preliminar da VPS antes da substituição
+
+- **Objetivo:** medir capacidade do host, validar a chave SSH e avaliar a compatibilidade com a demonstração.
+- **Resultado naquela etapa:** Debian 13, Docker/Compose, 4 vCPUs, 15 GiB de RAM e aproximadamente 181 GiB livres. Uma aplicação Compose antiga estava ativa e foi preservada durante o inventário inicial.
+- **Escopo do inventário:** não foram lidos `.env`, logs, bancos ou conteúdo dos containers antigos. Os passos posteriores de limpeza e substituição estão registrados na entrada da prévia temporária acima.
+- **Segurança:** a chave `Dev.RuiDiniz` foi instalada após comparar a identidade SSH com o painel do provedor; os acessos, senhas, endereço e fingerprint não são registrados aqui.
+- **Commits:** `c5fb0d8` (`docs(infra): registrar auditoria da VPS de prévia`) e `e740913` (`docs(governanca): registrar commit da auditoria`), ambos locais na branch de trabalho antes da publicação deste handoff.
 
 ### 2026-09-29 — Refinar visual do dashboard
 

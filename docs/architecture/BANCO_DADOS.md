@@ -1,8 +1,8 @@
 # BANCO_DADOS.md — Arquitetura de Banco de Dados
 
 **Projeto:** Dashboard Power BI
-**Atualizado em:** 2026-09-29
-**Estado observado:** SQL Server demo ativo; Supabase ausente no Compose demo; Oracle 19c/COMPASS não configurado.
+**Atualizado em:** 2026-09-30
+**Estado observado:** SQL Server demo ativo localmente e na prévia temporária da VPS; Supabase ausente nesses Compose; Oracle 19c/COMPASS não configurado.
 
 > Este documento descreve o modelo do repositório e os destinos planejados. A presença de cliente, migrations ou variáveis de ambiente não prova que o banco esteja configurado, que as migrations foram aplicadas ou que os dados estejam persistidos. Para o estado verificado, consulte [auditoria atual](../audits/ESTADO_REAL_PROJETO_2026-09-29.md).
 
@@ -15,6 +15,8 @@ O código prevê três destinos/fontes, mas apenas um banco está ativo no Compo
 1. **Supabase (PostgreSQL gerenciado)** — persistência opcional da plataforma via service role no backend. Não está configurado no Compose demo; vários repositórios usam fallback em memória nesse ambiente.
 2. **Oracle 19c/COMPASS** — fonte-alvo somente leitura para fatos agrícolas e KPIs. Não está conectada nem validada; contratos BI respondem `not_configured` no demo.
 3. **SQL Server** — ativo no Compose demo para consultas de relatórios de exemplo, acessado via `mssql` e queries parametrizadas. Não representa os fatos agrícolas reais do cliente.
+
+Na prévia temporária da VPS, o SQL Server Express usa o volume Compose `sqlserver_data`. O entrypoint reaplica o seed fictício a cada início, recriando os valores demonstrativos. A API conecta como `dashboard_reader`, que tem `db_datareader` e execução no schema `reports`; a senha é própria do ambiente e não está no repositório. A conta `sa` fica restrita ao container de inicialização e não é a conta de consulta da API.
 
 A estratégia de persistência é híbrida: quando `SUPABASE_URL` e `SUPABASE_SERVICE_ROLE_KEY` estão configurados, a API usa Supabase; caso contrário, usa fallback em memória para parte do domínio.
 
@@ -30,6 +32,7 @@ A estratégia de persistência é híbrida: quando `SUPABASE_URL` e `SUPABASE_SE
 - **Migration tool:** Supabase CLI (`supabase/migrations/`, 12 arquivos não verificados como aplicados)
 - **Seeds:** Setores padrão e configurações iniciais embutidos nas migrations
 - **Ambiente local demo:** Docker Compose com SQL Server de exemplo e Redis; Supabase não é iniciado pelo Compose demo.
+- **Prévia temporária na VPS:** SQL Server Express e Redis em rede Docker interna; seed demo repetível; segredos fora do Git em `infra/env/.env.preview` (modo `0600`). Parte do estado da plataforma continua em memória e não é persistida por esse SQL Server.
 - **Ambiente de produção planejado:** Supabase e Oracle 19c/COMPASS do cliente, dependendo de configuração e validação; SQL Server continua disponível para relatórios legados.
 - **String de conexão:** `NÃO DOCUMENTAR VALORES SENSÍVEIS` — ver `infra/env/.env.example`
 

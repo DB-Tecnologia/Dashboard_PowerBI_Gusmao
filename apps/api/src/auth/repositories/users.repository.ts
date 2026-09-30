@@ -146,6 +146,17 @@ export class UsersRepository {
       return;
     }
 
+    if (this.configService.get<string>('AUTH_DEMO_VIEWER_ONLY') === 'true') {
+      this.addUser(
+        'demo-viewer-preview',
+        email,
+        password,
+        ['viewer'],
+        ['diretoria', 'financeiro', 'comercial', 'operacoes'],
+      );
+      return;
+    }
+
     this.addUser(
       'demo-admin',
       email,

@@ -1,10 +1,38 @@
 # RELATORIO.md — Registro Diário de Desenvolvimento
 
 **Projeto:** Dashboard Power BI
-**Atualizado em:** 2026-09-29
+**Atualizado em:** 2026-09-30
 
 > As entradas anteriores a 24/08/2026 preservam os caminhos da estrutura documental vigente na data de cada registro. A estrutura atual e mantida em `docs/INDEX.md`; referencias historicas abaixo nao representam arquivos ausentes.
 > Cada entrada abaixo é um registro datado da sessão correspondente; números e status dentro de registros antigos não descrevem o runtime atual. Consulte `docs/audits/ESTADO_REAL_PROJETO_2026-09-29.md`.
+
+## 2026-09-30 — Prévia temporária publicada na VPS adicional
+
+### Entrega
+
+- Criado perfil Compose próprio em `infra/docker/docker-compose.preview.yml`: Caddy, API, Web, SQL Server Express demo e Redis. Só TCP 80/443 são publicados; API, banco e Redis ficam na rede interna.
+- Publicada a URL HTTPS temporária `https://srv1728931.hstgr.cloud`, com certificado Let's Encrypt; HTTP redireciona para HTTPS. O hostname pertence ao provedor e não é domínio próprio.
+- O seed da prévia cria uma única conta `viewer` para os quatro setores, sem admin demo/TOTP fixo. O SQL Server usa um login `dashboard_reader` sem permissão de escrita. Segredos reais ficam apenas no host, em `.env.preview` modo `0600`.
+- Removida, conforme pedido, a aplicação Docker anterior: containers, arquivos incluindo seu `.env`, imagens associadas, dados dos containers e cache Docker sem uso. Nenhum backup foi criado. Debian, Docker e chave SSH foram preservados.
+- Configurado SSH key-only para root: autenticação por senha e interativa desativadas após nova conexão bem-sucedida pela chave.
+- Atualizados Dockerfiles, Compose, seed SQL, README, ROADMAP, arquitetura, banco, SDD e documentos de governança. Auditoria: `docs/audits/VIABILIDADE_VPS_PREVIEW_2026-09-30.md`.
+
+### Validação e limites
+
+- `pnpm --filter @dashboard-power-bi/api build`, `pnpm --filter @dashboard-power-bi/web build`, `pnpm verify:env`, Compose config e `git diff --check` passaram. As três imagens de aplicação foram construídas na VPS.
+- Cinco serviços saudáveis, incluindo SQL Server após reinício. HTTPS `/login` 200; HTTP 308; `/api/health/sql` OK.
+- Login smoke: sem 2FA, perfil `viewer`, quatro setores; dashboard com 12 KPIs/12 períodos; catálogo com quatro relatórios; query SQL financeira retornou cinco linhas.
+- Binding Docker conferido: apenas Caddy publica TCP 80/443. A pasta antiga foi removida; volumes ativos pertencem à prévia; `.env.preview` tem modo `0600`.
+- Não executei suítes localmente. O primeiro CI falhou por Redis ausente; adicionei serviço Redis com healthcheck. Na repetição, qualidade e testes unitários passaram, mas `admin-users-groups`, `authorization` e `validation` falharam com respostas 401/403 inesperadas. A causa não foi determinada e fica como pendência; a prévia foi validada separadamente por builds e smoke checks.
+- Commits iniciais: `c5fb0d8` (`docs(infra): registrar auditoria da VPS de prévia`), `e740913` (`docs(governanca): registrar commit da auditoria`), `d031235` (`feat(infra): preparar perfil de prévia segura`), `9ab167e` (`fix(infra): tornar seed SQL repetível`) e `1851f4f` (`docs(infra): documentar prévia temporária da VPS`). Commit de CI: `ac8bd4b` (`ci: iniciar Redis nas suítes E2E`).
+- Publicados na branch `codex/vps-preview-2026-09-30`; PR [#24](https://github.com/DB-Tecnologia/Dashboard_PowerBI_Gusmao/pull/24) criado e ainda aberto, com CI reprovado nos E2E mencionados. `main` não foi alterada para não acionar o deploy automático ao ambiente produtivo.
+
+### Limitações e próximos passos
+
+- Dados do cliente não foram conectados; Oracle/COMPASS e reconciliação do BI permanecem pendentes.
+- O hostname é temporário; obter domínio próprio para um piloto, definir backup/restore, observabilidade, retenção e persistência durável do estado de plataforma.
+- Algumas telas seguem fixtures e usuários/estado de domínio seguem em memória; os dados SQL demo são repostos no reinício.
+- A prévia não libera o produto para produção.
 
 ## 2026-09-29 — Atualização da documentação para o runtime real
 

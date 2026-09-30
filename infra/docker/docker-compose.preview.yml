@@ -1,0 +1,153 @@
+services:
+  api:
+    build:
+      context: ../..
+      dockerfile: infra/docker/api.prod.Dockerfile
+    image: dashboard-gusmao-api:preview
+    restart: unless-stopped
+    env_file:
+      - path: ../env/.env.preview
+        required: false
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      APP_MODE: demo
+      DATA_MODE: mock
+      AUTH_DEMO_VIEWER_ONLY: 'true'
+      DATABASE_PROVIDER: sqlserver
+      SQLSERVER_HOST: sqlserver
+      SQLSERVER_PORT: 1433
+      SQLSERVER_DATABASE: ${SQLSERVER_DATABASE:-DashboardPowerBI}
+      SQLSERVER_USER: dashboard_reader
+      SQLSERVER_PASSWORD: ${SQLSERVER_APP_PASSWORD:?Defina SQLSERVER_APP_PASSWORD}
+      SQLSERVER_ENCRYPT: 'false'
+      SQLSERVER_TRUST_SERVER_CERTIFICATE: 'true'
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      CORS_ORIGINS: https://${PREVIEW_DOMAIN:?Defina PREVIEW_DOMAIN}
+      TRUST_PROXY_HOPS: 1
+      EXPORT_STORAGE_DIR: /workspace/storage/exports
+      EXPORT_PUBLIC_BASE_URL: https://${PREVIEW_DOMAIN}/api/exports/files
+    expose:
+      - '3001'
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - exports_data:/workspace/storage/exports
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:3001/health').then((response) => process.exit(response.ok ? 0 : 1)).catch(() => process.exit(1))"
+      interval: 15s
+      timeout: 5s
+      retries: 8
+      start_period: 30s
+    networks:
+      - app
+
+  web:
+    build:
+      context: ../..
+      dockerfile: infra/docker/web.prod.Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: /api
+        NEXT_PUBLIC_USE_MOCK_DATA: 'true'
+    image: dashboard-gusmao-web:preview
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      HOSTNAME: 0.0.0.0
+      PORT: 3000
+      NEXT_PUBLIC_API_URL: /api
+    expose:
+      - '3000'
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:3000/login').then((response) => process.exit(response.ok ? 0 : 1)).catch(() => process.exit(1))"
+      interval: 15s
+      timeout: 5s
+      retries: 8
+      start_period: 30s
+    networks:
+      - app
+
+  sqlserver:
+    build:
+      context: ../..
+      dockerfile: infra/docker/sqlserver.Dockerfile
+    image: dashboard-gusmao-sqlserver:preview
+    restart: unless-stopped
+    environment:
+      ACCEPT_EULA: 'Y'
+      MSSQL_PID: Express
+      MSSQL_MEMORY_LIMIT_MB: 2048
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD:?Defina MSSQL_SA_PASSWORD}
+      SQLSERVER_APP_PASSWORD: ${SQLSERVER_APP_PASSWORD:?Defina SQLSERVER_APP_PASSWORD}
+      SQLSERVER_DATABASE: ${SQLSERVER_DATABASE:-DashboardPowerBI}
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - sqlcmd -S localhost -U sa -P "$$MSSQL_SA_PASSWORD" -C -Q "SELECT 1" -b
+      interval: 10s
+      timeout: 5s
+      retries: 18
+      start_period: 60s
+    networks:
+      - app
+
+  redis:
+    image: redis:7.4-alpine
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 8
+    networks:
+      - app
+
+  caddy:
+    image: caddy:2.10-alpine
+    restart: unless-stopped
+    environment:
+      PREVIEW_DOMAIN: ${PREVIEW_DOMAIN:?Defina PREVIEW_DOMAIN}
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - ./caddy/Caddyfile.preview:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      api:
+        condition: service_healthy
+      web:
+        condition: service_healthy
+    networks:
+      - edge
+      - app
+
+networks:
+  app:
+    internal: true
+  edge:
+
+volumes:
+  caddy_data:
+  caddy_config:
+  exports_data:
+  redis_data:
+  sqlserver_data:

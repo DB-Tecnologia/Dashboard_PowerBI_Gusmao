@@ -2,9 +2,9 @@
 
 **Projeto:** Dashboard Power BI
 **Atualizado em:** 2026-09-29
-**Status:** Demo funcional; produto parcial, Oracle/COMPASS sem configuração e sem liberação para produção.
+**Status:** Demo local e prévia HTTPS temporária na VPS estão funcionais; produto parcial, Oracle/COMPASS sem configuração e sem liberação para produção.
 
-> Leia primeiro [Estado real do projeto](../audits/ESTADO_REAL_PROJETO_2026-09-29.md). Esta página descreve componentes e topologia; ela não comprova que um serviço esteja configurado no ambiente. No Compose demo, Supabase não está configurado, parte dos repositórios usa memória e BI agrícola real ainda não está ligado.
+> Para o estado do runtime, leia [Estado real do projeto](../audits/ESTADO_REAL_PROJETO_2026-09-29.md); para a instalação da VPS, leia [Auditoria da prévia temporária](../audits/VIABILIDADE_VPS_PREVIEW_2026-09-30.md). Esta página descreve componentes e topologia; a presença de um componente no código não comprova que esteja configurado no ambiente.
 
 ---
 
@@ -48,7 +48,7 @@ O sistema está em estado funcional parcial: entrega autenticação, dashboard, 
 ### Infraestrutura
 
 - **Monorepo:** pnpm workspaces
-- **Docker:** Docker Compose para desenvolvimento e produção
+- **Docker:** Docker Compose para desenvolvimento, demo local, prévia temporária e produção
 - **CI/CD:** GitHub Actions (deploy para VPS)
 - **Observabilidade:** Healthcheck em `/health` e `/health/sql`; NÃO IDENTIFICADO sistema de monitoramento/observabilidade estruturado
 - **Redis:** ativo no Compose demo para a fila/worker BullMQ de exportação; não substitui a persistência durável da plataforma.
@@ -82,7 +82,7 @@ O sistema está em estado funcional parcial: entrega autenticação, dashboard, 
 │   └── ui/                  # Reservado para componentes compartilhados
 ├── docs/                    # Documentação técnica e análise de escopo
 ├── infra/
-│   ├── docker/              # Dockerfiles e docker-compose (dev, demo, prod)
+│   ├── docker/              # Dockerfiles e docker-compose (dev, demo, preview, prod)
 │   └── env/                 # Exemplos de variáveis de ambiente
 ├── scripts/                 # Scripts de validação estrutural
 ├── supabase/
@@ -135,6 +135,15 @@ A API NestJS é a fonte oficial da maioria dos fluxos autenticados. Exceções a
 - O Compose injeta `REDIS_HOST=redis`, usa `TRUST_PROXY_HOPS=1` atrás do Nginx e restringe CORS ao domínio público configurado.
 - O template não contém credenciais reais. A API rejeita o boot de produção quando `TOTP_ENCRYPTION_KEY` está ausente ou vazia; desenvolvimento e testes preservam o fallback controlado.
 - `pnpm verify:env` valida cobertura, defaults de produção e ausência de valores demo.
+
+### Prévia temporária externa atual
+
+- O perfil `infra/docker/docker-compose.preview.yml` é separado dos Compose de desenvolvimento, demo local e produção. O acesso temporário é `https://srv1728931.hstgr.cloud`; não é domínio próprio nem um endpoint de produção.
+- Caddy termina HTTPS e publica apenas TCP 80/443. A Web, API, SQL Server Express demo e Redis ficam em redes Docker; API, SQL Server e Redis não publicam portas no host.
+- A Web recebe `/api` como base relativa e `NEXT_PUBLIC_USE_MOCK_DATA=true` na build. A API inicia com `APP_MODE=demo`, `DATA_MODE=mock`, `DATABASE_PROVIDER=sqlserver` e `AUTH_DEMO_VIEWER_ONLY=true`.
+- A variável `AUTH_DEMO_VIEWER_ONLY=true` cria somente o usuário de consulta geral do ambiente, sem administrador demo nem TOTP fixo. O SQL Server semeia um login `dashboard_reader` de leitura, separado da conta `sa` usada pela inicialização.
+- Segredos ficam no arquivo ignorado `infra/env/.env.preview` no host, modo `0600`. A pasta, os containers e os volumes da prévia não são compartilhados com outras stacks.
+- A senha SSH não é aceita; o acesso root foi limitado à chave instalada. Isso não transforma a VPS em produção: faltam domínio próprio, backups e observabilidade, persistência durável de usuários/estado e Oracle/COMPASS reconciliado.
 
 ---
 

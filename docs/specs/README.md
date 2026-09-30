@@ -80,12 +80,13 @@ Toda funcionalidade — existente ou pendente — deve ter uma spec corresponden
 
 ### Transversal
 
-| Spec                                                                  | Tela/Tarefa                                         | Status    |
-| --------------------------------------------------------------------- | --------------------------------------------------- | --------- |
-| [SPEC-DT-004-cache-queries](transversal/SPEC-DT-004-cache-queries.md) | DT-004 — Cache de queries SQL Server                | Concluído |
-| [SPEC-DT-005-testes-e2e](transversal/SPEC-DT-005-testes-e2e.md)       | DT-005 — Testes E2E (Playwright)                    | Parcial   |
-| [SPEC-DT-006-lgpd-retencao](transversal/SPEC-DT-006-lgpd-retencao.md) | DT-006 — Política de retenção LGPD                  | Concluído |
-| [SPEC-demo-dados-ampliados](transversal/SPEC-demo-dados-ampliados.md) | Dados fictícios e conta de consulta geral para demo | Concluído |
+| Spec                                                                      | Tela/Tarefa                                         | Status    |
+| ------------------------------------------------------------------------- | --------------------------------------------------- | --------- |
+| [SPEC-DT-004-cache-queries](transversal/SPEC-DT-004-cache-queries.md)     | DT-004 — Cache de queries SQL Server                | Concluído |
+| [SPEC-DT-005-testes-e2e](transversal/SPEC-DT-005-testes-e2e.md)           | DT-005 — Testes E2E (Playwright)                    | Parcial   |
+| [SPEC-DT-006-lgpd-retencao](transversal/SPEC-DT-006-lgpd-retencao.md)     | DT-006 — Política de retenção LGPD                  | Concluído |
+| [SPEC-demo-dados-ampliados](transversal/SPEC-demo-dados-ampliados.md)     | Dados fictícios e conta de consulta geral para demo | Concluído |
+| [SPEC-preview-vps-temporaria](transversal/SPEC-preview-vps-temporaria.md) | Prévia HTTPS temporária na VPS para o cliente       | Concluído |
 
 ---
 
