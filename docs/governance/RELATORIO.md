@@ -22,7 +22,7 @@
 - Verificações foram somente leitura, além da inclusão da chave pública em `/root/.ssh/authorized_keys`. Não houve alteração de firewall, senha, containers ou configuração da aplicação existente.
 - `pnpm verify:docs`, Prettier direcionado e `git diff --check` passaram.
 - Testes de aplicação não foram executados porque não houve alteração de código.
-- Commit desta atualização documental será registrado após criação; sem push nesta tarefa.
+- Commit principal `c5fb0d8` (`docs(infra): registrar auditoria da VPS de prévia`), local; sem push nesta tarefa. A memória persistida registra o hash em commit documental de acompanhamento.
 
 ## 2026-09-29 — Atualização da documentação para o runtime real
 

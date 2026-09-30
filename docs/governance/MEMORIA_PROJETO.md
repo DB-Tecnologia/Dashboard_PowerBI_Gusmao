@@ -77,7 +77,7 @@ O ambiente demo local é o principal critério de validação atual. Ele usa SQL
 - Branch de trabalho: `main`.
 - Remote esperado: `origin` apontando para `DB-Tecnologia/Dashboard_PowerBI_Gusmao`.
 - Último commit sincronizado com `origin/main`: `f33def6` (`docs(governanca): registrar publicação da auditoria`), publicado em 2026-09-29.
-- A auditoria da VPS de 2026-09-30 está registrada nesta memória e em `docs/audits/VIABILIDADE_VPS_PREVIEW_2026-09-30.md`; commit local pendente e sem push.
+- A auditoria da VPS foi registrada no commit local `c5fb0d8` (`docs(infra): registrar auditoria da VPS de prévia`); sem push nesta tarefa.
 - `.playwright-cli/` permanece como diretório temporário não rastreado e não foi incluído no commit.
 
 ## Produto, stack e topologia
@@ -213,7 +213,7 @@ Na auditoria local de 2026-09-29 passaram novamente `pnpm verify:workspace`, `pn
 - **Conclusão:** recursos suficientes para uma demonstração isolada; ainda não pronta para publicação externa. Faltam perfil Compose de prévia, domínio/HTTPS, modo sintético explícito na Web/API, bootstrap de usuário de consulta, revisão do seed admin, firewall e isolamento de portas internas.
 - **Validações:** acesso SSH por chave validado com `PasswordAuthentication=no`; `pnpm verify:docs`, Prettier direcionado e `git diff --check` aprovados. Não houve mudança de código nem testes de aplicação.
 - **Segurança:** endereço, fingerprints, senha e arquivos `.env` ficaram fora do repositório. Sem leitura de logs/dados do projeto existente e sem mudanças em seus containers, rede, firewall ou configuração.
-- **Commit/push:** pendente; não houve push nesta tarefa.
+- **Commit/push:** `c5fb0d8` (`docs(infra): registrar auditoria da VPS de prévia`), local; sem push nesta tarefa. O registro deste hash foi fechado em um commit documental de acompanhamento.
 - **Próximos passos:** preparar o perfil de preview e TLS sem interromper a aplicação existente; trocar a senha root compartilhada e revisar a desativação do login SSH por senha após validar o acesso por chave.
 
 ### 2026-09-29 — Refinar visual do dashboard
