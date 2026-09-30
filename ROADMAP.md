@@ -219,13 +219,15 @@ Os detalhes e evidências estão em [Auditoria do ambiente local Docker](docs/au
 - ✅ Abas, drill-down e estados existentes preservados; sem alteração de API, banco ou valores dos dados.
 - ✅ Especificação, testes, revisão em 390/640/1024/1440 px, typecheck, build e Playwright registrados em `docs/specs/bi/SPEC-dashboard-visual-agro-corporativo.md`.
 
-### Avaliação da VPS para prévia ao cliente — 2026-09-30
+### Prévia temporária na VPS para o cliente — 2026-09-30
 
-- ✅ Capacidade e Docker da VPS avaliados; há recursos para uma instância de demonstração isolada.
-- ✅ Chave SSH pública instalada e testada; o projeto Docker existente foi preservado.
-- ⏳ Dashboard Gusmão ainda não instalado. Antes do acesso do cliente, preparar perfil Compose de prévia, HTTPS/domínio, segredos, usuário somente leitura e isolamento das portas internas.
-- ⏳ Corrigir o build de produção para ativar explicitamente os dados sintéticos na Web/API e definir se os relatórios SQL demo farão parte da prévia.
-- Evidências e limitações: [viabilidade da VPS](docs/audits/VIABILIDADE_VPS_PREVIEW_2026-09-30.md).
+- ✅ Criado perfil Compose isolado com Caddy, API, Web, SQL Server Express demo e Redis. Só o proxy publica portas; API, banco e Redis permanecem na rede interna.
+- ✅ Disponibilizado HTTPS válido em [srv1728931.hstgr.cloud](https://srv1728931.hstgr.cloud); HTTP redireciona para HTTPS.
+- ✅ Modo mock explícito na API e na build Web; SQL Server tem conta de leitura sem privilégio de escrita; conta de demonstração é somente `viewer`, em quatro setores.
+- ✅ Removida a aplicação Docker anterior a pedido do usuário, incluindo containers, arquivos, imagens e dados dos containers; limpo o cache Docker sem remover Debian, Docker ou a chave SSH.
+- ✅ SSH agora aceita somente chave para root. Healthchecks, login, dashboard e consultas aos relatórios SQL foram verificados.
+- ⚠️ É uma prévia temporária, não uma instalação produtiva: dados fictícios, hostname do provedor, estado em memória em partes do runtime e sem Oracle/COMPASS, backup ou domínio próprio.
+- Evidências, validações e próximos passos: [auditoria da prévia na VPS](docs/audits/VIABILIDADE_VPS_PREVIEW_2026-09-30.md) e [especificação](docs/specs/transversal/SPEC-preview-vps-temporaria.md).
 
 ---
 

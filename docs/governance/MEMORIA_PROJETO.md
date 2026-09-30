@@ -27,7 +27,7 @@ Depois da leitura, confira o snapshot contra o código, os comandos de validaç�
 
 O produto é uma plataforma web interna de relatórios e BI em estado funcional parcial. A base disponível contempla autenticação, sessão, perfil, dashboard inicial, catálogo e visualização de relatórios, administração de usuários e grupos, permissões, notificações, exportações, auditoria e configurações.
 
-O ambiente demo local é o principal critério de validação atual. Ele usa SQL Server como fonte demonstrativa e pode ser executado com a topologia Docker documentada. A integração produtiva com Oracle 19c/COMPASS ainda depende de informações de infraestrutura e de consultas de reconciliação.
+O ambiente demo local e a prévia temporária HTTPS na VPS adicional permitem validar o produto com SQL Server e dados fictícios. A integração produtiva com Oracle 19c/COMPASS ainda depende de informações de infraestrutura e de consultas de reconciliação.
 
 **Nível de prontidão atual:**
 
@@ -36,13 +36,21 @@ O ambiente demo local é o principal critério de validação atual. Ele usa SQL
 - **Produção:** não liberada; além da chave TOTP obrigatória no boot de produção, faltam Oracle/COMPASS e reconciliação, persistência durável validada, storage de exportações, SMTP real e hardening operacional.
 - **BI de produção:** ainda não reconciliado com a fonte Oracle; não declarar KPIs produtivos como validados antes do smoke test e da reconciliação.
 
-### Avaliação para prévia externa em 2026-09-30
+### Prévia externa temporária em 2026-09-30
 
-- A capacidade da VPS é suficiente para uma demonstração isolada com Docker. O host já executa outra aplicação; seus containers, arquivos e dados foram preservados.
-- A chave SSH pública da equipe foi instalada e o acesso por chave validado. Segredos e detalhes de identificação do host não devem entrar no repositório.
-- O Dashboard Gusmão não foi instalado. O Compose demo é de desenvolvimento; o Compose de produção não serve HTTPS, não inclui SQL Server demo e não habilita explicitamente os dados sintéticos na build Web.
-- Antes do cliente testar: preparar perfil Compose isolado; domínio e certificado HTTPS; modo demo explícito; credenciais de consulta exclusivas; segredos fora do Git; firewall e portas internas; persistência e rollback. Rever o seed administrativo de demonstração antes de qualquer exposição pública.
-- Relatório: `docs/audits/VIABILIDADE_VPS_PREVIEW_2026-09-30.md`.
+- A VPS adicional serve `https://srv1728931.hstgr.cloud` por Caddy/Let's Encrypt; a URL temporária pertence ao provedor. Só TCP 80/443 estão publicados; os cinco serviços da prévia estão saudáveis.
+- A aplicação Docker anterior foi removida conforme pedido: containers, arquivos, imagens associadas e dados nos containers, sem backup. Debian, Docker, a nova stack e a chave SSH foram preservados.
+- Root SSH aceita apenas a chave pública validada; `PasswordAuthentication` e login interativo estão desativados. O `.env.preview` real no servidor tem modo `0600` e não está no Git.
+- A única conta compartilhável é `viewer` com quatro setores. API e Web usam modo demo; home tem 12 KPIs e 12 períodos; catálogo tem quatro relatórios; consulta SQL demo retornou cinco linhas.
+- Build API/Web local e Docker de API/Web/SQL Server no host aprovados; Compose/env configurados; HTTP redireciona para HTTPS; health SQL OK. Suites Jest/Playwright não foram executadas nesta tarefa.
+- Limites: não é produção; dados fictícios, parte do estado em memória, seed SQL repõe exemplos no reinício, sem domínio próprio, backup/restore, observabilidade ou Oracle/COMPASS reconciliado.
+- Implementação: commits `d031235` (`feat(infra): preparar perfil de prévia segura`) e `9ab167e` (`fix(infra): tornar seed SQL repetível`). Auditoria: `docs/audits/VIABILIDADE_VPS_PREVIEW_2026-09-30.md`.
+
+### Preparação preliminar da VPS em 2026-09-30
+
+- O inventário inicial encontrou Debian 13, Docker/Compose e uma aplicação anterior com containers, arquivos e dados no servidor. A chave SSH foi instalada após conferir a identidade do host com o painel do provedor.
+- Antes do deploy, essa etapa concluiu que o Compose existente não era adequado para acesso externo e recomendou perfil isolado, dados mock explícitos, conta de consulta e HTTPS.
+- As evidências finais e a substituição autorizada estão em `docs/audits/VIABILIDADE_VPS_PREVIEW_2026-09-30.md`.
 
 ### Reconciliação documental em 2026-09-29
 
@@ -206,15 +214,13 @@ Na auditoria local de 2026-09-29 passaram novamente `pnpm verify:workspace`, `pn
 
 ## Linha do tempo de tarefas
 
-### 2026-09-30 — Auditoria da VPS para prévia ao cliente
+### 2026-09-30 — Inventário preliminar da VPS antes da substituição
 
-- **Objetivo:** avaliar capacidade e conteúdo do servidor, instalar a chave SSH solicitada e medir se a demo pode ser publicada para validação do cliente.
-- **Resultado:** host Debian 13 com Docker/Compose, 4 vCPUs, 15 GiB de RAM e cerca de 181 GiB livres; há outra aplicação Compose ativa, que foi preservada. A chave SSH pública foi instalada e testada em conexão sem senha.
-- **Conclusão:** recursos suficientes para uma demonstração isolada; ainda não pronta para publicação externa. Faltam perfil Compose de prévia, domínio/HTTPS, modo sintético explícito na Web/API, bootstrap de usuário de consulta, revisão do seed admin, firewall e isolamento de portas internas.
-- **Validações:** acesso SSH por chave validado com `PasswordAuthentication=no`; `pnpm verify:docs`, Prettier direcionado e `git diff --check` aprovados. Não houve mudança de código nem testes de aplicação.
-- **Segurança:** endereço, fingerprints, senha e arquivos `.env` ficaram fora do repositório. Sem leitura de logs/dados do projeto existente e sem mudanças em seus containers, rede, firewall ou configuração.
-- **Commit/push:** `c5fb0d8` (`docs(infra): registrar auditoria da VPS de prévia`), local; sem push nesta tarefa. O registro deste hash foi fechado em um commit documental de acompanhamento.
-- **Próximos passos:** preparar o perfil de preview e TLS sem interromper a aplicação existente; trocar a senha root compartilhada e revisar a desativação do login SSH por senha após validar o acesso por chave.
+- **Objetivo:** medir capacidade do host, validar a chave SSH e avaliar a compatibilidade com a demonstração.
+- **Resultado naquela etapa:** Debian 13, Docker/Compose, 4 vCPUs, 15 GiB de RAM e aproximadamente 181 GiB livres. Uma aplicação Compose antiga estava ativa e foi preservada durante o inventário inicial.
+- **Escopo do inventário:** não foram lidos `.env`, logs, bancos ou conteúdo dos containers antigos. Os passos posteriores de limpeza e substituição estão registrados na entrada da prévia temporária acima.
+- **Segurança:** a chave `Dev.RuiDiniz` foi instalada após comparar a identidade SSH com o painel do provedor; os acessos, senhas, endereço e fingerprint não são registrados aqui.
+- **Commits:** `c5fb0d8` (`docs(infra): registrar auditoria da VPS de prévia`) e `e740913` (`docs(governanca): registrar commit da auditoria`), ambos locais na branch de trabalho antes da publicação deste handoff.
 
 ### 2026-09-29 — Refinar visual do dashboard
 

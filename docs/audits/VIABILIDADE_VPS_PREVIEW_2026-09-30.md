@@ -1,46 +1,54 @@
-# Viabilidade da VPS para prévia ao cliente — 2026-09-30
+# Prévia temporária do cliente na VPS — 2026-09-30
 
-## Conclusão
+## Resultado
 
-A VPS tem recursos suficientes para hospedar uma instância isolada de demonstração do Dashboard Gusmão. O host já executa outra aplicação em Docker, que foi preservada. O Dashboard Gusmão ainda não foi instalado.
+A prévia do Dashboard Gusmão está disponível em [https://srv1728931.hstgr.cloud](https://srv1728931.hstgr.cloud). O hostname é temporário e controlado pelo provedor; não é um domínio pertencente ao projeto. A instalação destina-se a avaliação do cliente, não a uso produtivo.
 
-A máquina tem Debian GNU/Linux 13, Docker Engine 26.1.5 e Docker Compose 2.26.1; dispõe de 4 vCPUs, 15 GiB de RAM e cerca de 181 GiB livres em disco. A memória disponível estava em aproximadamente 14 GiB durante a inspeção. O acesso de saída ao registry do Docker respondeu; isso confirma resolução de nomes e conectividade externa para baixar imagens.
+A VPS continua com Debian GNU/Linux 13, Docker Engine 26.1.5 e Docker Compose 2.26.1. O inventário inicial mediu 4 vCPUs, 15 GiB de RAM e cerca de 181 GiB livres. O projeto usa Compose isolado em `/opt/dashboard-gusmao-preview/source`; os segredos reais ficam em `infra/env/.env.preview`, modo `0600`, fora do Git.
 
-## Acesso e integridade
+## Topologia e acesso
 
-- A identidade SSH do servidor foi comparada com o painel do provedor antes de autenticar.
-- A chave pública `Dev.RuiDiniz` foi instalada para o usuário `root`, com permissões restritas, e o login por chave foi validado sem autenticação por senha.
-- A chave privada permaneceu no computador de desenvolvimento. Endereço do servidor, fingerprints, credenciais e conteúdo de arquivos de ambiente não são registrados neste documento.
-- A autenticação SSH por senha ainda permanece habilitada no host. A senha deve ser trocada; qualquer desativação do acesso por senha deve ocorrer somente depois de confirmar o acesso por chave em uma nova sessão.
+```text
+Internet -> Caddy (TCP 80/443) -> Web Next.js
+                            \-> API NestJS -> SQL Server Express demo
+                                           -> Redis
+```
 
-## O que já existe na VPS
+- O Compose `dashboard-gusmao-preview` executa Caddy, Web, API, SQL Server e Redis. A inspeção dos bindings Docker confirmou publicação somente das portas TCP 80 e 443 no Caddy; API, SQL Server e Redis não publicam portas no host.
+- A Web e a API usam os modos explícitos de demonstração. A home vem do dataset sintético móvel de 12 meses; o SQL Server contém os relatórios fictícios de exemplo.
+- A API usa um usuário SQL `dashboard_reader`, membro de `db_datareader`, com `EXECUTE` no schema de relatórios. Não recebe permissão de escrita.
+- A única conta compartilhável é papel `viewer` em Diretoria, Financeiro, Comercial e Operações. O seed com administrador/TOTP fixo não é executado no perfil da VPS.
+- Caddy obteve certificado público da Let's Encrypt. A resposta externa de `/login` foi HTTP 200; HTTP redireciona com 308 para HTTPS.
+- O arquivo `.env.preview` tem modo `0600`. Nenhuma senha, token, segredo, IP ou fingerprint é registrado nesta auditoria.
 
-- Há um projeto Compose independente ativo com quatro containers saudáveis e um container de seed encerrado com sucesso. A inspeção usou metadados de containers, imagens, portas, mounts e nomes/tamanhos da pasta do projeto; arquivos de ambiente, logs e dados da aplicação não foram lidos.
-- No instante da coleta, cada container ativo usava menos de 3% de CPU e entre 8 e 112 MiB de RAM.
-- Os serviços Web/API desse projeto já publicam portas no host. PostgreSQL e Redis estão limitados a portas de loopback. Não houve conflito observado nas portas padrão de HTTP/HTTPS nem na porta 8082 usada pelo Nginx do Compose de produção deste repositório.
-- O Compose existente não declara volumes nomeados, e os containers consultados não reportam mounts. Antes de reiniciá-los, recriá-los ou remover imagens, é necessário confirmar como os dados persistem. Nenhum container, imagem, volume ou arquivo da aplicação existente foi alterado.
-- UFW não está instalado, `nftables` não está disponível e a política `INPUT` do `iptables` aparece como `ACCEPT`. O firewall configurado no painel do provedor não é visível pelo acesso SSH e ainda precisa ser conferido.
-- Docker reporta cerca de 5,4 GB em imagens e aproximadamente 4,9 GB reclamáveis. Esse espaço não foi limpo: imagens sem tag podem ser necessárias para rollback do projeto existente.
+## Substituição da aplicação anterior
 
-## Compatibilidade com este projeto
+O usuário pediu para limpar a VPS e substituir a aplicação. Depois que a nova stack passou por healthchecks, login e consulta SQL, o projeto Docker anterior foi parado e removido pelo Compose identificado nos metadados dos containers. Foram removidos seus containers, arquivos da aplicação, arquivo de ambiente antigo, imagens associadas e cache Docker sem uso. Nenhum backup foi criado, conforme o escopo explícito de limpeza. Debian, Docker, a nova stack e a chave SSH permaneceram.
 
-O repositório oferece um Compose demo para desenvolvimento local e um Compose de produção; nenhum está pronto, sem ajustes, para uma prévia pública ao cliente:
+Após a limpeza, só há cinco containers ativos, todos da prévia, cinco volumes nomeados da prévia e cinco imagens usadas por ela. A pasta da aplicação antiga não existe mais. O `docker system df` registrou 3,646 GB em imagens da prévia, 95,27 MB em volumes ativos e cache de build vazio.
 
-- O Compose demo inicia Web e API em modo de desenvolvimento e publica também API, SQL Server e Redis no host.
-- O Compose de produção usa Nginx somente em HTTP, não inclui o SQL Server de demonstração e define Oracle como fonte padrão. A integração Oracle/COMPASS não está configurada.
-- A demonstração sintética depende de `DATA_MODE=mock` na API e `NEXT_PUBLIC_USE_MOCK_DATA=true` na Web. O Dockerfile de produção não recebe atualmente a segunda variável como argumento de build.
-- O ambiente de produção requer segredos próprios, incluindo `JWT_ACCESS_SECRET` e `TOTP_ENCRYPTION_KEY`. Sem persistência Supabase configurada, partes da plataforma recorrem à memória e perdem dados ao reiniciar.
-- O seed de demonstração cria contas administrativas e de consulta quando as variáveis de demo são preenchidas; não deve ser exposto como está em um ambiente público sem um fluxo de bootstrap e credenciais apropriados.
+## Segurança operacional
 
-## Trabalho necessário antes de enviar ao cliente
+- A identidade SSH foi comparada ao painel do provedor antes de instalar a chave pública `Dev.RuiDiniz`. O login por chave foi validado em uma conexão nova.
+- O arquivo `/etc/ssh/sshd_config.d/00-preview-key-only.conf` define `PermitRootLogin prohibit-password`, `PasswordAuthentication no` e `KbdInteractiveAuthentication no`; `sshd -t`, reload e novo login por chave passaram.
+- UFW não está instalado e a política local `iptables INPUT` é `ACCEPT`. Os serviços da aplicação ficam protegidos por não terem bindings de porta; TCP 80/443 foram confirmadas de um cliente externo. Regras do firewall do provedor não foram alteradas.
+- A VPS não recebeu dados reais. O hostname do provedor, credenciais de demo e segredos do serviço devem ser tratados como temporários e não reutilizados em produção.
 
-1. Criar um perfil Compose de prévia separado, com nome de projeto, rede, armazenamento e diretório próprios; não usar `docker compose down`, `docker system prune` ou portas já ocupadas pelo projeto existente.
-2. Servir a aplicação por um domínio/subdomínio controlado, com DNS apontado para a VPS e HTTPS válido. Só o reverse proxy deve receber tráfego público; API, Redis e SQL Server ficam restritos à rede Docker.
-3. Preparar imagens de produção que identifiquem explicitamente dados sintéticos, habilitem o modo mock no build da Web e na API e, se o cliente testar relatórios SQL, incluam o SQL Server demo isolado.
-4. Criar um bootstrap seguro para um usuário de consulta com senha exclusiva; revisar a conta administrativa demo e seu TOTP fixo no código antes de disponibilizar qualquer acesso externo.
-5. Definir segredos fora do repositório, política de acesso da porta SSH, firewall de host/provedor, retenção, backup e forma de reiniciar/rollback.
-6. Validar HTTPS, login de consulta, dashboard, relatórios incluídos, saúde dos containers e ausência de exposição de portas internas antes de compartilhar o endereço.
+## Validações operacionais
 
-## Limites desta inspeção
+- `pnpm --filter @dashboard-power-bi/api build`: aprovado.
+- `pnpm --filter @dashboard-power-bi/web build`: aprovado.
+- `pnpm verify:env`, configuração do Compose de prévia e `git diff --check`: aprovados.
+- Construção das imagens da API, Web e SQL Server na VPS: aprovada.
+- Cinco serviços Docker saudáveis. O SQL Server foi reiniciado e voltou saudável com o seed reaplicado.
+- HTTPS externo válido: `/login` 200; HTTP redireciona para HTTPS; `/api/health/sql` indica SQL Server disponível.
+- Login confirmado sem 2FA; perfil `viewer`, quatro setores; dashboard com 12 KPIs e 12 pontos temporais; catálogo com quatro relatórios; execução SQL do relatório financeiro retornou cinco linhas.
+- Não foram executadas suítes Jest/Playwright nesta operação.
 
-Foi feito inventário de sistema, capacidade, Docker, containers, listeners, autenticação SSH e conectividade de saída. Não foram lidos `.env`, logs, bancos, código, documentos ou conteúdo de containers do outro projeto. Também não foram executados scans externos de segurança, atualizações de sistema, backups, alterações de firewall, rotação da senha root ou instalação do Dashboard Gusmão.
+## Limites e próximos passos
+
+- BI e relatórios contêm apenas dados fictícios; Oracle/COMPASS não está conectado nem reconciliado.
+- Usuários, favoritos e partes do domínio permanecem em memória. A tela Web de notificações e o histórico Web de exportações usam fixtures; alterações nesses dados não são garantidas após reinício.
+- O SQL demo reexecuta o seed ao iniciar e repõe as tabelas de exemplo; mudanças manuais no banco são perdidas no reinício.
+- O hostname é temporário. Próximo passo para um piloto mais durável: obter domínio próprio, configurar DNS, definir backups/restauração, observabilidade, retenção e estratégia de persistência para os dados de plataforma.
+- Essa prévia não valida os critérios de produção do V1 nem substitui a auditoria de estado real do produto.

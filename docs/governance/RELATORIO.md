@@ -6,23 +6,32 @@
 > As entradas anteriores a 24/08/2026 preservam os caminhos da estrutura documental vigente na data de cada registro. A estrutura atual e mantida em `docs/INDEX.md`; referencias historicas abaixo nao representam arquivos ausentes.
 > Cada entrada abaixo é um registro datado da sessão correspondente; números e status dentro de registros antigos não descrevem o runtime atual. Consulte `docs/audits/ESTADO_REAL_PROJETO_2026-09-29.md`.
 
-## 2026-09-30 — Levantamento da VPS para prévia ao cliente
+## 2026-09-30 — Prévia temporária publicada na VPS adicional
 
 ### Entrega
 
-- Inspecionados sistema operacional, CPU/memória/disco, Docker/Compose, containers existentes, portas, SSH, firewall local e conectividade externa.
-- A VPS tem recursos suficientes para uma demonstração. Uma aplicação Docker já existente foi mantida intacta; não foram lidos seus arquivos de ambiente, logs ou dados.
-- A chave pública SSH foi instalada para root e validada em nova conexão usando autenticação por chave. A senha root continua habilitada e deve ser rotacionada antes de compartilhar acesso.
-- Nenhum container ou serviço do Dashboard Gusmão foi instalado. O Compose demo é de desenvolvimento; a configuração de produção atual não atende a uma prévia externa sem domínio/HTTPS, modo demo preparado, usuário de consulta seguro, isolamento e revisão do seed admin.
-- Criada a auditoria sanitizada `docs/audits/VIABILIDADE_VPS_PREVIEW_2026-09-30.md`; ela não registra IP, fingerprints, senhas, arquivos `.env` ou segredos.
+- Criado perfil Compose próprio em `infra/docker/docker-compose.preview.yml`: Caddy, API, Web, SQL Server Express demo e Redis. Só TCP 80/443 são publicados; API, banco e Redis ficam na rede interna.
+- Publicada a URL HTTPS temporária `https://srv1728931.hstgr.cloud`, com certificado Let's Encrypt; HTTP redireciona para HTTPS. O hostname pertence ao provedor e não é domínio próprio.
+- O seed da prévia cria uma única conta `viewer` para os quatro setores, sem admin demo/TOTP fixo. O SQL Server usa um login `dashboard_reader` sem permissão de escrita. Segredos reais ficam apenas no host, em `.env.preview` modo `0600`.
+- Removida, conforme pedido, a aplicação Docker anterior: containers, arquivos incluindo seu `.env`, imagens associadas, dados dos containers e cache Docker sem uso. Nenhum backup foi criado. Debian, Docker e chave SSH foram preservados.
+- Configurado SSH key-only para root: autenticação por senha e interativa desativadas após nova conexão bem-sucedida pela chave.
+- Atualizados Dockerfiles, Compose, seed SQL, README, ROADMAP, arquitetura, banco, SDD e documentos de governança. Auditoria: `docs/audits/VIABILIDADE_VPS_PREVIEW_2026-09-30.md`.
 
 ### Validação e limites
 
-- Login SSH por chave validado com `BatchMode=yes`, `PasswordAuthentication=no`; `id -un` confirmou `root`.
-- Verificações foram somente leitura, além da inclusão da chave pública em `/root/.ssh/authorized_keys`. Não houve alteração de firewall, senha, containers ou configuração da aplicação existente.
-- `pnpm verify:docs`, Prettier direcionado e `git diff --check` passaram.
-- Testes de aplicação não foram executados porque não houve alteração de código.
-- Commit principal `c5fb0d8` (`docs(infra): registrar auditoria da VPS de prévia`), local; sem push nesta tarefa. A memória persistida registra o hash em commit documental de acompanhamento.
+- `pnpm --filter @dashboard-power-bi/api build`, `pnpm --filter @dashboard-power-bi/web build`, `pnpm verify:env`, Compose config e `git diff --check` passaram. As três imagens de aplicação foram construídas na VPS.
+- Cinco serviços saudáveis, incluindo SQL Server após reinício. HTTPS `/login` 200; HTTP 308; `/api/health/sql` OK.
+- Login smoke: sem 2FA, perfil `viewer`, quatro setores; dashboard com 12 KPIs/12 períodos; catálogo com quatro relatórios; query SQL financeira retornou cinco linhas.
+- Binding Docker conferido: apenas Caddy publica TCP 80/443. A pasta antiga foi removida; volumes ativos pertencem à prévia; `.env.preview` tem modo `0600`.
+- Suítes Jest/Playwright não foram executadas nesta operação.
+- Commits de código: `d031235` (`feat(infra): preparar perfil de prévia segura`) e `9ab167e` (`fix(infra): tornar seed SQL repetível`). Os commits da auditoria preliminar da VPS também serão publicados em branch que não aciona o deploy automático de `main`.
+
+### Limitações e próximos passos
+
+- Dados do cliente não foram conectados; Oracle/COMPASS e reconciliação do BI permanecem pendentes.
+- O hostname é temporário; obter domínio próprio para um piloto, definir backup/restore, observabilidade, retenção e persistência durável do estado de plataforma.
+- Algumas telas seguem fixtures e usuários/estado de domínio seguem em memória; os dados SQL demo são repostos no reinício.
+- A prévia não libera o produto para produção.
 
 ## 2026-09-29 — Atualização da documentação para o runtime real
 

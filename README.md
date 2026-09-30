@@ -4,7 +4,7 @@
 
 O Dashboard Gusmão é uma plataforma de BI e relatórios criada para dar à gestão uma visão clara da operação do Grupo Franciosi, conectando produção, colheita, grãos, algodão, algodoeira e romaneios em uma experiência web segura e rastreável.
 
-> **Estado em 2026-09-29:** plataforma demo funcional em Docker; BI agrícola real ainda não conectado. A home usa dados sintéticos identificados, o SQL Server local atende relatórios de exemplo e Oracle/COMPASS aguarda acesso, mapeamento e reconciliação. O projeto não está liberado para produção.
+> **Estado em 2026-09-30:** além do ambiente demo local, há uma prévia temporária HTTPS na VPS para avaliação do cliente. Ela usa somente dados fictícios e SQL Server de demonstração. Oracle/COMPASS ainda aguarda acesso, mapeamento e reconciliação; o projeto não está liberado para produção.
 
 ## Por que este produto existe
 
@@ -130,6 +130,16 @@ Para navegar por todos os setores sem permissões administrativas, entre com `vi
 
 No ambiente demo, `/api/v1/bi/production/summary` informa `not_configured` quando a base local não possui dados de produção. O contrato não mascara essa condição com números sintéticos.
 
+## Prévia temporária para o cliente
+
+A prévia está em [https://srv1728931.hstgr.cloud](https://srv1728931.hstgr.cloud). O hostname é temporário e controlado pelo provedor da VPS. Entre com a conta e a senha de consulta compartilhadas separadamente; ela tem papel `viewer` nos quatro setores e não possui acesso administrativo.
+
+Essa instância serve somente para avaliação visual e funcional. A home, notificações e outros exemplos usam valores fictícios; os relatórios SQL consultam tabelas preenchidas com dados de demonstração. Não há conexão Oracle/COMPASS, persistência durável de usuários nem dados reais do cliente. O SQL demo repõe seu conjunto de exemplo ao reiniciar.
+
+O perfil isolado está em `infra/docker/docker-compose.preview.yml`, o proxy HTTPS em `infra/docker/caddy/Caddyfile.preview` e o modelo de variáveis em `infra/env/.env.preview.example`. Na VPS, o arquivo real `infra/env/.env.preview` contém credenciais e segredos e permanece fora do Git, com acesso restrito ao `root`.
+
+Somente o Caddy publica as portas 80/443. API, SQL Server e Redis ficam na rede Docker privada. O SSH do host aceita a chave validada e não aceita autenticação por senha. A prévia não equivale a um ambiente de produção e será substituída por domínio próprio quando ele estiver disponível.
+
 ### Checklist de setup local
 
 - [ ] Instalar Node.js 20 ou superior.
@@ -254,18 +264,20 @@ Comece pelo [índice da documentação](docs/INDEX.md):
 - [Decisões](docs/decisions/): ADRs arquiteturais.
 - [Memória persistida](docs/governance/MEMORIA_PROJETO.md): snapshot, histórico, validações e handoff para agentes.
 
-## Produção e suporte operacional
+## Deploy e suporte operacional
 
-Os artefatos de produção estão em:
+Os artefatos de produção e prévia estão em:
 
 ```text
 infra/docker/docker-compose.prod.yml
+infra/docker/docker-compose.preview.yml
+infra/docker/caddy/Caddyfile.preview
 infra/docker/api.prod.Dockerfile
 infra/docker/web.prod.Dockerfile
 .github/workflows/deploy-vps.yml
 ```
 
-O deploy automatizado e os limites operacionais estão descritos em [Arquitetura](docs/architecture/ARQUITETURA.md). Variáveis de produção devem ser fornecidas exclusivamente pelo ambiente seguro de execução.
+O deploy automatizado e os limites operacionais estão descritos em [Arquitetura](docs/architecture/ARQUITETURA.md). O workflow de deploy em `main` usa os secrets GitHub do ambiente de produção; a prévia temporária da VPS adicional usa um Compose próprio. Variáveis de produção devem ser fornecidas exclusivamente pelo ambiente seguro de execução.
 
 O template versionado [`infra/env/.env.production.example`](infra/env/.env.production.example) documenta o contrato completo de produção, com Oracle/COMPASS como fonte padrão e SQL Server como compatibilidade legada. Para preparar uma implantação:
 
