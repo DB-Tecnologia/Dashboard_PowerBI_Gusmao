@@ -39,12 +39,12 @@ Após a limpeza, só há cinco containers ativos, todos da prévia, cinco volume
 - `pnpm --filter @dashboard-power-bi/api build`: aprovado.
 - `pnpm --filter @dashboard-power-bi/web build`: aprovado.
 - `pnpm verify:env`, configuração do Compose de prévia e `git diff --check`: aprovados.
-- O CI inicial não tinha Redis e as três suítes E2E da API que inicializam o worker BullMQ falharam por `ECONNREFUSED`; foi adicionada uma instância Redis saudável ao job para a repetição automática no pull request.
+- O CI inicial não tinha Redis e as três suítes E2E da API que inicializam o worker BullMQ falharam por `ECONNREFUSED`; foi adicionada uma instância Redis saudável ao job. Na repetição, qualidade e testes unitários passaram, mas três suítes E2E falharam com respostas 401/403 onde os casos esperavam 200/201/400. A causa dessas falhas ainda não foi determinada; não afeta a validação operacional da prévia e permanece como pendência antes de integrar o PR.
 - Construção das imagens da API, Web e SQL Server na VPS: aprovada.
 - Cinco serviços Docker saudáveis. O SQL Server foi reiniciado e voltou saudável com o seed reaplicado.
 - HTTPS externo válido: `/login` 200; HTTP redireciona para HTTPS; `/api/health/sql` indica SQL Server disponível.
 - Login confirmado sem 2FA; perfil `viewer`, quatro setores; dashboard com 12 KPIs e 12 pontos temporais; catálogo com quatro relatórios; execução SQL do relatório financeiro retornou cinco linhas.
-- As suítes Jest/Playwright não foram executadas manualmente nesta operação; o CI executou unitários com sucesso e repetirá E2E com Redis após a atualização da branch.
+- Não executei suítes localmente. O CI executou unitários com sucesso e confirmou que Redis está disponível; os E2E continuam reprovados pelas respostas 401/403 descritas acima.
 
 ## Limites e próximos passos
 

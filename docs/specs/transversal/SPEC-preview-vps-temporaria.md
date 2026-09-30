@@ -59,15 +59,15 @@ A VPS executa Debian 13 e Docker. O projeto demo atual é apropriado apenas para
 
 ## 6. Impacto Técnico
 
-| Área           | Impacto                                                                                                                                                        |
-| -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Arquitetura    | Compose dedicado para prévia; Caddy termina TLS; API, Web, SQL Server e Redis em redes privadas.                                                               |
-| Banco de dados | Usa SQL Server demo e seed reexecutável; não recebe dados reais. O seed repõe as tabelas demo ao reiniciar.                                                    |
-| API            | Flag restrita ao ambiente de prévia cria uma conta viewer; modo demo e SQL Server configurados por ambiente.                                                   |
-| Frontend       | Build de produção recebe `NEXT_PUBLIC_USE_MOCK_DATA=true` e URL relativa `/api`.                                                                               |
-| Testes         | Builds, healthchecks e smoke checks de acesso; o job CI fornece Redis para as suítes E2E da API que inicializam o worker BullMQ.                               |
-| Infraestrutura | A aplicação anterior na VPS foi substituída; portas 80/443 no proxy e volumes nomeados para os serviços de demonstração.                                       |
-| Segurança      | Segredos gerados no host; usuário SQL sem privilégios de escrita; sem porta direta para API/DB/Redis; acesso público temporário limitado por papel de leitura. |
+| Área           | Impacto                                                                                                                                                           |
+| -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Arquitetura    | Compose dedicado para prévia; Caddy termina TLS; API, Web, SQL Server e Redis em redes privadas.                                                                  |
+| Banco de dados | Usa SQL Server demo e seed reexecutável; não recebe dados reais. O seed repõe as tabelas demo ao reiniciar.                                                       |
+| API            | Flag restrita ao ambiente de prévia cria uma conta viewer; modo demo e SQL Server configurados por ambiente.                                                      |
+| Frontend       | Build de produção recebe `NEXT_PUBLIC_USE_MOCK_DATA=true` e URL relativa `/api`.                                                                                  |
+| Testes         | Builds, healthchecks e smoke checks de acesso; o job CI fornece Redis. Qualidade/unitários passaram; três suítes E2E permanecem reprovadas por respostas 401/403. |
+| Infraestrutura | A aplicação anterior na VPS foi substituída; portas 80/443 no proxy e volumes nomeados para os serviços de demonstração.                                          |
+| Segurança      | Segredos gerados no host; usuário SQL sem privilégios de escrita; sem porta direta para API/DB/Redis; acesso público temporário limitado por papel de leitura.    |
 
 ## 7. Testes Necessários
 

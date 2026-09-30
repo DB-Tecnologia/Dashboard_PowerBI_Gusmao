@@ -42,10 +42,10 @@ O ambiente demo local e a prévia temporária HTTPS na VPS adicional permitem va
 - A aplicação Docker anterior foi removida conforme pedido: containers, arquivos, imagens associadas e dados nos containers, sem backup. Debian, Docker, a nova stack e a chave SSH foram preservados.
 - Root SSH aceita apenas a chave pública validada; `PasswordAuthentication` e login interativo estão desativados. O `.env.preview` real no servidor tem modo `0600` e não está no Git.
 - A única conta compartilhável é `viewer` com quatro setores. API e Web usam modo demo; home tem 12 KPIs e 12 períodos; catálogo tem quatro relatórios; consulta SQL demo retornou cinco linhas.
-- Build API/Web local e Docker de API/Web/SQL Server no host aprovados; Compose/env configurados; HTTP redireciona para HTTPS; health SQL OK. O CI executou testes unitários com sucesso; três suítes E2E da API falharam porque o job não fornecia Redis. O workflow foi corrigido para subir Redis com healthcheck, aguardando a repetição automática.
+- Build API/Web local e Docker de API/Web/SQL Server no host aprovados; Compose/env configurados; HTTP redireciona para HTTPS; health SQL OK. No CI, qualidade e testes unitários passaram; após adicionar Redis, três suítes E2E ainda falham com respostas 401/403 inesperadas. A causa não foi determinada e fica pendente antes da integração do PR.
 - Limites: não é produção; dados fictícios, parte do estado em memória, seed SQL repõe exemplos no reinício, sem domínio próprio, backup/restore, observabilidade ou Oracle/COMPASS reconciliado.
 - Implementação: commits `d031235` (`feat(infra): preparar perfil de prévia segura`) e `9ab167e` (`fix(infra): tornar seed SQL repetível`); documentação inicial em `1851f4f` (`docs(infra): documentar prévia temporária da VPS`). Auditoria: `docs/audits/VIABILIDADE_VPS_PREVIEW_2026-09-30.md`.
-- O workflow de CI agora oferece Redis para inicialização BullMQ nas suítes E2E da API; a alteração foi documentada e publicada na branch do PR, sem execução manual de testes.
+- O workflow de CI oferece Redis para inicialização BullMQ nas suítes E2E da API; commit `ac8bd4b`. Essa correção elimina `ECONNREFUSED`, mas não resolve as falhas E2E subsequentes; nenhum teste foi executado manualmente.
 
 ### Preparação preliminar da VPS em 2026-09-30
 
