@@ -182,6 +182,10 @@ IF NOT EXISTS (SELECT 1 FROM sys.server_principals WHERE name = N'dashboard_read
 BEGIN
   CREATE LOGIN [dashboard_reader] WITH PASSWORD = N'__APP_PASSWORD__', CHECK_POLICY = ON, CHECK_EXPIRATION = OFF;
 END
+ELSE
+BEGIN
+  ALTER LOGIN [dashboard_reader] WITH PASSWORD = N'__APP_PASSWORD__', CHECK_POLICY = ON, CHECK_EXPIRATION = OFF;
+END
 GO
 
 IF DATABASE_PRINCIPAL_ID(N'dashboard_reader') IS NULL
@@ -190,6 +194,18 @@ BEGIN
 END
 GO
 
-ALTER ROLE [db_datareader] ADD MEMBER [dashboard_reader];
+IF NOT EXISTS (
+  SELECT 1
+  FROM sys.database_role_members AS membership
+  INNER JOIN sys.database_principals AS role_principal
+    ON role_principal.principal_id = membership.role_principal_id
+  INNER JOIN sys.database_principals AS user_principal
+    ON user_principal.principal_id = membership.member_principal_id
+  WHERE role_principal.name = N'db_datareader'
+    AND user_principal.name = N'dashboard_reader'
+)
+BEGIN
+  ALTER ROLE [db_datareader] ADD MEMBER [dashboard_reader];
+END
 GRANT EXECUTE ON SCHEMA::[reports] TO [dashboard_reader];
 GO
