@@ -11,7 +11,7 @@
 - O root SSH agora aceita apenas a chave validada; a senha e a autenticação interativa foram desativadas para SSH. O arquivo real `.env.preview` fica no host com modo `0600` e nunca deve ir para o Git.
 - Builds da API/Web, cinco healthchecks, HTTPS, login viewer, dashboard, catálogo e consulta SQL foram confirmados. Suítes Jest/Playwright não foram executadas.
 - Limites: hostname temporário do provedor, dados fictícios, repositórios em memória em partes do runtime, sem backup/restore ou observabilidade e sem Oracle/COMPASS. Não classificar como produção.
-- O workflow GitHub `Deploy VPS` dispara em push para `main` e usa secrets do ambiente produtivo. Para evitar deploy não intencional ao VPS configurado nesse workflow, publicar os commits desta entrega em uma branch separada, não em `main`.
+- O workflow GitHub `Deploy VPS` dispara em push para `main` e usa secrets do ambiente produtivo. Estes commits foram publicados na branch `codex/vps-preview-2026-09-30`, com PR [#24](https://github.com/DB-Tecnologia/Dashboard_PowerBI_Gusmao/pull/24); `main` não foi alterada e o PR ainda não foi integrado.
 - Detalhes: [auditoria da prévia](../audits/VIABILIDADE_VPS_PREVIEW_2026-09-30.md) e [especificação SDD](../specs/transversal/SPEC-preview-vps-temporaria.md).
 
 ## 2026-09-30 — Auditoria preliminar da VPS antes do deploy

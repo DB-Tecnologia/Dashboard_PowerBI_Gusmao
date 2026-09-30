@@ -24,7 +24,8 @@
 - Login smoke: sem 2FA, perfil `viewer`, quatro setores; dashboard com 12 KPIs/12 períodos; catálogo com quatro relatórios; query SQL financeira retornou cinco linhas.
 - Binding Docker conferido: apenas Caddy publica TCP 80/443. A pasta antiga foi removida; volumes ativos pertencem à prévia; `.env.preview` tem modo `0600`.
 - Suítes Jest/Playwright não foram executadas nesta operação.
-- Commits de código: `d031235` (`feat(infra): preparar perfil de prévia segura`) e `9ab167e` (`fix(infra): tornar seed SQL repetível`). Os commits da auditoria preliminar da VPS também serão publicados em branch que não aciona o deploy automático de `main`.
+- Commits: `c5fb0d8` (`docs(infra): registrar auditoria da VPS de prévia`), `e740913` (`docs(governanca): registrar commit da auditoria`), `d031235` (`feat(infra): preparar perfil de prévia segura`), `9ab167e` (`fix(infra): tornar seed SQL repetível`) e `1851f4f` (`docs(infra): documentar prévia temporária da VPS`).
+- Publicados na branch `codex/vps-preview-2026-09-30`; PR [#24](https://github.com/DB-Tecnologia/Dashboard_PowerBI_Gusmao/pull/24) criado e ainda aberto. `main` não foi alterada para não acionar o deploy automático ao ambiente produtivo.
 
 ### Limitações e próximos passos
 
