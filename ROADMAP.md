@@ -1,7 +1,7 @@
 # ROADMAP.md — Roadmap de Desenvolvimento
 
 **Projeto:** Dashboard Power BI
-**Atualizado em:** 2026-09-29
+**Atualizado em:** 2026-09-30
 **Metodologia:** Specification-Driven Development (SDD) + Test-Driven Development (TDD)
 
 **Fonte de prioridade e execução.** Para saber se uma capacidade foi verificada no runtime e separar protótipo, demo, persistência e prontidão para produção, use [Estado real do projeto (2026-09-29)](docs/audits/ESTADO_REAL_PROJETO_2026-09-29.md).
@@ -218,6 +218,14 @@ Os detalhes e evidências estão em [Auditoria do ambiente local Docker](docs/au
 - ✅ Navegação autenticada compacta em telas grandes e recolhida em menu acessível abaixo de 1024 px; cores, tipografia, acentuação e gráficos foram padronizados.
 - ✅ Abas, drill-down e estados existentes preservados; sem alteração de API, banco ou valores dos dados.
 - ✅ Especificação, testes, revisão em 390/640/1024/1440 px, typecheck, build e Playwright registrados em `docs/specs/bi/SPEC-dashboard-visual-agro-corporativo.md`.
+
+### Avaliação da VPS para prévia ao cliente — 2026-09-30
+
+- ✅ Capacidade e Docker da VPS avaliados; há recursos para uma instância de demonstração isolada.
+- ✅ Chave SSH pública instalada e testada; o projeto Docker existente foi preservado.
+- ⏳ Dashboard Gusmão ainda não instalado. Antes do acesso do cliente, preparar perfil Compose de prévia, HTTPS/domínio, segredos, usuário somente leitura e isolamento das portas internas.
+- ⏳ Corrigir o build de produção para ativar explicitamente os dados sintéticos na Web/API e definir se os relatórios SQL demo farão parte da prévia.
+- Evidências e limitações: [viabilidade da VPS](docs/audits/VIABILIDADE_VPS_PREVIEW_2026-09-30.md).
 
 ---
 

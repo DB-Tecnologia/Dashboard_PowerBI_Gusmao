@@ -2,7 +2,7 @@
 
 **Projeto:** Dashboard Power BI Gusmão
 
-**Última atualização:** 2026-09-29
+**Última atualização:** 2026-09-30
 **Finalidade:** contexto consolidado e histórico de handoff técnico para agentes e colaboradores.
 
 ## Objetivo e leitura
@@ -36,6 +36,14 @@ O ambiente demo local é o principal critério de validação atual. Ele usa SQL
 - **Produção:** não liberada; além da chave TOTP obrigatória no boot de produção, faltam Oracle/COMPASS e reconciliação, persistência durável validada, storage de exportações, SMTP real e hardening operacional.
 - **BI de produção:** ainda não reconciliado com a fonte Oracle; não declarar KPIs produtivos como validados antes do smoke test e da reconciliação.
 
+### Avaliação para prévia externa em 2026-09-30
+
+- A capacidade da VPS é suficiente para uma demonstração isolada com Docker. O host já executa outra aplicação; seus containers, arquivos e dados foram preservados.
+- A chave SSH pública da equipe foi instalada e o acesso por chave validado. Segredos e detalhes de identificação do host não devem entrar no repositório.
+- O Dashboard Gusmão não foi instalado. O Compose demo é de desenvolvimento; o Compose de produção não serve HTTPS, não inclui SQL Server demo e não habilita explicitamente os dados sintéticos na build Web.
+- Antes do cliente testar: preparar perfil Compose isolado; domínio e certificado HTTPS; modo demo explícito; credenciais de consulta exclusivas; segredos fora do Git; firewall e portas internas; persistência e rollback. Rever o seed administrativo de demonstração antes de qualquer exposição pública.
+- Relatório: `docs/audits/VIABILIDADE_VPS_PREVIEW_2026-09-30.md`.
+
 ### Reconciliação documental em 2026-09-29
 
 - O estado por serviço, tela, integração, risco, prioridade e validação está consolidado em `docs/audits/ESTADO_REAL_PROJETO_2026-09-29.md`; ele prevalece sobre os estados encontrados nos snapshots históricos.
@@ -68,8 +76,8 @@ O ambiente demo local é o principal critério de validação atual. Ele usa SQL
 
 - Branch de trabalho: `main`.
 - Remote esperado: `origin` apontando para `DB-Tecnologia/Dashboard_PowerBI_Gusmao`.
-- Commit principal da reconciliação: `f94a3f3` (`docs(governanca): alinhar documentação ao runtime atual`), publicado em `origin/main`.
-- Um commit de governança posterior registrará esta confirmação. O push de 2026-09-29 sincroniza a branch `main` com `origin/main` e publica os sete commits locais anteriores junto ao commit documental.
+- Último commit sincronizado com `origin/main`: `f33def6` (`docs(governanca): registrar publicação da auditoria`), publicado em 2026-09-29.
+- A auditoria da VPS de 2026-09-30 está registrada nesta memória e em `docs/audits/VIABILIDADE_VPS_PREVIEW_2026-09-30.md`; commit local pendente e sem push.
 - `.playwright-cli/` permanece como diretório temporário não rastreado e não foi incluído no commit.
 
 ## Produto, stack e topologia
@@ -197,6 +205,16 @@ Na auditoria local de 2026-09-29 passaram novamente `pnpm verify:workspace`, `pn
 | 2026-08-25 | Cliente Web envia Bearer nas operações autenticadas de 2FA          | Corrigir chamadas de perfil que chegavam à API sem autenticação           | Setup, verificação e desativação 2FA passam a funcionar no navegador    |
 
 ## Linha do tempo de tarefas
+
+### 2026-09-30 — Auditoria da VPS para prévia ao cliente
+
+- **Objetivo:** avaliar capacidade e conteúdo do servidor, instalar a chave SSH solicitada e medir se a demo pode ser publicada para validação do cliente.
+- **Resultado:** host Debian 13 com Docker/Compose, 4 vCPUs, 15 GiB de RAM e cerca de 181 GiB livres; há outra aplicação Compose ativa, que foi preservada. A chave SSH pública foi instalada e testada em conexão sem senha.
+- **Conclusão:** recursos suficientes para uma demonstração isolada; ainda não pronta para publicação externa. Faltam perfil Compose de prévia, domínio/HTTPS, modo sintético explícito na Web/API, bootstrap de usuário de consulta, revisão do seed admin, firewall e isolamento de portas internas.
+- **Validações:** acesso SSH por chave validado com `PasswordAuthentication=no`; `pnpm verify:docs`, Prettier direcionado e `git diff --check` aprovados. Não houve mudança de código nem testes de aplicação.
+- **Segurança:** endereço, fingerprints, senha e arquivos `.env` ficaram fora do repositório. Sem leitura de logs/dados do projeto existente e sem mudanças em seus containers, rede, firewall ou configuração.
+- **Commit/push:** pendente; não houve push nesta tarefa.
+- **Próximos passos:** preparar o perfil de preview e TLS sem interromper a aplicação existente; trocar a senha root compartilhada e revisar a desativação do login SSH por senha após validar o acesso por chave.
 
 ### 2026-09-29 — Refinar visual do dashboard
 

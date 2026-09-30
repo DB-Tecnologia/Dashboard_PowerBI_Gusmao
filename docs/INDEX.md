@@ -30,6 +30,7 @@ Este indice separa a documentacao vigente do historico preservado. Os quatro doc
 
 ## Auditorias
 
+- [Viabilidade da VPS para prévia ao cliente (2026-09-30)](audits/VIABILIDADE_VPS_PREVIEW_2026-09-30.md): inventário sanitizado, acesso SSH, compatibilidade e requisitos antes do deploy.
 - [Estado real do projeto (2026-09-29)](audits/ESTADO_REAL_PROJETO_2026-09-29.md): retrato vigente do runtime, Compose, telas, limitações, riscos e validações; usar como referência de estado.
 - [Auditoria do ambiente local Docker (2026-09-29)](audits/AUDITORIA_LOCAL_DOCKER_2026-09-29.md)
 - [Análise de aderência V1 (histórica)](audits/ANALISE_ESCOPO_V1.md)

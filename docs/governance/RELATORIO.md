@@ -1,10 +1,28 @@
 # RELATORIO.md — Registro Diário de Desenvolvimento
 
 **Projeto:** Dashboard Power BI
-**Atualizado em:** 2026-09-29
+**Atualizado em:** 2026-09-30
 
 > As entradas anteriores a 24/08/2026 preservam os caminhos da estrutura documental vigente na data de cada registro. A estrutura atual e mantida em `docs/INDEX.md`; referencias historicas abaixo nao representam arquivos ausentes.
 > Cada entrada abaixo é um registro datado da sessão correspondente; números e status dentro de registros antigos não descrevem o runtime atual. Consulte `docs/audits/ESTADO_REAL_PROJETO_2026-09-29.md`.
+
+## 2026-09-30 — Levantamento da VPS para prévia ao cliente
+
+### Entrega
+
+- Inspecionados sistema operacional, CPU/memória/disco, Docker/Compose, containers existentes, portas, SSH, firewall local e conectividade externa.
+- A VPS tem recursos suficientes para uma demonstração. Uma aplicação Docker já existente foi mantida intacta; não foram lidos seus arquivos de ambiente, logs ou dados.
+- A chave pública SSH foi instalada para root e validada em nova conexão usando autenticação por chave. A senha root continua habilitada e deve ser rotacionada antes de compartilhar acesso.
+- Nenhum container ou serviço do Dashboard Gusmão foi instalado. O Compose demo é de desenvolvimento; a configuração de produção atual não atende a uma prévia externa sem domínio/HTTPS, modo demo preparado, usuário de consulta seguro, isolamento e revisão do seed admin.
+- Criada a auditoria sanitizada `docs/audits/VIABILIDADE_VPS_PREVIEW_2026-09-30.md`; ela não registra IP, fingerprints, senhas, arquivos `.env` ou segredos.
+
+### Validação e limites
+
+- Login SSH por chave validado com `BatchMode=yes`, `PasswordAuthentication=no`; `id -un` confirmou `root`.
+- Verificações foram somente leitura, além da inclusão da chave pública em `/root/.ssh/authorized_keys`. Não houve alteração de firewall, senha, containers ou configuração da aplicação existente.
+- `pnpm verify:docs`, Prettier direcionado e `git diff --check` passaram.
+- Testes de aplicação não foram executados porque não houve alteração de código.
+- Commit desta atualização documental será registrado após criação; sem push nesta tarefa.
 
 ## 2026-09-29 — Atualização da documentação para o runtime real
 

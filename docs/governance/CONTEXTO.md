@@ -1,7 +1,15 @@
 # CONTEXTO.md — Contexto Vivo do Projeto
 
 **Projeto:** Dashboard Power BI
-**Atualizado em:** 2026-09-29
+**Atualizado em:** 2026-09-30
+
+## 2026-09-30 — Auditoria da VPS para prévia ao cliente
+
+- A VPS tem recursos suficientes para uma instância Docker isolada. A chave SSH pública foi instalada e validada; uma aplicação Docker existente foi mantida intacta.
+- A topologia atual do projeto não deve ser publicada diretamente: o Compose demo é de desenvolvimento e publica dependências internas; o Compose de produção não tem TLS, SQL Server demo nem modo sintético da Web configurável no build atual.
+- Decisão: criar um perfil de prévia próprio com domínio/HTTPS, rede isolada, segredos externos, conta de consulta e portas internas restritas; confirmar primeiro como persistem os dados do Compose já existente.
+- Nenhum endereço IP, fingerprint, senha, arquivo `.env`, log ou dado do outro projeto foi registrado. Nenhum deploy, hardening de SSH, mudança de firewall ou limpeza Docker foi feito.
+- Detalhes e próximos passos: [viabilidade da VPS](../audits/VIABILIDADE_VPS_PREVIEW_2026-09-30.md).
 
 ## 2026-09-29 — Reconciliação documental com o runtime
 
