@@ -42,9 +42,10 @@ O ambiente demo local e a prévia temporária HTTPS na VPS adicional permitem va
 - A aplicação Docker anterior foi removida conforme pedido: containers, arquivos, imagens associadas e dados nos containers, sem backup. Debian, Docker, a nova stack e a chave SSH foram preservados.
 - Root SSH aceita apenas a chave pública validada; `PasswordAuthentication` e login interativo estão desativados. O `.env.preview` real no servidor tem modo `0600` e não está no Git.
 - A única conta compartilhável é `viewer` com quatro setores. API e Web usam modo demo; home tem 12 KPIs e 12 períodos; catálogo tem quatro relatórios; consulta SQL demo retornou cinco linhas.
-- Build API/Web local e Docker de API/Web/SQL Server no host aprovados; Compose/env configurados; HTTP redireciona para HTTPS; health SQL OK. Suites Jest/Playwright não foram executadas nesta tarefa.
+- Build API/Web local e Docker de API/Web/SQL Server no host aprovados; Compose/env configurados; HTTP redireciona para HTTPS; health SQL OK. O CI executou testes unitários com sucesso; três suítes E2E da API falharam porque o job não fornecia Redis. O workflow foi corrigido para subir Redis com healthcheck, aguardando a repetição automática.
 - Limites: não é produção; dados fictícios, parte do estado em memória, seed SQL repõe exemplos no reinício, sem domínio próprio, backup/restore, observabilidade ou Oracle/COMPASS reconciliado.
 - Implementação: commits `d031235` (`feat(infra): preparar perfil de prévia segura`) e `9ab167e` (`fix(infra): tornar seed SQL repetível`); documentação inicial em `1851f4f` (`docs(infra): documentar prévia temporária da VPS`). Auditoria: `docs/audits/VIABILIDADE_VPS_PREVIEW_2026-09-30.md`.
+- O workflow de CI agora oferece Redis para inicialização BullMQ nas suítes E2E da API; a alteração foi documentada e publicada na branch do PR, sem execução manual de testes.
 
 ### Preparação preliminar da VPS em 2026-09-30
 
@@ -85,7 +86,7 @@ O ambiente demo local e a prévia temporária HTTPS na VPS adicional permitem va
 - Branch de trabalho publicada: `codex/vps-preview-2026-09-30`, acompanhando `origin/codex/vps-preview-2026-09-30`.
 - Remote esperado: `origin` apontando para `DB-Tecnologia/Dashboard_PowerBI_Gusmao`.
 - Último commit sincronizado com `origin/main`: `f33def6` (`docs(governanca): registrar publicação da auditoria`), publicado em 2026-09-29.
-- A branch publicada contém `c5fb0d8`, `e740913`, `d031235`, `9ab167e` e `1851f4f`. O PR [#24](https://github.com/DB-Tecnologia/Dashboard_PowerBI_Gusmao/pull/24) está aberto e ainda não foi integrado.
+- A branch publicada contém `c5fb0d8`, `e740913`, `d031235`, `9ab167e`, `1851f4f` e commits posteriores da prévia/CI. O PR [#24](https://github.com/DB-Tecnologia/Dashboard_PowerBI_Gusmao/pull/24) está aberto e ainda não foi integrado.
 - `main` não recebeu push: `.github/workflows/deploy-vps.yml` faria deploy automático ao ambiente produtivo ao receber commits nessa branch. A publicação isolada não acionou esse workflow.
 - `.playwright-cli/` permanece como diretório temporário não rastreado e não foi incluído no commit.
 

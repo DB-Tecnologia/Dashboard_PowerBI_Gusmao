@@ -39,11 +39,12 @@ Após a limpeza, só há cinco containers ativos, todos da prévia, cinco volume
 - `pnpm --filter @dashboard-power-bi/api build`: aprovado.
 - `pnpm --filter @dashboard-power-bi/web build`: aprovado.
 - `pnpm verify:env`, configuração do Compose de prévia e `git diff --check`: aprovados.
+- O CI inicial não tinha Redis e as três suítes E2E da API que inicializam o worker BullMQ falharam por `ECONNREFUSED`; foi adicionada uma instância Redis saudável ao job para a repetição automática no pull request.
 - Construção das imagens da API, Web e SQL Server na VPS: aprovada.
 - Cinco serviços Docker saudáveis. O SQL Server foi reiniciado e voltou saudável com o seed reaplicado.
 - HTTPS externo válido: `/login` 200; HTTP redireciona para HTTPS; `/api/health/sql` indica SQL Server disponível.
 - Login confirmado sem 2FA; perfil `viewer`, quatro setores; dashboard com 12 KPIs e 12 pontos temporais; catálogo com quatro relatórios; execução SQL do relatório financeiro retornou cinco linhas.
-- Não foram executadas suítes Jest/Playwright nesta operação.
+- As suítes Jest/Playwright não foram executadas manualmente nesta operação; o CI executou unitários com sucesso e repetirá E2E com Redis após a atualização da branch.
 
 ## Limites e próximos passos
 
