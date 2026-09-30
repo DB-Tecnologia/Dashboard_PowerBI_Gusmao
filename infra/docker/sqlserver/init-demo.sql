@@ -177,3 +177,19 @@ BEGIN
   ORDER BY id;
 END
 GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.server_principals WHERE name = N'dashboard_reader')
+BEGIN
+  CREATE LOGIN [dashboard_reader] WITH PASSWORD = N'__APP_PASSWORD__', CHECK_POLICY = ON, CHECK_EXPIRATION = OFF;
+END
+GO
+
+IF DATABASE_PRINCIPAL_ID(N'dashboard_reader') IS NULL
+BEGIN
+  CREATE USER [dashboard_reader] FOR LOGIN [dashboard_reader];
+END
+GO
+
+ALTER ROLE [db_datareader] ADD MEMBER [dashboard_reader];
+GRANT EXECUTE ON SCHEMA::[reports] TO [dashboard_reader];
+GO
