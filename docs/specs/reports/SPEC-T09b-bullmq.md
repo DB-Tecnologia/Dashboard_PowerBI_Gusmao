@@ -3,18 +3,20 @@
 **ID:** T09b
 **Módulo:** Reports
 **Fase:** Fase 3
-**Status:** Pendente
-**Atualizado em:** 2026-06-28
+**Status:** Parcial
+**Atualizado em:** 2026-09-29
+
+> BullMQ, Redis e worker estão presentes. O runtime ainda permite fallback em memória, salva arquivos localmente e a tela Web de histórico usa fixtures, sem reconciliação com os jobs da API. Consulte a [auditoria atual](../../audits/ESTADO_REAL_PROJETO_2026-09-29.md).
 
 ---
 
 ## 1. Objetivo
 
-Implementar pipeline assíncrono de exportação com BullMQ + Redis, worker de processamento, polling de status e notificação ao usuário.
+Registrar o pipeline assíncrono de exportação implementado com BullMQ + Redis e worker. Persistência dos arquivos, integração do histórico Web e operação sem fallback ainda não estão concluídas.
 
 ## 2. Contexto
 
-Atualmente as exportações são processadas de forma síncrona em memória. Isso causa timeout em relatórios grandes e perda de jobs ao reiniciar. BullMQ + Redis resolve com fila persistente, worker dedicado e status em tempo real.
+O caminho principal de exportação usa BullMQ + Redis e worker. Há fallback em memória; arquivos ficam no filesystem local e o histórico Web demo usa fixtures, sem refletir os jobs reais da API.
 
 ## 3. Regras de Negócio
 
@@ -54,15 +56,15 @@ Atualmente as exportações são processadas de forma síncrona em memória. Iss
 
 ## 5. Critérios de Aceite
 
-- [ ] BullMQ + Redis instalados e configurados
-- [ ] Fila de exportações criada
-- [ ] Worker de processamento assíncrono
-- [ ] Status de job: pending, processing, completed, failed
-- [ ] Polling de status pelo frontend
+- [x] BullMQ + Redis instalados e usados no pipeline principal
+- [x] Fila de exportações criada
+- [x] Worker de processamento assíncrono
+- [x] Status de job: pending, processing, completed, failed
+- [ ] Histórico/polling Web conectado aos jobs reais da API
 - [ ] Notificação ao usuário após conclusão
-- [ ] Expiração automática de jobs antigos (7 dias)
-- [ ] Storage de arquivos (local ou S3)
-- [ ] Testes unitários e de integração
+- [x] Expiração/limpeza automática de exports via retenção
+- [x] Storage local; storage persistente/externo continua pendente
+- [x] Testes unitários e de integração existentes; validação completa de produção pendente
 
 ## 6. Impacto Técnico
 
@@ -96,8 +98,7 @@ Atualmente as exportações são processadas de forma síncrona em memória. Iss
 
 ## 9. Dependências
 
-- BullMQ + Redis (instalação pendente)
-- Worker process (criação pendente)
-- Storage (S3 ou local persistente)
+- Redis disponível e acessível no ambiente
+- Armazenamento durável dos arquivos exportados
 - Modificação em exports.controller e exports.service
 - Frontend: polling de status

@@ -4,7 +4,9 @@
 **Módulo:** BI
 **Fase:** Fase 3
 **Status:** Concluído
-**Atualizado em:** 2026-06-29
+**Atualizado em:** 2026-09-29
+
+> Drill-down multi-dimensão selecionável está implementado. Os valores demonstrativos são sintéticos; fonte Oracle/COMPASS e reconciliação permanecem pendentes. Consulte a [auditoria atual](../../audits/ESTADO_REAL_PROJETO_2026-09-29.md).
 
 ---
 

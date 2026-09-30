@@ -4,7 +4,9 @@
 **Módulo:** Admin
 **Fase:** Fase 4
 **Status:** Concluído
-**Atualizado em:** 2026-06-29
+**Atualizado em:** 2026-09-29
+
+> Os gráficos de tendência estão no runtime; volume e qualidade dos dados variam conforme a persistência/ambiente. Consulte a [auditoria atual](../../audits/ESTADO_REAL_PROJETO_2026-09-29.md).
 
 ---
 

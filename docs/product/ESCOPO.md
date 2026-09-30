@@ -1,8 +1,10 @@
 # ESCOPO.md — Escopo do Projeto
 
 **Projeto:** Dashboard Power BI
-**Atualizado em:** 2026-06-28
-**Fase:** Desenvolvimento (funcional parcial, abaixo do escopo V1)
+**Atualizado em:** 2026-09-29
+**Fase:** Demo funcional; produto parcial, sem aceite nem liberação para produção
+
+> **Leitura do status:** as caixas abaixo representam presença de implementação no repositório, não dados reais, persistência durável, conformidade legal ou aceite de produção. O ambiente demo tem SQL Server de exemplo, Supabase não configurado e valores agrícolas sintéticos. Use a [auditoria do estado real](../audits/ESTADO_REAL_PROJETO_2026-09-29.md) como retrato atual.
 
 ---
 
@@ -40,7 +42,7 @@ A plataforma web resolve esses problemas oferecendo acesso autenticado via naveg
 
 ### Estado real vs escopo desejado
 
-O escopo original (PDF V1) prevê 18 telas e 6 módulos. O estado real do runtime entrega a maioria das telas em nível funcional, mas com lacunas em BI avançado, editor visual completo e hardening de segurança.
+O escopo original prevê 18 telas e 6 módulos. Há implementações parciais nas 18 telas; nenhuma deve ser considerada concluída para V1 de produção antes de dados do cliente, persistência e critérios de aceite serem validados.
 
 ### Módulo Auth
 
@@ -50,8 +52,8 @@ O escopo original (PDF V1) prevê 18 telas e 6 módulos. O estado real do runtim
 - [x] Rate limiting no login (anti brute-force)
 - [x] 2FA opcional via TOTP (Authenticator App)
 - [x] Log de eventos de autenticação
-- [ ] Hardening final de sessão (blacklist de tokens, invalidação em massa)
-- [ ] 2FA obrigatório para administradores
+- [x] Revogação de tokens e invalidação de sessões (blacklist/token versioning); o hardening operacional e testes no ambiente produtivo ainda exigem validação
+- [x] 2FA obrigatório para administradores no fluxo de autenticação
 
 ### Módulo Permissões
 
@@ -60,7 +62,7 @@ O escopo original (PDF V1) prevê 18 telas e 6 módulos. O estado real do runtim
 - [x] Permissão individual por relatório específico
 - [x] Grupo de acesso com roles e setores
 - [x] Auditoria de mudanças de permissão
-- [ ] Herança de permissões via grupos
+- [x] Herança/agregação de permissões via grupos no runtime
 - [ ] Bloqueio automático após inatividade (timeout)
 - [ ] Guard combinado JWT + role + permission
 
@@ -70,7 +72,7 @@ O escopo original (PDF V1) prevê 18 telas e 6 módulos. O estado real do runtim
 - [x] Queries parametrizadas (prevenção SQL Injection)
 - [x] Suporte a stored procedures e views
 - [x] Validação de identificadores
-- [ ] Cache de resultados configurável por relatório
+- [x] Cache LRU/TTL de consultas configurável por ambiente, local à memória do processo
 - [ ] Atualização em tempo real ou por agendamento (cron)
 - [ ] Monitoramento de lentidão e timeout de queries
 
@@ -89,12 +91,12 @@ O escopo original (PDF V1) prevê 18 telas e 6 módulos. O estado real do runtim
 
 - [x] Gráficos interativos: linha, barra, pizza, área (Recharts)
 - [x] KPIs com indicadores de variação (delta %)
-- [x] Drill-down em gráficos para dados detalhados (por sector)
+- [x] Drill-down em gráficos para dados detalhados por dimensão selecionável
 - [x] Salvar layouts de dashboard personalizados
 - [x] Widgets configuráveis: KPI, gráfico, tabela
-- [x] Editor visual mínimo (reordenação drag-and-drop)
-- [ ] Drill-down multi-dimensão (tempo, produto, região)
-- [ ] Editor visual completo (redimensionamento, paleta, canvas livre)
+- [x] Editor visual com paleta, drag-and-drop, redimensionamento e configuração; canvas livre, compartilhamento e versionamento não estão fechados
+- [x] Drill-down multi-dimensão selecionável (fazenda, cultura, variedade, safra, cliente, produto, status e tempo, conforme KPI)
+- [ ] Editor visual completo para o V1 (base de paleta e resize existe; capacidades finais, persistência e aceite pendentes)
 - [ ] Exportar dashboard como imagem/PDF
 - [ ] Compartilhamento entre usuários do mesmo grupo
 
@@ -105,7 +107,7 @@ O escopo original (PDF V1) prevê 18 telas e 6 módulos. O estado real do runtim
 - [x] Logs de acesso e download com filtro
 - [x] Configurações do sistema editáveis via API
 - [x] Dashboard administrativo com KPIs operacionais
-- [ ] Gráficos de tendência no dashboard admin
+- [x] Gráficos de tendência no dashboard admin; os valores dependem dos registros disponíveis no ambiente
 - [ ] Alertas de segurança em tempo real
 - [ ] Governança completa
 
@@ -128,10 +130,10 @@ O escopo original (PDF V1) prevê 18 telas e 6 módulos. O estado real do runtim
 
 ### Performance
 
-- Cache de queries com TTL configurável (PENDENTE)
+- Cache de queries LRU/TTL configurável por ambiente, limitado ao processo da API
 - Pool de conexões SQL Server
-- React Query no frontend (staleTime 5min)
-- Fila de exportações assíncrona (em memória; BullMQ PENDENTE)
+- `@tanstack/react-query` está declarada, mas não estrutura os fluxos principais da Web
+- Fila/worker de exportações com BullMQ + Redis; fallback em memória existe e arquivos são locais
 
 ### Disponibilidade
 
@@ -179,7 +181,7 @@ O escopo original (PDF V1) prevê 18 telas e 6 módulos. O estado real do runtim
 ### LGPD
 
 - O sistema armazena dados pessoais (email, nome, IP, user agent)
-- NÃO IDENTIFICADO política explícita de retenção, anonimização e exclusão
+- A API expõe retenção, anonimização e portabilidade; política aprovada, persistência e operação efetiva precisam de validação
 
 ---
 
@@ -187,7 +189,7 @@ O escopo original (PDF V1) prevê 18 telas e 6 módulos. O estado real do runtim
 
 - App Mobile (iOS/Android) — roadmap V2 (PWA ou React Native)
 - Pipeline de dados / Data Warehouse / OLAP — roadmap V2
-- Integração com outros bancos (Oracle, MySQL) — V1 conecta apenas ao SQL Server
+- A demo usa SQL Server para relatórios de exemplo. O BI alvo Oracle/COMPASS consta nos documentos atuais, mas diverge da restrição de fonte SQL Server no PDF original; o escopo contratual deve ser confirmado antes da implementação produtiva.
 - Relatórios em tempo real (live) — V1 usa refresh agendado; streaming via WebSocket na V2
 - Multi-tenancy (múltiplas empresas) — V1 é single-tenant
 - Assinaturas digitais em relatórios (certificado ICP-Brasil) — fora do MVP
@@ -196,41 +198,41 @@ O escopo original (PDF V1) prevê 18 telas e 6 módulos. O estado real do runtim
 
 ## 7. Regras de Negócio
 
-| Código | Regra                                                              | Módulo     | Status     |
-| ------ | ------------------------------------------------------------------ | ---------- | ---------- |
-| RN-001 | O usuário precisa estar autenticado para acessar o painel          | Auth       | Confirmado |
-| RN-002 | Senhas devem ter no mínimo 8 caracteres                            | Auth       | Confirmado |
-| RN-003 | Após 5 tentativas falhas de login, o IP é bloqueado por 15 minutos | Auth       | Confirmado |
-| RN-004 | O refresh token expira em 7 dias                                   | Auth       | Confirmado |
-| RN-005 | O access token expira em 15 minutos                                | Auth       | Confirmado |
-| RN-006 | Usuários só visualizam relatórios do seu setor                     | Permissões | Confirmado |
-| RN-007 | Apenas Downloader e Admin podem exportar relatórios                | Permissões | Confirmado |
-| RN-008 | Apenas Admin pode gerenciar usuários, grupos e permissões          | Permissões | Confirmado |
-| RN-009 | Queries ao SQL Server devem ser parametrizadas                     | SQL Server | Confirmado |
-| RN-010 | Somente SELECT e EXEC de stored procedures são permitidos          | SQL Server | Confirmado |
-| RN-011 | DROP, DELETE, UPDATE, INSERT, ALTER e TRUNCATE são proibidos       | SQL Server | Confirmado |
-| RN-012 | Exportações expiram após 7 dias                                    | Exports    | Confirmado |
-| RN-013 | Todas as mutações administrativas geram log de auditoria           | Audit      | Confirmado |
-| RN-014 | 2FA/TOTP é opcional para todos os usuários                         | Auth       | Confirmado |
-| RN-015 | 2FA/TOTP deve ser obrigatório para administradores                 | Auth       | Pendente   |
-| RN-016 | Usuários herdam permissões dos grupos que pertencem                | Permissões | Pendente   |
-| RN-017 | Sessão web deve expirar após inatividade (timeout)                 | Auth       | Pendente   |
-| RN-018 | Dashboards personalizados são privados por usuário                 | BI         | Confirmado |
+| Código | Regra                                                              | Módulo     | Status                                              |
+| ------ | ------------------------------------------------------------------ | ---------- | --------------------------------------------------- |
+| RN-001 | O usuário precisa estar autenticado para acessar o painel          | Auth       | Confirmado                                          |
+| RN-002 | Senhas devem ter no mínimo 8 caracteres                            | Auth       | Confirmado                                          |
+| RN-003 | Após 5 tentativas falhas de login, o IP é bloqueado por 15 minutos | Auth       | Confirmado                                          |
+| RN-004 | O refresh token expira em 7 dias                                   | Auth       | Confirmado                                          |
+| RN-005 | O access token expira em 15 minutos                                | Auth       | Confirmado                                          |
+| RN-006 | Usuários só visualizam relatórios do seu setor                     | Permissões | Confirmado                                          |
+| RN-007 | Apenas Downloader e Admin podem exportar relatórios                | Permissões | Confirmado                                          |
+| RN-008 | Apenas Admin pode gerenciar usuários, grupos e permissões          | Permissões | Confirmado                                          |
+| RN-009 | Queries ao SQL Server devem ser parametrizadas                     | SQL Server | Confirmado                                          |
+| RN-010 | Somente SELECT e EXEC de stored procedures são permitidos          | SQL Server | Confirmado                                          |
+| RN-011 | DROP, DELETE, UPDATE, INSERT, ALTER e TRUNCATE são proibidos       | SQL Server | Confirmado                                          |
+| RN-012 | Exportações expiram após 7 dias                                    | Exports    | Confirmado                                          |
+| RN-013 | Todas as mutações administrativas geram log de auditoria           | Audit      | Confirmado                                          |
+| RN-014 | 2FA/TOTP é opcional para usuários não administradores              | Auth       | Implementado; validar política final                |
+| RN-015 | 2FA/TOTP deve ser obrigatório para administradores                 | Auth       | Implementado; testar na configuração real           |
+| RN-016 | Usuários herdam permissões dos grupos que pertencem                | Permissões | Implementado no runtime; validar a matriz de acesso |
+| RN-017 | Sessão web deve expirar após inatividade (timeout)                 | Auth       | Pendente                                            |
+| RN-018 | Dashboards personalizados são privados por usuário                 | BI         | Confirmado                                          |
 
 ---
 
 ## 8. Critérios Gerais de Aceite
 
 - [x] Sistema executa localmente com instruções documentadas
-- [x] Testes principais passam (`pnpm test`, `pnpm typecheck`, `pnpm build`)
+- [ ] Suíte completa passa em todas as camadas (a execução mais recente registrada cobre Web, typecheck, build e alguns E2E; API completa não foi executada nesta atualização documental)
 - [x] Funcionalidades principais documentadas
 - [x] Banco de dados documentado (`BANCO_DADOS.md`)
-- [x] Fluxos principais validados
+- [ ] Fluxos principais aceitos com persistência e dados reais (o demo local foi validado, mas não substitui aceite do cliente)
 - [x] Sem credenciais expostas
-- [ ] Relatório diário atualizado (`RELATORIO.md`)
+- [x] Relatório diário atualizado (`RELATORIO.md`)
 - [ ] BI avançado e dashboards personalizados completos
-- [ ] 2FA obrigatório para admins
-- [ ] Testes E2E críticos implementados
+- [x] 2FA obrigatório para administradores implementado; chave e operação produtiva pendem validação
+- [x] Testes E2E existem para fluxos de autenticação/dashboard; cobertura integral de aceite permanece pendente
 
 ---
 
@@ -272,13 +274,11 @@ O escopo original (PDF V1) prevê 18 telas e 6 módulos. O estado real do runtim
 
 ## 12. Riscos
 
-| Risco                        | Impacto                                         | Probabilidade | Mitigação                                       |
-| ---------------------------- | ----------------------------------------------- | ------------- | ----------------------------------------------- |
-| SQL Server indisponível      | Relatórios e KPIs não carregam                  | Média         | Healthcheck + fallback gracioso                 |
-| Supabase indisponível        | Persistência de plataforma degrada              | Baixa         | Fallback em memória (com risco de perda)        |
-| Fila em memória perde jobs   | Exportações pendentes perdidas ao reiniciar     | Média         | Implementar BullMQ + Redis                      |
-| LGPD não tratada             | Risco de conformidade legal                     | Alta          | Definir política de retenção e exclusão         |
-| 2FA opcional                 | Conta admin comprometida sem 2FA                | Média         | Tornar 2FA obrigatório para admins              |
-| Sem testes E2E               | Regressões não detectadas em fluxos críticos    | Média         | Implementar Playwright para fluxos principais   |
-| Drill-down limitado a sector | Usuários não exploram outras dimensões          | Baixa         | Adicionar dimensões de tempo, produto, região   |
-| Editor visual incompleto     | Usuários não personalizam dashboards totalmente | Baixa         | Completar redimensionamento e paleta de widgets |
+| Risco                           | Impacto                                                                         | Probabilidade | Mitigação                                                  |
+| ------------------------------- | ------------------------------------------------------------------------------- | ------------- | ---------------------------------------------------------- |
+| SQL Server indisponível         | Relatórios e KPIs não carregam                                                  | Média         | Healthcheck + fallback gracioso                            |
+| Supabase ausente no demo        | Alterações guardadas em memória podem se perder ao reiniciar                    | Alta          | Configurar e validar persistência durável.                 |
+| Jobs e arquivos de exportação   | Worker usa BullMQ/Redis, mas arquivos ficam locais e histórico Web usa fixtures | Alta          | Integrar lista Web e storage durável.                      |
+| BI Oracle/COMPASS não conectado | KPIs do dashboard não representam dados agrícolas do cliente                    | Alta          | Conectar, persistir snapshots e reconciliar com o negócio. |
+| Retenção/LGPD                   | Rotas e cron existem, mas execução depende de persistência e política aprovada  | Alta          | Validar política, evidências e operação com responsáveis.  |
+| Operação de produção            | TLS, SMTP, backup/restore e observabilidade não foram aceitos                   | Alta          | Fechar checklist operacional e testar recuperação.         |

@@ -1,5 +1,7 @@
 # DB_ORACLE.md — Mapeamento Completo do Banco Oracle
 
+> Este inventário deriva de um dump importado no Oracle XE de desenvolvimento; não comprova acesso ao Oracle/COMPASS atual do cliente, nem que schemas e dados estejam sincronizados. O runtime segue sem conexão produtiva validada. Veja [Estado real do projeto — 2026-09-29](../audits/ESTADO_REAL_PROJETO_2026-09-29.md).
+
 > Gerado em 02/07/2026 a partir do dump `exp_full_xecdb_20260612-1215.dmp` importado no Oracle XE 21c do Docker dev.
 
 ---

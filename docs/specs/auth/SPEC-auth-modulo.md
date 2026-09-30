@@ -2,9 +2,11 @@
 
 **ID:** AUTH-MOD
 **Módulo:** Auth
-**Fase:** Fase 1 (concluído), Fase 4 (pendente)
+**Fase:** Base implementada; validação e hardening de produção pendentes
 **Status:** Parcial
-**Atualizado em:** 2026-06-28
+**Atualizado em:** 2026-09-29
+
+> TOTP obrigatório para administradores e revogação de sessões estão presentes. O demo pode usar repositórios em memória e segredo TOTP sem criptografia quando a chave está ausente fora de produção. Consulte a [auditoria atual](../../audits/ESTADO_REAL_PROJETO_2026-09-29.md).
 
 ---
 
@@ -14,26 +16,26 @@ Gerenciar autenticação, sessão, recuperação de senha, perfil do usuário e 
 
 ## 2. Contexto
 
-O módulo Auth é a porta de entrada do sistema. Todas as rotas autenticadas dependem dos guards e tokens emitidos aqui. O módulo cobre login, refresh, logout, recuperação de senha, perfil, rate limiting, CSRF, headers de segurança e 2FA/TOTP (parcial).
+O módulo Auth é a porta de entrada do sistema. Todas as rotas autenticadas dependem dos guards e tokens emitidos aqui. O módulo cobre login, refresh, logout, recuperação de senha, perfil, rate limiting, CSRF, headers de segurança, TOTP e revogação de sessões.
 
 Fases:
 
 - **Fase 1:** Login, JWT, refresh, logout, recuperação de senha — concluído.
 - **Fase 2:** Perfil do usuário, CSRF, headers de segurança — concluído.
-- **Fase 4:** 2FA obrigatório para admins, hardening final de sessão — pendente.
+- **Fase 4:** enforcement de TOTP para admins e revogação implementados; validação de produção e timeout por inatividade pendentes.
 
 ## 3. Regras de Negócio
 
-| Código | Regra                                                              | Status     |
-| ------ | ------------------------------------------------------------------ | ---------- |
-| RN-001 | Usuário precisa estar autenticado para acessar o painel            | Confirmado |
-| RN-002 | Senhas devem ter no mínimo 8 caracteres                            | Confirmado |
-| RN-003 | Após 5 tentativas falhas de login, o IP é bloqueado por 15 minutos | Confirmado |
-| RN-004 | Refresh token expira em 7 dias                                     | Confirmado |
-| RN-005 | Access token expira em 15 minutos                                  | Confirmado |
-| RN-014 | 2FA/TOTP é opcional para todos os usuários                         | Confirmado |
-| RN-015 | 2FA/TOTP deve ser obrigatório para administradores                 | Pendente   |
-| RN-017 | Sessão web deve expirar após inatividade (timeout)                 | Pendente   |
+| Código | Regra                                                              | Status                                         |
+| ------ | ------------------------------------------------------------------ | ---------------------------------------------- |
+| RN-001 | Usuário precisa estar autenticado para acessar o painel            | Confirmado                                     |
+| RN-002 | Senhas devem ter no mínimo 8 caracteres                            | Confirmado                                     |
+| RN-003 | Após 5 tentativas falhas de login, o IP é bloqueado por 15 minutos | Confirmado                                     |
+| RN-004 | Refresh token expira em 7 dias                                     | Confirmado                                     |
+| RN-005 | Access token expira em 15 minutos                                  | Confirmado                                     |
+| RN-014 | 2FA/TOTP é opcional para usuários não administradores              | Implementado                                   |
+| RN-015 | 2FA/TOTP deve ser obrigatório para administradores                 | Implementado; validar configuração operacional |
+| RN-017 | Sessão web deve expirar após inatividade (timeout)                 | Pendente                                       |
 
 ## 4. Fluxo Esperado
 
@@ -52,7 +54,7 @@ Fases:
 3. Usuário acessa `/reset-password?token=...`.
 4. API valida token e permite nova senha.
 
-### Fluxo — 2FA (pendente)
+### Fluxo — 2FA/TOTP
 
 1. Usuário ativa 2FA no perfil → API gera secret + QR code.
 2. Usuário escaneia no app autenticador e verifica código.
@@ -68,9 +70,9 @@ Fases:
 - [x] Perfil do usuário (GET /auth/me, POST /auth/me/password)
 - [x] CSRF protection (cookie + header)
 - [x] Headers de segurança (CSP, HSTS, X-Frame-Options, etc.)
-- [ ] 2FA obrigatório para administradores
-- [ ] Blacklist de tokens revogados
-- [ ] Inativação de sessão em massa
+- [x] 2FA obrigatório para administradores
+- [x] Revogação de access token e refresh token
+- [x] Invalidação de sessões em massa
 - [ ] Timeout de sessão por inatividade
 
 ## 6. Impacto Técnico
@@ -82,7 +84,7 @@ Fases:
 | API            | POST /auth/login, POST /auth/refresh, POST /auth/logout, GET /auth/me, POST /auth/me/password, POST /auth/forgot-password, POST /auth/reset-password |
 | Frontend       | /login, /forgot-password, /reset-password, /app/profile                                                                                              |
 | Testes         | Unit (auth.service, token.service, login-attempts), Integration (auth.controller, guards), Security (CSRF, SQL injection)                            |
-| Infraestrutura | Redis para blacklist de tokens (pendente)                                                                                                            |
+| Infraestrutura | Persistência durável da plataforma precisa estar configurada e validada                                                                              |
 | Segurança      | bcrypt (salt >= 12), JWT, CSRF, CSP, rate limiting, 2FA/TOTP                                                                                         |
 
 ## 7. Testes Necessários
@@ -103,15 +105,15 @@ Fases:
 
 ## 8. Riscos
 
-| Risco                   | Impacto                                        | Mitigação                                   |
-| ----------------------- | ---------------------------------------------- | ------------------------------------------- |
-| 2FA opcional            | Conta admin comprometida sem 2FA               | Tornar 2FA obrigatório para admins (DT-001) |
-| Sem blacklist de tokens | Tokens revogados continuam válidos até expirar | Implementar blacklist com Redis (DT-002)    |
-| Sem timeout de sessão   | Sessões eternas em dispositivos compartilhados | Implementar timeout por inatividade         |
+| Risco                                    | Impacto                                            | Mitigação                                                     |
+| ---------------------------------------- | -------------------------------------------------- | ------------------------------------------------------------- |
+| Fallback TOTP sem chave fora de produção | Segredo não é criptografado                        | Restringir ao demo local e configurar chave forte em produção |
+| Persistência em memória no demo          | Estado de conta/sessão pode se perder ao reiniciar | Configurar Supabase e validar persistência                    |
+| Sem timeout de sessão                    | Sessões eternas em dispositivos compartilhados     | Implementar timeout por inatividade                           |
 
 ## 9. Dependências
 
-- Supabase para persistência de usuários e refresh tokens
-- otplib para 2FA/TOTP (instalado, endpoints pendentes)
-- Redis para blacklist de tokens (pendente)
+- Supabase opcional para persistência durável de partes da plataforma
+- otplib para 2FA/TOTP (endpoints implementados)
+- `TOTP_ENCRYPTION_KEY` obrigatória em produção
 - SMTP para envio de emails de recuperação

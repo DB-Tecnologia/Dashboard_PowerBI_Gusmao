@@ -1,5 +1,7 @@
 # Auditoria do ambiente local Docker — 2026-09-29
 
+> Este documento reúne a inspeção inicial do Compose demo e revalidações feitas durante 2026-09-29. A pendência documental da seção 6 foi fechada nesta data; use [Estado real do projeto](ESTADO_REAL_PROJETO_2026-09-29.md) como retrato consolidado após a revisão visual do dashboard e a reconciliação dos documentos.
+
 ## Resultado em uma frase
 
 O ambiente demo sobe localmente e permite autenticar, abrir o painel e consultar relatórios de exemplo no SQL Server. Ele ainda não é uma instalação de produção: os indicadores agrícolas do Oracle/COMPASS não estão conectados, parte dos dados é simulada e há fluxos da interface que ainda não usam as APIs existentes.
@@ -83,7 +85,7 @@ Os Dockerfiles da API e da Web executam `pnpm install --frozen-lockfile=false` e
 
 O `README.md` e a onda de agosto no `ROADMAP.md` descrevem o Compose demo e a integração Oracle pendente. O `docs/product/ESCOPO.md` ainda lista como pendentes capacidades já presentes no código, como 2FA obrigatório para admin, drill-down multi-dimensão e BullMQ. Ao mesmo tempo, partes da interface ainda usam fixtures, conforme o achado anterior. Isso torna a contagem de “telas concluídas” diferente de dizer que cada fluxo usa dados reais e persistentes.
 
-**Para fechar:** atualizar o escopo, a matriz das telas e a documentação de módulos a partir de evidências do runtime, separando claramente “interface pronta”, “fluxo ligado à API”, “persistência durável” e “dados produtivos reconciliados”.
+**Concluído em 2026-09-29:** escopo, roadmap, referências, arquitetura, banco e especificações foram alinhados às evidências do runtime. A classificação atual separa tela presente, fluxo ligado à API, persistência durável e dados reais reconciliados; veja [Estado real do projeto](ESTADO_REAL_PROJETO_2026-09-29.md).
 
 ## Ordem recomendada para terminar
 

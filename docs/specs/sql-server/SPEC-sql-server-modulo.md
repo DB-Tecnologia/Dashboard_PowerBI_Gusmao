@@ -85,11 +85,11 @@ O SQL Server é a origem dos dados de relatórios. A plataforma conecta via `mss
 
 ## 8. Riscos
 
-| Risco                   | Impacto                       | Mitigação                              |
-| ----------------------- | ----------------------------- | -------------------------------------- |
-| SQL Server indisponível | Relatórios não carregam       | Healthcheck + fallback graceful        |
-| Query lenta             | Timeout, UX degradada         | Timeout configurável, cache (pendente) |
-| SQL injection           | Vazamento/destruição de dados | Queries parametrizadas, whitelist      |
+| Risco                   | Impacto                       | Mitigação                                                                                              |
+| ----------------------- | ----------------------------- | ------------------------------------------------------------------------------------------------------ |
+| SQL Server indisponível | Relatórios não carregam       | Healthcheck + fallback graceful                                                                        |
+| Query lenta             | Timeout, UX degradada         | Timeout e cache LRU/TTL local implementados; avaliar métricas e cache distribuído conforme necessidade |
+| SQL injection           | Vazamento/destruição de dados | Queries parametrizadas, whitelist                                                                      |
 
 ## 9. Dependências
 

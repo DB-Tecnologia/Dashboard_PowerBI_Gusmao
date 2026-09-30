@@ -4,7 +4,9 @@
 **Módulo:** Reports
 **Fase:** Fase 3
 **Status:** Parcial
-**Atualizado em:** 2026-06-28
+**Atualizado em:** 2026-09-29
+
+> A API tem fila/worker BullMQ e download autenticado; arquivos são locais e a lista Web de histórico ainda usa fixtures. Consulte a [auditoria atual](../../audits/ESTADO_REAL_PROJETO_2026-09-29.md).
 
 ---
 
@@ -14,7 +16,7 @@ Permitir exportação de relatórios em PDF, Excel, CSV e JSON, com histórico d
 
 ## 2. Contexto
 
-Tela e fluxo de exportação acessível a usuários com role downloader ou admin. Atualmente funciona em memória (síncrono). Pipeline assíncrono com BullMQ é pendência (T09b).
+Fluxo de exportação para usuários com role downloader ou admin. A API gera os arquivos via pipeline assíncrono T09b; storage durável e histórico Web ligado à API permanecem pendentes.
 
 ## 3. Regras de Negócio
 
@@ -31,7 +33,7 @@ Tela e fluxo de exportação acessível a usuários com role downloader ou admin
 2. Clica "Exportar" → modal com seleção de formato.
 3. Seleciona PDF, Excel, CSV ou JSON.
 4. POST /exports com reportId, formato, parâmetros.
-5. API gera arquivo (síncrono atual, assíncrono com BullMQ no futuro).
+5. API cria job assíncrono na fila; o worker gera o arquivo e grava no filesystem local.
 6. Exportação registrada em api_export_jobs.
 7. Frontend exibe notificação de conclusão.
 8. Download disponível em GET /exports/:id/download.
@@ -39,8 +41,8 @@ Tela e fluxo de exportação acessível a usuários com role downloader ou admin
 ### Fluxo — Histórico
 
 1. Usuário acessa `/app/exports`.
-2. Frontend chama GET /exports com filtros.
-3. Lista de exportações com status, formato, data, download.
+2. A tela Web atual usa fixtures via `app-data.ts` no demo e não consulta o histórico real da API.
+3. O contrato da API oferece listagem/status e download autenticado de jobs.
 
 ### Fluxo alternativo — Sem permissão
 
@@ -52,13 +54,13 @@ Tela e fluxo de exportação acessível a usuários com role downloader ou admin
 
 - [x] Botão de exportação por relatório (PDF, Excel, CSV, JSON)
 - [x] Modal de confirmação com seleção de formato
-- [x] Geração no backend (síncrono)
-- [x] Histórico de exportações com status
+- [x] Geração assíncrona no backend via BullMQ/worker
+- [ ] Histórico Web de exportações reconciliado com jobs reais
 - [x] Download autenticado
 - [x] Expiração automática (7 dias)
 - [x] Controle de permissão (downloader/admin)
-- [ ] Pipeline assíncrono com BullMQ
-- [ ] Notificação ao usuário após conclusão
+- [x] Pipeline assíncrono com BullMQ
+- [ ] Notificação Web ligada ao job real após conclusão
 - [ ] Storage S3 ou equivalente
 
 ## 6. Impacto Técnico
@@ -86,15 +88,15 @@ Tela e fluxo de exportação acessível a usuários com role downloader ou admin
 
 ## 8. Riscos
 
-| Risco                      | Impacto                           | Mitigação                       |
-| -------------------------- | --------------------------------- | ------------------------------- |
-| Fila em memória perde jobs | Exportações perdidas ao reiniciar | BullMQ + Redis (T09b)           |
-| Arquivo grande             | OOM, timeout                      | Processamento assíncrono (T09b) |
-| Storage local cheio        | Falha em novas exportações        | S3 ou equivalente (pendente)    |
+| Risco                             | Impacto                                               | Mitigação                                 |
+| --------------------------------- | ----------------------------------------------------- | ----------------------------------------- |
+| Fallback da fila pode perder jobs | Exportações pendentes podem sumir no modo alternativo | Exigir Redis na operação e monitorar fila |
+| Arquivo grande                    | OOM, timeout                                          | Processamento assíncrono (T09b)           |
+| Storage local cheio               | Falha em novas exportações                            | S3 ou equivalente (pendente)              |
 
 ## 9. Dependências
 
 - `exports.service` (geração de PDF/Excel/CSV/JSON)
 - `exports.controller` (solicitação, histórico, download)
 - `roles.guard` (controle downloader/admin)
-- BullMQ + Redis (pendente, T09b)
+- BullMQ + Redis implementados (T09b); storage externo e histórico Web integrados pendentes

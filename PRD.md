@@ -1,14 +1,24 @@
 # PRD - Dashboard Gusmao
 
 **Versao:** 1.0
-**Atualizado em:** 2026-08-24
-**Status:** Base funcional parcial; BI de producao em validacao local
+**Atualizado em:** 2026-09-29
+**Status:** Demo funcional em Docker; produto parcial e nao liberado para producao. BI agricola Oracle/COMPASS sem configuracao ou reconciliacao.
 
 ## 1. Produto
 
 O Dashboard Gusmao e uma plataforma web interna de relatorios e inteligencia de negocio para centralizar indicadores operacionais do Grupo Franciosi. O produto deve transformar dados do sistema operacional agricola em visoes confiaveis, rastreaveis e uteis para gestao.
 
 O ambiente local usa SQL Server demo para validar a plataforma. A integracao real sera feita posteriormente com Oracle 19c/COMPASS, em modo somente leitura, quando a infraestrutura fornecer rede, host, porta, service name e usuario apropriado.
+
+### Situacao observada no runtime — 2026-09-29
+
+- Docker demo ativo com Web, API, SQL Server e Redis.
+- Web e API oferecem os fluxos base; dashboard agricola em modo demo apresenta series sinteticas identificadas. Os dados do SQL Server sao relatorios de exemplo.
+- O endpoint do contrato BI para producao responde `not_configured` no ambiente demo. O refresh atual faz apenas smoke check, termina `skipped` e mantem o estado em memoria; nao grava snapshot.
+- Parte dos repositorios usa Supabase quando configurado e memoria como fallback. O Compose demo nao configura Supabase; alteracoes administrativas nao sao garantidas apos reinicio.
+- API de notificacoes/exportacoes existe, mas as listas Web correspondentes ainda usam `app-data.ts` e fixtures em modo demo.
+- Export worker BullMQ/Redis funciona; arquivos ficam no filesystem local. Nao ha storage externo de producao configurado.
+- Estado detalhado, limites e evidencias: [Auditoria do estado real](docs/audits/ESTADO_REAL_PROJETO_2026-09-29.md).
 
 ## 2. Problema e publico
 

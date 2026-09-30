@@ -1,5 +1,7 @@
 # TAREFAS_PARA_CONCLUSAO.md — Plano de Execução para Conclusão
 
+> **Snapshot de backlog de 2026-08-25.** As estimativas e prioridades abaixo são históricas e algumas tarefas já foram resolvidas ou reordenadas. Use [Estado real do projeto — 2026-09-29](../audits/ESTADO_REAL_PROJETO_2026-09-29.md) como backlog/prioridade vigente.
+
 **Projeto:** Dashboard Power BI
 **Data:** 2026-08-25
 

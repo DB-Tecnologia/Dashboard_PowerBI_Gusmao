@@ -4,7 +4,9 @@
 **Módulo:** Auth
 **Fase:** Fase 4
 **Status:** Concluído
-**Atualizado em:** 2026-06-28
+**Atualizado em:** 2026-09-29
+
+> Enforcement para admins está implementado. Produção exige `TOTP_ENCRYPTION_KEY`; o fallback fora de produção pode guardar o segredo sem criptografia. Consulte a [auditoria atual](../../audits/ESTADO_REAL_PROJETO_2026-09-29.md).
 
 ---
 
@@ -110,6 +112,6 @@ O `otplib` já está instalado em `apps/api`. O 2FA é opcional para todos os us
 ## 9. Dependências
 
 - `otplib` (instalado)
-- Coluna `totp_secret` em users (migration pendente)
+- Segredo TOTP gerido pelo repositório Auth; persistência no ambiente requer Supabase configurado
 - Modificação no fluxo de login (auth.controller)
 - UI de 2FA no perfil e no login

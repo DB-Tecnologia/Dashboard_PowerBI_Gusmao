@@ -1,5 +1,9 @@
 # API
 
+**Atualizado em:** 2026-09-29
+
+> Rotas existentes não garantem persistência ou que a Web já as consuma. Para os fluxos conectados e as lacunas por módulo, consulte [Estado real do projeto](../audits/ESTADO_REAL_PROJETO_2026-09-29.md).
+
 ## Stack
 
 - NestJS 10
@@ -36,7 +40,7 @@
 - `POST /admin/cache/invalidate` — invalida todas as entradas do cache de queries (admin apenas)
 - `GET /admin/cache/stats` — retorna estatísticas de hit/miss/evictions do cache de queries (admin apenas)
 - fluxo de recuperação e redefinição de senha
-- 2FA/TOTP: setup (`POST /auth/totp/setup`), verificação (`POST /auth/totp/verify`), desativação (`POST /auth/totp/disable` — exige `code` + `password`, proibido para admin), login TOTP (`POST /auth/totp/login`) — quando ativo, login retorna `requiresTwoFactor: true` + `tempToken`. Rate limiting: 3 tentativas, bloqueio 15min. Secret criptografado com AES-256-GCM (`TOTP_ENCRYPTION_KEY`). Admin sem 2FA ativo recebe 403 em rotas admin (`TwoFactorGuard`).
+- 2FA/TOTP: setup (`POST /auth/totp/setup`), verificação (`POST /auth/totp/verify`), desativação (`POST /auth/totp/disable` — exige `code` + `password`, proibido para admin), login TOTP (`POST /auth/totp/login`) — quando ativo, login retorna `requiresTwoFactor: true` + `tempToken`. Rate limiting: 3 tentativas, bloqueio 15 min. Segredo usa AES-256-GCM com `TOTP_ENCRYPTION_KEY`; a chave é exigida em produção. Sem chave fora de produção, o fallback pode armazenar segredo sem criptografia. Admin sem TOTP recebe 403 em rotas protegidas por `TwoFactorGuard`.
 - CRUD básico administrativo de usuários
 - CRUD básico administrativo de grupos
 - catálogo, detalhe e execução de relatórios
@@ -58,7 +62,7 @@ As rotas autenticadas abaixo compartilham `source`, `status`, `dataAsOf`, `lastS
 - `POST /api/v1/bi/refresh` — smoke check idempotente da fonte; recebe `{ "idempotencyKey": "..." }`
 - `GET /api/v1/bi/refresh/:runId` — status, contagens, erros, watermark e último snapshot válido do job
 
-No SQL Server demo, os domínios agrícolas não são preenchidos com dados sintéticos. A carga efetiva Oracle/COMPASS será habilitada após receber host, service name, rede e usuário somente leitura.
+No SQL Server demo, os domínios agrícolas não são preenchidos com dados sintéticos. A carga efetiva Oracle/COMPASS será habilitada após receber host, service name, rede e usuário somente leitura. No ambiente demo atual a fonte BI retorna `not_configured`; o refresh só valida a fonte, termina `skipped` e não grava snapshot nem watermark durável.
 
 ## Padrões importantes
 
@@ -69,11 +73,10 @@ No SQL Server demo, os domínios agrícolas não são preenchidos com dados sint
 
 ## Limitações atuais
 
-- parte do domínio administrativo ainda usa fallbacks em memória quando dependências de persistência não estão disponíveis;
-- definições administrativas de relatórios persistem em `api_report_definitions` via Supabase no runtime principal quando `SUPABASE_URL` e `SUPABASE_SERVICE_ROLE_KEY` estão configurados;
-- parte desses fluxos ainda usa Supabase e memória como persistência real por trás da API;
-- a home de BI agora expõe payload consolidado em `GET /dashboard/home`, mantendo `GET /dashboard/kpis` por compatibilidade;
-- o drill-down do dashboard suporta multi-dimensão selecionável em `GET /dashboard/kpis/:kpiId/drilldown?dimension=...`, retornando `availableDimensions` e linhas agregadas por dimensão;
-- exportações de relatórios agora geram PDF, XLSX, CSV e JSON com worker, fila, histórico, download autenticado e auditoria, mas a cobertura total do escopo V1 ainda não está fechada.
-- settings administrativos podem ser atualizados pela API e geram evento de auditoria;
-- permissões administrativas geram auditoria em create, update e delete, mas a matriz fina de herança e governança ainda é parcial.
+- Compose demo não configura Supabase. Repositórios com fallback em memória podem perder alterações ao reiniciar a API; migrations presentes no repositório não foram confirmadas como aplicadas em banco externo.
+- A integração BI Oracle/COMPASS, carga idempotente e persistência de snapshots/watermark não estão concluídas.
+- API de notificações e exportações existe; porém as telas Web de lista de notificações e histórico de exportações ainda usam fixtures através de `app-data.ts`.
+- Worker de exportação usa BullMQ/Redis, mas os arquivos são locais ao container e não há storage externo validado.
+- Cache de consultas SQL é LRU/TTL local ao processo, não compartilhado entre instâncias.
+- O endpoint de retenção e portabilidade existe, mas operação efetiva depende da persistência configurada e não equivale a validação jurídica de conformidade LGPD.
+- Cobertura automatizada existente não comprova integração com Supabase, Oracle/COMPASS ou ambiente de produção. A suíte completa da API não foi executada nesta atualização documental.

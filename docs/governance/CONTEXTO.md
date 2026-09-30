@@ -3,6 +3,14 @@
 **Projeto:** Dashboard Power BI
 **Atualizado em:** 2026-09-29
 
+## 2026-09-29 — Reconciliação documental com o runtime
+
+- A documentação vigente foi comparada com os módulos registrados em `apps/api/src/app.module.ts`, os clients da Web e o Compose demo. O resultado consolidado e as evidências estão em [Estado real do projeto](../audits/ESTADO_REAL_PROJETO_2026-09-29.md).
+- O demo tem Web, API, SQL Server e Redis ativos. Oracle/COMPASS não está configurado; Supabase não está configurado no Compose; BI demo usa valores sintéticos; parte dos repositórios tem fallback em memória.
+- As rotas de notificações/exportações existem, mas as listas Web ainda usam fixtures. Export worker usa BullMQ/Redis; seus arquivos são locais. Refresh BI encerra `skipped`, sem snapshot ou watermark durável.
+- Roadmap passou a classificar as 18 telas e seis módulos como parciais para V1 de produção. Auditorias antigas e planos datados foram preservados com aviso de histórico.
+- Validações desta alteração documental e o commit/push devem ser registrados no relatório diário e na memória após a execução.
+
 ## 2026-09-29 — Refinamento visual agro corporativo da home BI
 
 - A home autenticada usa fundo natural claro, cartões brancos, verde floresta, verde petróleo e âmbar; a fonte é a pilha nativa do sistema. A paleta é provisória porque a marca oficial não forneceu tokens.
@@ -104,13 +112,15 @@
 
 ---
 
-## 1. Resumo Executivo
+## Snapshot histórico de 2026-06-29 — Resumo Executivo
+
+> Os parágrafos e métricas abaixo registram o snapshot daquela data e não substituem a seção atual no início deste arquivo nem a [auditoria atual](../audits/ESTADO_REAL_PROJETO_2026-09-29.md).
 
 O Dashboard Power BI é uma plataforma web interna de relatórios e BI em estado funcional avançado. O sistema entrega autenticação com JWT, dashboard com KPIs e gráficos Recharts, catálogo e execução de relatórios via SQL Server/Oracle, administração de usuários/grupos/permissões com herança via grupos, auditoria com retenção LGPD, exportações com pipeline real, notificações, settings, dashboards personalizados com editor visual drag-and-drop completo (react-grid-layout) e seed automático de dashboard padrão por setor, dashboard admin com gráficos de tendência (agregações temporais de audit logs, exports e usuários), 2FA/TOTP obrigatório para admins, hardening de sessão (token blacklist, token versioning, revogação), cache de queries SQL com TTL e LRU, política de retenção de logs com cron diário e cobertura E2E de 16 testes. As lacunas remanescentes são a evolução do drill-down multi-dimensão e a validação produtiva com Oracle/COMPASS. O principal risco técnico é a dependência de fallback em memória quando Supabase não está configurado.
 
 ---
 
-## 2. Estado Atual do Projeto
+## Snapshot histórico de 2026-06-29 — Estado observado naquele momento
 
 | Área           | Status             | Observações                                                                                             |
 | -------------- | ------------------ | ------------------------------------------------------------------------------------------------------- |

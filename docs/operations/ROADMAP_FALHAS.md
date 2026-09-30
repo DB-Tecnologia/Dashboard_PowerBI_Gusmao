@@ -1,5 +1,7 @@
 # ROADMAP_FALHAS.md — Roadmap de Correção de Falhas
 
+> **Backlog originado em auditoria histórica.** Algumas tarefas foram concluídas e outras deixaram de representar as lacunas prioritárias. O estado e as prioridades atuais estão em [Estado real do projeto — 2026-09-29](../audits/ESTADO_REAL_PROJETO_2026-09-29.md); preserve este documento como histórico.
+
 **Projeto:** Dashboard Power BI
 **Criado em:** 2026-06-28
 **Origem:** Auditoria completa do projeto (backend, frontend, integrações, infraestrutura)

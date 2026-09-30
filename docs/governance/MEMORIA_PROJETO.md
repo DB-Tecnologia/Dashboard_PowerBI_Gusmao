@@ -32,9 +32,16 @@ O ambiente demo local é o principal critério de validação atual. Ele usa SQL
 **Nível de prontidão atual:**
 
 - **Desenvolvimento local:** pronto para validação reproduzível com Docker demo.
-- **Qualidade automatizada:** gates de lint, formatação, typecheck, testes, build, documentação, ambiente, Docker e E2E aprovados no último ciclo concluído; a suíte Playwright atual tem 16 testes aprovados.
-- **Produção:** não liberada; a exigência da chave TOTP no boot foi concluída, mas ainda faltam integração Oracle/COMPASS, hardening operacional, SMTP real e demais itens do roadmap.
+- **Qualidade automatizada:** na última validação registrada, Web teve 43 suítes/147 testes; `typecheck`, `build`, `lint` e `verify:docs` passaram; o E2E `auth-dashboard.spec.ts` passou 8/8. A suíte completa da API e a suíte completa de E2E não foram executadas nesta atualização documental.
+- **Produção:** não liberada; além da chave TOTP obrigatória no boot de produção, faltam Oracle/COMPASS e reconciliação, persistência durável validada, storage de exportações, SMTP real e hardening operacional.
 - **BI de produção:** ainda não reconciliado com a fonte Oracle; não declarar KPIs produtivos como validados antes do smoke test e da reconciliação.
+
+### Reconciliação documental em 2026-09-29
+
+- O estado por serviço, tela, integração, risco, prioridade e validação está consolidado em `docs/audits/ESTADO_REAL_PROJETO_2026-09-29.md`; ele prevalece sobre os estados encontrados nos snapshots históricos.
+- README, PRD, escopo, ROADMAP, especificações, referências Web/API, arquitetura e banco foram alinhados às diferenças entre demo funcional e produção.
+- Auditorias antigas, roadmap detalhado e backlog de agosto foram preservados e marcados como históricos, sem apagar o histórico de decisões.
+- Após validação e push, registrar aqui o identificador do commit documental e a confirmação de publicação.
 
 ### Entrega visual da home BI em 2026-09-29
 
@@ -295,18 +302,18 @@ Na auditoria local de 2026-09-29 passaram novamente `pnpm verify:workspace`, `pn
 
 ## Pendências e bloqueios
 
-| Item                                          | Estado                               | Impacto                                                                                 |
-| --------------------------------------------- | ------------------------------------ | --------------------------------------------------------------------------------------- |
-| Integração Oracle/COMPASS                     | Bloqueada por infraestrutura         | Não há conexão produtiva nem reconciliação de KPIs                                      |
-| Smoke queries e data de corte                 | Pendente                             | Sem prova de consistência dos indicadores reais                                         |
-| Atualização idempotente e ledger de execução  | Pendente                             | Frescor, watermark e último snapshot ainda precisam de fechamento produtivo             |
-| E2E expandido                                 | Concluído em P1-03                   | 16 testes aprovados; histórico de exportação demo ainda depende de dados demonstrativos |
-| Persistência durável de usuários              | Pendente                             | `UsersRepository` usa mapas em memória no runtime atual                                 |
-| Notificações e histórico de exportação na Web | Pendente                             | As telas usam `app-data.ts`; ligar aos clientes e endpoints centralizados da API        |
-| Instalação Docker por lockfile                | Pendente                             | Dockerfiles usam instalação sem lockfile imutável                                       |
-| Alinhamento da documentação de escopo         | Pendente                             | O escopo histórico diverge das capacidades e integrações atuais                         |
-| SMTP real                                     | Pendente em P1-05                    | Notificações produtivas continuam dependendo do modo mock                               |
-| TLS, backup, rollback e logs operacionais     | Pendentes em P0-01/P1-06/P1-07/P1-08 | Hardening e operação de produção não concluídos                                         |
+| Item                                          | Estado                                 | Impacto                                                                                                                                                                                |
+| --------------------------------------------- | -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Integração Oracle/COMPASS                     | Bloqueada por infraestrutura           | Não há conexão produtiva nem reconciliação de KPIs                                                                                                                                     |
+| Smoke queries e data de corte                 | Pendente                               | Sem prova de consistência dos indicadores reais                                                                                                                                        |
+| Atualização idempotente e ledger de execução  | Pendente                               | Frescor, watermark e último snapshot ainda precisam de fechamento produtivo                                                                                                            |
+| E2E expandido                                 | Implementação presente; aceite parcial | 16 cenários passaram em 2026-08-25; execução mais recente registrada cobriu `auth-dashboard.spec.ts` (8/8); a suíte E2E completa e API completa não foram executadas nesta atualização |
+| Persistência durável de usuários              | Pendente                               | `UsersRepository` usa mapas em memória no runtime atual                                                                                                                                |
+| Notificações e histórico de exportação na Web | Pendente                               | As telas usam `app-data.ts`; ligar aos clientes e endpoints centralizados da API                                                                                                       |
+| Instalação Docker por lockfile                | Pendente                               | Dockerfiles usam instalação sem lockfile imutável                                                                                                                                      |
+| Alinhamento da documentação de escopo         | Pendente                               | O escopo histórico diverge das capacidades e integrações atuais                                                                                                                        |
+| SMTP real                                     | Pendente em P1-05                      | Notificações produtivas continuam dependendo do modo mock                                                                                                                              |
+| TLS, backup, rollback e logs operacionais     | Pendentes em P0-01/P1-06/P1-07/P1-08   | Hardening e operação de produção não concluídos                                                                                                                                        |
 
 ## Protocolo de atualização
 

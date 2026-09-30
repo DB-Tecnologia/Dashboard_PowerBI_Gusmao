@@ -1,5 +1,7 @@
 # AUDITORIA_PROJETO.md — Auditoria Completa do Projeto
 
+> **Snapshot histórico (2026-07-20).** Preserve como registro daquela auditoria; não use seus status como retrato do runtime atual. Consulte [Estado real do projeto — 2026-09-29](ESTADO_REAL_PROJETO_2026-09-29.md).
+
 **Projeto:** Dashboard Power BI
 **Data da auditoria:** 2026-07-20
 **Auditor:** Rui Diniz

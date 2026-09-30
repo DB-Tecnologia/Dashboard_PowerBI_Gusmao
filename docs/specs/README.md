@@ -3,6 +3,8 @@
 **Projeto:** Dashboard Power BI
 **Metodologia:** Specification-Driven Development (SDD)
 
+> **Status atualizado em 2026-09-29:** os status abaixo descrevem implementação no código, não disponibilidade de integração produtiva. O Compose demo não tem Supabase ou Oracle/COMPASS configurados; consulte [Estado real do projeto](../audits/ESTADO_REAL_PROJETO_2026-09-29.md) para limites por tela. “Concluído” em uma spec técnica não significa aceite integral do V1.
+
 ---
 
 ## O que é esta pasta
@@ -51,7 +53,7 @@ Toda funcionalidade — existente ou pendente — deve ter uma spec corresponden
 | [SPEC-T06-filtros](reports/SPEC-T06-filtros.md)           | T06 — Filtros avançados            | Concluído |
 | [SPEC-T09-exportacao](reports/SPEC-T09-exportacao.md)     | T09 — Exportação PDF/Excel         | Parcial   |
 | [SPEC-T15-gestao-admin](reports/SPEC-T15-gestao-admin.md) | T15 — Gestão de relatórios (admin) | Concluído |
-| [SPEC-T09b-bullmq](reports/SPEC-T09b-bullmq.md)           | T09b — Pipeline BullMQ + Redis     | Concluído |
+| [SPEC-T09b-bullmq](reports/SPEC-T09b-bullmq.md)           | T09b — Pipeline BullMQ + Redis     | Parcial   |
 
 ### BI
 
@@ -62,8 +64,8 @@ Toda funcionalidade — existente ou pendente — deve ter uma spec corresponden
 | [SPEC-T07-dashboard-interativo](bi/SPEC-T07-dashboard-interativo.md)           | T07 — Dashboard interativo        | Concluído          |
 | [SPEC-T08-dashboards-personalizados](bi/SPEC-T08-dashboards-personalizados.md) | T08 — Dashboards personalizados   | Parcial            |
 | [SPEC-T16-editor-visual](bi/SPEC-T16-editor-visual.md)                         | T16 — Editor visual drag-and-drop | Concluído (mínimo) |
-| [SPEC-T16b-editor-completo](bi/SPEC-T16b-editor-completo.md)                   | T16b — Editor visual completo     | Pendente           |
-| [SPEC-T07b-drilldown-multi](bi/SPEC-T07b-drilldown-multi.md)                   | T07b — Drill-down multi-dimensão  | Pendente           |
+| [SPEC-T16b-editor-completo](bi/SPEC-T16b-editor-completo.md)                   | T16b — Editor visual completo     | Parcial            |
+| [SPEC-T07b-drilldown-multi](bi/SPEC-T07b-drilldown-multi.md)                   | T07b — Drill-down multi-dimensão  | Concluído          |
 
 ### Admin
 
@@ -71,17 +73,17 @@ Toda funcionalidade — existente ou pendente — deve ter uma spec corresponden
 | --------------------------------------------------------------------- | ------------------------------ | --------- |
 | [SPEC-admin-modulo](admin/SPEC-admin-modulo.md)                       | Módulo Admin (geral)           | Parcial   |
 | [SPEC-T12-dashboard-admin](admin/SPEC-T12-dashboard-admin.md)         | T12 — Dashboard administrativo | Concluído |
-| [SPEC-T11-notificacoes](admin/SPEC-T11-notificacoes.md)               | T11 — Central de notificações  | Concluído |
+| [SPEC-T11-notificacoes](admin/SPEC-T11-notificacoes.md)               | T11 — Central de notificações  | Parcial   |
 | [SPEC-T17-auditoria](admin/SPEC-T17-auditoria.md)                     | T17 — Auditoria com filtros    | Concluído |
 | [SPEC-T18-configuracoes](admin/SPEC-T18-configuracoes.md)             | T18 — Configurações do sistema | Concluído |
-| [SPEC-T12b-graficos-tendencia](admin/SPEC-T12b-graficos-tendencia.md) | T12b — Gráficos de tendência   | Pendente  |
+| [SPEC-T12b-graficos-tendencia](admin/SPEC-T12b-graficos-tendencia.md) | T12b — Gráficos de tendência   | Concluído |
 
 ### Transversal
 
 | Spec                                                                  | Tela/Tarefa                                         | Status    |
 | --------------------------------------------------------------------- | --------------------------------------------------- | --------- |
 | [SPEC-DT-004-cache-queries](transversal/SPEC-DT-004-cache-queries.md) | DT-004 — Cache de queries SQL Server                | Concluído |
-| [SPEC-DT-005-testes-e2e](transversal/SPEC-DT-005-testes-e2e.md)       | DT-005 — Testes E2E (Playwright)                    | Pendente  |
+| [SPEC-DT-005-testes-e2e](transversal/SPEC-DT-005-testes-e2e.md)       | DT-005 — Testes E2E (Playwright)                    | Parcial   |
 | [SPEC-DT-006-lgpd-retencao](transversal/SPEC-DT-006-lgpd-retencao.md) | DT-006 — Política de retenção LGPD                  | Concluído |
 | [SPEC-demo-dados-ampliados](transversal/SPEC-demo-dados-ampliados.md) | Dados fictícios e conta de consulta geral para demo | Concluído |
 

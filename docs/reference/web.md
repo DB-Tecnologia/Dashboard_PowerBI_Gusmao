@@ -1,63 +1,44 @@
-# Web
+# Referência Web
+
+**Atualizado em:** 2026-09-29
+
+> Esta página descreve telas e integrações observadas no código. A classificação de prontidão fica em [Estado real do projeto](../audits/ESTADO_REAL_PROJETO_2026-09-29.md). “Tela presente” não significa dados agrícolas reais, persistência durável ou aceite de produção.
 
 ## Stack
 
-- Next.js 14
-- App Router
-- Tailwind CSS
-- componentes locais em `apps/web/src/components`
+- Next.js 14 com App Router
+- TypeScript estrito
+- Tailwind CSS e componentes locais em `apps/web/src/components`
+- Recharts nos gráficos da home e dashboards
+- Jest e Testing Library; Playwright para fluxos E2E existentes
 
-## Telas e fluxos já visíveis
+## Rotas e telas
 
-- login
-- recuperação e reset de senha
-- perfil do usuário
-- área autenticada com `AuthGuard`
-- dashboard inicial
-- relatórios
-- hub administrativo
-- usuários
-- grupos
-- notificações
-- exportações
-- configurações do sistema
-- página de design system
-- dashboards personalizados com seed automático por setor e banner de boas-vindas
-- dashboard admin com gráficos de tendência (usuários por mês, atividade por semana, exports por semana, top relatórios, top setores)
+A Web contém login, recuperação/reset de senha, perfil, home BI, catálogo e visualização de relatórios, dashboards personalizados, exportações, notificações e áreas administrativas para usuários, grupos, permissões, relatórios, auditoria e configurações. Consulte `apps/web/src/app/` para o inventário exato de rotas.
 
-## Sessão
+### Home BI
 
-A sessão do frontend agora fica em `sessionStorage`, remove a dependência operacional do `localStorage`, migra sessões legadas e tenta um refresh automático único quando a API devolve `401`. Ainda não é o hardening final previsto no escopo V1.
+- Consome o payload de dashboard da API quando o client configurado seleciona o modo de API; o ambiente demo usa `DATA_MODE=mock` e valores agrícolas sintéticos identificados na tela.
+- Exibe séries mensais de demonstração, comparação entre períodos, abas Executiva/Analítica/Operacional e drill-down por dimensões.
+- A atualização visual de 2026-09-29 organizou KPIs sem repetição, identificação de demo/período, gráfico principal, destaques, leitura por área e indicadores.
+- Navegação compacta em telas grandes e menu acessível abaixo de 1024 px. Revisão visual registrada nas larguras 390, 640, 1024 e 1440 px.
+- Paleta agro corporativa provisória: fundo `#F6F7F2`, cartões brancos, floresta `#14532D`, petróleo `#0F766E` e âmbar `#B45309`; a fonte é nativa do sistema.
 
-## Integração atual
+## Integração e persistência
 
-- auth, perfil, dashboard, relatórios, exportações, notificações e settings usam a API NestJS como fonte oficial;
-- a Web não depende mais de leituras diretas do Supabase nesses fluxos principais da plataforma.
-- a home autenticada agora usa `GET /dashboard/home` e renderiza charts reais com Recharts (BarChart, LineChart, PieChart, AreaChart);
-- no modo demonstração, a home identifica explicitamente os dados fictícios e mostra o período de histórico; as séries sintéticas mensais de Produção, Comercial e Algodoeira cobrem 12 meses, comparando o mês atual ao anterior;
-- a home BI tem hierarquia executiva: título “Visão geral”, KPIs de resumo sem repetição, identificação de demonstração e período, linha do tempo ao lado dos destaques, leitura por área e cartões de KPI; as abas Executiva, Analítica e Operacional e o drill-down são preservados;
-- a navegação autenticada usa uma barra lateral compacta fixa a partir de 1024 px e um menu móvel acessível em larguras menores; o layout foi revisado a 390, 640, 1024 e 1440 px sem rolagem horizontal;
-- a identidade da home usa fundo `#F6F7F2`, cartões brancos, texto `#17211B`, floresta `#14532D`, petróleo `#0F766E` e âmbar `#B45309`; a fonte é nativa do sistema. A paleta permanece provisória até a entrega da identidade visual oficial;
-- os gráficos compartilhados receberam tokens de cor, rótulos, eixos, legendas e tooltips padronizados; rótulos legados de KPI são normalizados apenas na camada de exibição;
-- componentes de gráfico reutilizáveis em `components/charts/` (BarChartWidget, LineChartWidget, PieChartWidget, AreaChartWidget, ChartTooltip);
-- cada KPI da home já abre um drill-down completo consumindo `GET /dashboard/kpis/:kpiId/drilldown?dimension=...` + `GET /dashboard/kpis/:kpiId/history`, com seletor de dimensão, breadcrumb, resumo, gráfico de evolução de 12 meses e tabela comparativa;
-- a tela de detalhe do relatório já consegue solicitar exportações via modal com seleção de formato (PDF, Excel, CSV, JSON);
-- a tela de exportações baixa arquivos pela API autenticada, sem depender de link público cru;
-- polling automático de status de exportações (atualiza a cada 5s enquanto houver jobs pendentes);
-- filtros por formato e status na lista de exportações;
-- skeleton loading e empty state ilustrativo na lista de exportações;
-- fallback em memória para exportações quando Supabase não configurado;
-- a tela de settings já permite editar valores não sensíveis via API centralizada;
-- dashboards personalizados com CRUD completo: criar, visualizar (`/app/dashboards/:id`), editar e excluir;
-- widgets de dashboard: KPI, Gráfico (bar, line, pie, area) e Tabela (placeholder);
-- modal de adicionar widget com seleção de tipo, KPI e tipo de gráfico;
-- fallback em memória para dashboards quando Supabase não configurado;
-- editor visual de dashboards: botão "Editar layout" ativa modo de edição com paleta de widgets (KPI, Gráfico, Tabela, Texto, Iframe), grid responsivo de 12 colunas com drag-and-drop e redimensionamento via `react-grid-layout`, painel lateral de configuração inline (título, KPI, tipo de gráfico, conteúdo, URL), e persistência em lote via `PATCH /dashboards/:id/widgets/batch`;
-- hub administrativo (`/app/admin`) com KPIs operacionais reais: total de usuários, ativos, grupos, exportações e tabela de atividade recente dos logs de auditoria;
-- gestão de relatórios admin (`/app/admin/reports`) com CRUD completo, edição de definições, gerenciamento de parâmetros (nome, tipo, obrigatório), seleção de fonte SQL (view ou stored_procedure) e teste de conexão antes de salvar;
-- login com suporte a 2FA/TOTP: quando ativado, o fluxo exibe input de código de 6 dígitos após credenciais válidas (`/login`);
-- perfil do usuário (`/app/profile`) com gestão de 2FA/TOTP: ativar (setup com QR code/otpauthUrl e secret), verificar código e ativar, desativar com verificação de código.
+- Auth, perfil, home/dashboards, relatórios, administração, auditoria e settings têm clients e rotas de API. A persistência de partes do domínio depende de Supabase configurado no backend; quando ausente, vários repositórios usam memória.
+- **Exceções conhecidas:** as listas de notificações e o histórico de exportações usam `apps/web/src/lib/app-data.ts`; no modo demo exibem fixtures locais e não representam os registros reais criados pela API.
+- Solicitar exportação pela tela de relatório inicia o fluxo da API. A API usa worker BullMQ/Redis e disponibiliza download autenticado, mas os arquivos ficam no filesystem do container e a lista Web não reconcilia seus jobs.
+- Dashboards personalizados têm CRUD e editor de widgets, drag-and-drop, resize e configuração. A persistência depende de Supabase; compartilhamento/versionamento completo não foi confirmado.
+- TOTP aparece no login e perfil; administradores precisam habilitá-lo. Produção requer `TOTP_ENCRYPTION_KEY`; fallback sem criptografia é apenas para execução local controlada.
 
-## Limitações atuais
+## Sessão e estados de tela
 
-- persistências de platform ainda dependem do Supabase no backend atual;
+A sessão é mantida em `sessionStorage`, com tentativa única de refresh quando a API devolve `401`. As telas tratam loading, erro e vazio onde implementado; consulte os testes do componente para cobertura específica. O modo mock facilita demonstração e não deve ser interpretado como backend de produção.
+
+## Validação visual e automatizada registrada
+
+- Web: 43 suítes e 147 testes na última execução registrada.
+- Playwright: `tests/e2e/auth-dashboard.spec.ts`, 8 cenários aprovados na última execução registrada.
+- `pnpm typecheck`, `pnpm build`, `pnpm lint` e `pnpm verify:docs` aprovados na última execução registrada.
+- A suíte completa da API não foi executada nesta atualização documental; não inferir aprovação dela a partir da validação Web.

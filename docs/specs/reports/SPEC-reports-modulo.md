@@ -2,9 +2,11 @@
 
 **ID:** REP-MOD
 **Módulo:** Reports
-**Fase:** Fase 1 (base), Fase 3 (pendente)
+**Fase:** Base presente; fechamento V1 e integração produtiva pendentes
 **Status:** Parcial
-**Atualizado em:** 2026-06-28
+**Atualizado em:** 2026-09-29
+
+> Pipeline BullMQ/Redis e worker estão implementados. Storage durável e histórico Web conectado à API permanecem pendentes. Consulte a [auditoria atual](../../audits/ESTADO_REAL_PROJETO_2026-09-29.md).
 
 ---
 
@@ -56,22 +58,22 @@ O módulo Reports é o núcleo funcional da plataforma. Usuários visualizam rel
 - [x] Persistência real das definições (Supabase)
 - [x] Favoritos por usuário
 - [x] Exportação: PDF, Excel, CSV, JSON
-- [ ] Pipeline de export com BullMQ e fila
-- [ ] Worker de processamento assíncrono
+- [x] Pipeline de export com BullMQ e fila
+- [x] Worker de processamento assíncrono
 - [ ] Storage S3 ou equivalente
 - [ ] Preview de parâmetros com tipos na tela admin
 
 ## 6. Impacto Técnico
 
-| Área           | Impacto                                                                         |
-| -------------- | ------------------------------------------------------------------------------- |
-| Arquitetura    | Módulo Reports + integração SQL Server + Exports                                |
-| Banco de dados | api_report_definitions, api_favorite_reports, api_export_jobs (Supabase)        |
-| API            | GET /reports, POST /reports/:id/execute, CRUD /admin/reports, POST /exports     |
-| Frontend       | /app/reports, /app/reports/:id, /app/admin/reports, /app/exports                |
-| Testes         | Unit (catalog, detail, filters, admin), Integration (controllers, repositories) |
-| Infraestrutura | SQL Server, BullMQ+Redis (pendente), S3 (pendente)                              |
-| Segurança      | Queries parametrizadas, validação de fonte, roles guard                         |
+| Área           | Impacto                                                                          |
+| -------------- | -------------------------------------------------------------------------------- |
+| Arquitetura    | Módulo Reports + integração SQL Server + Exports                                 |
+| Banco de dados | api_report_definitions, api_favorite_reports, api_export_jobs (Supabase)         |
+| API            | GET /reports, POST /reports/:id/execute, CRUD /admin/reports, POST /exports      |
+| Frontend       | /app/reports, /app/reports/:id, /app/admin/reports, /app/exports                 |
+| Testes         | Unit (catalog, detail, filters, admin), Integration (controllers, repositories)  |
+| Infraestrutura | SQL Server demo, BullMQ+Redis implementados, storage durável de arquivo pendente |
+| Segurança      | Queries parametrizadas, validação de fonte, roles guard                          |
 
 ## 7. Testes Necessários
 
@@ -91,17 +93,17 @@ O módulo Reports é o núcleo funcional da plataforma. Usuários visualizam rel
 
 ## 8. Riscos
 
-| Risco                        | Impacto                           | Mitigação                              |
-| ---------------------------- | --------------------------------- | -------------------------------------- |
-| SQL Server indisponível      | Relatórios não carregam           | Healthcheck + fallback                 |
-| Query lenta                  | Timeout, UX degradada             | Timeout configurável, cache (pendente) |
-| Fila em memória perde jobs   | Exportações perdidas ao reiniciar | BullMQ + Redis (pendente)              |
-| Arquivo de exportação grande | OOM, timeout                      | Processamento assíncrono (pendente)    |
+| Risco                          | Impacto                           | Mitigação                                                        |
+| ------------------------------ | --------------------------------- | ---------------------------------------------------------------- |
+| SQL Server indisponível        | Relatórios não carregam           | Healthcheck + fallback                                           |
+| Query lenta                    | Timeout, UX degradada             | Cache LRU/TTL local implementado; métricas pendentes             |
+| Fallback em memória perde jobs | Exportações perdidas ao reiniciar | Redis no pipeline principal; validar configuração e persistência |
+| Arquivo de exportação grande   | OOM, timeout                      | Processamento assíncrono implementado; medir com cargas reais    |
 
 ## 9. Dependências
 
 - `sql-server.service` (execução de queries)
 - `report-definitions.repository` (persistência híbrida)
 - `exports.service` (geração de PDF/Excel/CSV/JSON)
-- BullMQ + Redis (pendente, para pipeline assíncrono)
+- BullMQ + Redis implementados para pipeline assíncrono
 - S3 ou storage equivalente (pendente)

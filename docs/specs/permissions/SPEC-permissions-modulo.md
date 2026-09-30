@@ -4,7 +4,9 @@
 **Módulo:** Permissions
 **Fase:** Fase 2 (concluído), pendências em Fase 4
 **Status:** Parcial
-**Atualizado em:** 2026-06-28
+**Atualizado em:** 2026-09-29
+
+> Grupos, herança de permissões e guards estão presentes; persistência no demo e validação da matriz final de acesso continuam pendentes. Consulte a [auditoria atual](../../audits/ESTADO_REAL_PROJETO_2026-09-29.md).
 
 ---
 
@@ -18,12 +20,12 @@ O módulo Permissions controla quem pode ver, editar, exportar e administrar rec
 
 ## 3. Regras de Negócio
 
-| Código | Regra                                                     | Status     |
-| ------ | --------------------------------------------------------- | ---------- |
-| RN-006 | Usuários só visualizam relatórios do seu setor            | Confirmado |
-| RN-007 | Apenas Downloader e Admin podem exportar relatórios       | Confirmado |
-| RN-008 | Apenas Admin pode gerenciar usuários, grupos e permissões | Confirmado |
-| RN-016 | Usuários herdam permissões dos grupos que pertencem       | Pendente   |
+| Código | Regra                                                     | Status                       |
+| ------ | --------------------------------------------------------- | ---------------------------- |
+| RN-006 | Usuários só visualizam relatórios do seu setor            | Confirmado                   |
+| RN-007 | Apenas Downloader e Admin podem exportar relatórios       | Confirmado                   |
+| RN-008 | Apenas Admin pode gerenciar usuários, grupos e permissões | Confirmado                   |
+| RN-016 | Usuários herdam permissões dos grupos que pertencem       | Implementado; validar matriz |
 
 ## 4. Fluxo Esperado
 
@@ -35,7 +37,7 @@ O módulo Permissions controla quem pode ver, editar, exportar e administrar rec
 4. Se permissão granular necessária → checa em permissions.
 5. Acesso permitido ou negado (403).
 
-### Fluxo — Herança via grupos (pendente)
+### Fluxo — Herança via grupos
 
 1. Usuário pertence a grupo X.
 2. Grupo X tem permissões P1, P2.

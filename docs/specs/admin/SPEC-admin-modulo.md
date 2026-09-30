@@ -2,7 +2,7 @@
 
 **ID:** ADM-MOD
 **Módulo:** Admin
-**Fase:** Fase 2 (concluído), Fase 4 (pendente)
+**Fase:** Base implementada; validação V1 e de produção pendentes
 **Status:** Parcial
 **Atualizado em:** 2026-06-28
 

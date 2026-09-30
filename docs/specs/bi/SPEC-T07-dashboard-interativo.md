@@ -72,10 +72,10 @@ Nenhuma RN específica.
 
 ## 8. Riscos
 
-| Risco                        | Impacto                                | Mitigação             |
-| ---------------------------- | -------------------------------------- | --------------------- |
-| Drill-down limitado a sector | Usuários não exploram outras dimensões | T07b (multi-dimensão) |
-| Performance com muitos dados | Gráfico lento                          | Agregação no backend  |
+| Risco                        | Impacto                                    | Mitigação                                                                                |
+| ---------------------------- | ------------------------------------------ | ---------------------------------------------------------------------------------------- |
+| Fonte demo sintética         | Drill-down não representa dados do cliente | Integrar Oracle/COMPASS e reconciliar dimensões; suporte multi-dimensão já existe (T07b) |
+| Performance com muitos dados | Gráfico lento                              | Agregação no backend                                                                     |
 
 ## 9. Dependências
 

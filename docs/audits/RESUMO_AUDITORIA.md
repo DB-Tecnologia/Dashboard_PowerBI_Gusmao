@@ -1,5 +1,7 @@
 # RESUMO_AUDITORIA.md — Resumo Executivo da Auditoria
 
+> **Snapshot histórico (2026-07-20).** Este resumo foi preservado como histórico. Para a situação atual do runtime, use [Estado real do projeto — 2026-09-29](ESTADO_REAL_PROJETO_2026-09-29.md).
+
 **Projeto:** Dashboard Power BI
 **Data:** 2026-07-20
 

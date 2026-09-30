@@ -1,5 +1,7 @@
 # ROADMAP — Módulos Funcionais (6 do Escopo V1)
 
+> **Nota de status:** este detalhamento preserva requisitos e decisões do plano; status antigos não são a fonte vigente. Consulte [Estado real do projeto — 2026-09-29](../audits/ESTADO_REAL_PROJETO_2026-09-29.md) para capacidades verificadas e lacunas de produção.
+
 **Metodologia:** SDD + TDD aplicados em cada módulo.
 
 ---
@@ -53,10 +55,9 @@ Entregáveis Concluídos:
 ✅ apps/web/src/components/auth/login-form.tsx — UI de login
 
 Débitos / Pendente:
-📋 2FA obrigatório para admins (DT-001 — 2FA/TOTP opcional já implementado)
-📋 Blacklist de tokens revogados
-📋 Auditoria de eventos de auth (parcial — login já logado via audit)
-📋 Hardening final de sessão (stratégia de invalidação em massa)
+✅ TOTP obrigatório para administradores implementado; produção requer `TOTP_ENCRYPTION_KEY`.
+✅ Revogação de tokens e invalidação em massa de sessões implementadas.
+📋 Validar timeout por inatividade e hardening operacional na configuração real.
 ```
 
 ---
@@ -191,7 +192,7 @@ Entregáveis Concluídos:
 ✅ supabase/migrations/20260607183000_006_api_favorite_reports.sql — favoritos
 
 Débitos / Pendente:
-📋 Storage S3 ou equivalente para arquivos (BullMQ + Redis já implementados com fallback em memória)
+📋 Storage durável de arquivos; BullMQ/Redis e worker já implementados, com fallback em memória.
 📋 Ampliar favoritos (mais funcionalidades)
 📋 Preview de parâmetros com tipos na tela admin
 ```

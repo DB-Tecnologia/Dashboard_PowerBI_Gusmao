@@ -1,8 +1,10 @@
 # ARQUITETURA.md — Arquitetura do Sistema
 
 **Projeto:** Dashboard Power BI
-**Atualizado em:** 2026-08-24
-**Status:** Desenvolvimento (funcional parcial, abaixo do escopo V1)
+**Atualizado em:** 2026-09-29
+**Status:** Demo funcional; produto parcial, Oracle/COMPASS sem configuração e sem liberação para produção.
+
+> Leia primeiro [Estado real do projeto](../audits/ESTADO_REAL_PROJETO_2026-09-29.md). Esta página descreve componentes e topologia; ela não comprova que um serviço esteja configurado no ambiente. No Compose demo, Supabase não está configurado, parte dos repositórios usa memória e BI agrícola real ainda não está ligado.
 
 ---
 
@@ -31,15 +33,16 @@ O sistema está em estado funcional parcial: entrega autenticação, dashboard, 
 - **UI library:** Tailwind CSS, componentes locais em `apps/web/src/components`
 - **Gráficos:** Recharts (linha, barra, pizza, área)
 - **Drag-and-drop:** `@dnd-kit/core`, `@dnd-kit/sortable`, `@dnd-kit/utilities`
-- **Data fetching:** `@tanstack/react-query`
+- **Data fetching:** clients HTTP locais; `@tanstack/react-query` está declarada, mas não estrutura os fluxos principais da Web.
 - **Testes:** Jest, Testing Library
 
 ### Banco de Dados
 
-- **Banco principal (plataforma):** Supabase (PostgreSQL gerenciado) — persistência de usuários, grupos, permissões, auditoria, settings, dashboards, exportações, notificações
-- **Banco externo (relatórios):** SQL Server via `mssql` — origem de leitura para relatórios e KPIs
+- **Persistência opcional da plataforma:** Supabase (PostgreSQL gerenciado) via service role quando configurado; no Compose demo está ausente e há fallback em memória em vários repositórios.
+- **Fonte ativa de relatórios demo:** SQL Server via `mssql`, leitura de consultas de exemplo.
+- **Fonte alvo do BI agrícola:** Oracle 19c/COMPASS, planejada e ainda não conectada nem validada.
 - **ORM / Query Builder:** Nenhum; queries diretas parametrizadas
-- **Migrations:** Supabase migrations em `supabase/migrations/` (8 arquivos)
+- **Migrations:** 12 arquivos SQL em `supabase/migrations/`; sua presença não significa que estejam aplicadas a um projeto Supabase.
 - **Seeds:** Setores padrão e configurações iniciais embutidos nas migrations
 
 ### Infraestrutura
@@ -48,7 +51,7 @@ O sistema está em estado funcional parcial: entrega autenticação, dashboard, 
 - **Docker:** Docker Compose para desenvolvimento e produção
 - **CI/CD:** GitHub Actions (deploy para VPS)
 - **Observabilidade:** Healthcheck em `/health` e `/health/sql`; NÃO IDENTIFICADO sistema de monitoramento/observabilidade estruturado
-- **Redis:** Presente na infraestrutura Docker, mas não é dependência funcional da aplicação
+- **Redis:** ativo no Compose demo para a fila/worker BullMQ de exportação; não substitui a persistência durável da plataforma.
 
 ---
 
@@ -83,7 +86,7 @@ O sistema está em estado funcional parcial: entrega autenticação, dashboard, 
 │   └── env/                 # Exemplos de variáveis de ambiente
 ├── scripts/                 # Scripts de validação estrutural
 ├── supabase/
-│   └── migrations/          # 8 migrations SQL do Supabase
+│   └── migrations/          # 12 migrations SQL do Supabase
 └── .github/
     └── workflows/           # CI/CD (deploy VPS)
 ```
@@ -115,7 +118,7 @@ apps/web -> apps/api -> SQL Server
                     \-> memoria em partes do dominio
 ```
 
-A API NestJS é a fonte oficial de todos os fluxos autenticados. O frontend não acessa Supabase diretamente. O fallback sintético do dashboard legado só pode ser usado com `DATA_MODE=mock`; os contratos BI v1 não fazem fallback silencioso.
+A API NestJS é a fonte oficial da maioria dos fluxos autenticados. Exceções atuais: as telas Web de notificações e histórico de exportações usam `apps/web/src/lib/app-data.ts`; no demo retornam fixtures e fora do mock tentam acesso direto ao Supabase. O fallback sintético do dashboard legado só pode ser usado com `DATA_MODE=mock`; os contratos BI v1 deixam a ausência de origem explícita.
 
 ### BI e fontes substituíveis
 
@@ -123,7 +126,7 @@ A API NestJS é a fonte oficial de todos os fluxos autenticados. O frontend não
 - **Principais arquivos:** `apps/api/src/bi/*`, `apps/api/src/sql-server/database-provider.service.ts`, `apps/api/src/sql-server/sql-query.service.ts`.
 - **Rotas:** `/api/v1/bi/source`, `/freshness`, `/filters`, domínios agrícolas e `/refresh`.
 - **Regra:** somente leitura; ausência de credencial, timeout, consulta vazia ou erro de origem produz status explícito e `warnings`.
-- **Estado:** resumo de produção implementado para as views Oracle já mapeadas; grãos, algodão, algodoeira e romaneios aguardam smoke queries de produção.
+- **Estado:** Oracle/COMPASS não configurado; os contratos agrícolas retornam `not_configured` no Compose demo. O refresh executa apenas smoke check, termina `skipped`, guarda execução em memória e não grava snapshot nem watermark.
 
 ### Contrato de ambiente de produção
 
@@ -164,36 +167,36 @@ A API NestJS é a fonte oficial de todos os fluxos autenticados. O frontend não
 - **Responsabilidade:** Permissões granulares por recurso e ação, auditoria de mutações
 - **Principais arquivos:** `apps/api/src/permissions/*`, `apps/web/src/components/admin/admin-permissions.tsx`
 - **Funcionalidades:** CRUD de permissões (code, name, description, resource, action), auditoria em create/update/delete
-- **Status:** Parcial — herança via grupos e guard combinado JWT + role + permission pendentes
+- **Status:** Parcial — grupos e herança estão implementados; persistência depende do Supabase e de uma configuração ativa.
 
 ### Reports
 
 - **Responsabilidade:** Catálogo, visualização, execução, gestão administrativa, favoritos e exportação de relatórios
 - **Principais arquivos:** `apps/api/src/reports/*`, `apps/web/src/components/reports/*`, `apps/web/src/components/admin/admin-reports.tsx`
-- **Funcionalidades:** Catálogo por setor com busca, visualização inline com parâmetros, filtros avançados, CRUD admin de definições, validação de fonte SQL, favoritos, exportação (PDF/XLSX/CSV/JSON) com pipeline, fila, histórico e download autenticado
+- **Funcionalidades:** Catálogo por setor com busca, visualização inline com parâmetros, filtros avançados, CRUD admin de definições, validação de fonte SQL, favoritos, exportação (PDF/XLSX/CSV/JSON) por BullMQ/Redis, download autenticado e auditoria. O histórico da tela Web ainda usa fixtures; arquivos são gravados localmente.
 - **Dependências:** `apps/api/src/sql-server/*` (acesso ao SQL Server)
-- **Status:** Parcial — BullMQ/Redis implementados com fallback em memória; storage S3 pendente
+- **Status:** Parcial — worker BullMQ/Redis está implementado; há fallback em memória e armazenamento local, sem storage S3 ou garantia de arquivos duráveis entre recriações do container.
 
 ### Dashboard
 
 - **Responsabilidade:** Dashboard home com KPIs, drill-down, dashboards personalizados, editor visual
 - **Principais arquivos:** `apps/api/src/platform/dashboard/*`, `apps/api/src/platform/dashboards/*`, `apps/web/src/components/dashboard/*`, `apps/web/src/components/charts/*`
 - **Funcionalidades:** `GET /dashboard/home` (payload consolidado), `GET /dashboard/kpis/:kpiId/drilldown`, `GET /dashboard/kpis/:kpiId/history`, CRUD de dashboards personalizados, widgets (KPI, gráfico, tabela), reordenação drag-and-drop via `@dnd-kit/sortable`, charts Recharts (bar, line, pie, area)
-- **Status:** Parcial — drill-down apenas por sector, editor visual mínimo (redimensionamento e paleta pendentes)
+- **Status:** Parcial — home e drill-down multi-dimensão estão ativos com dados sintéticos; CRUD/editor visual têm dependência de persistência opcional; ainda faltam dados reais reconciliados, compartilhamento e versionamento.
 
 ### Notifications
 
 - **Responsabilidade:** Central de notificações do usuário
 - **Principais arquivos:** `apps/api/src/platform/notifications/*`, `apps/web/src/components/notifications/*`
 - **Funcionalidades:** Listagem, marcar como lida, filtros por tipo
-- **Status:** Funcional (simples frente ao PDF)
+- **Status:** API funcional; a lista Web usa fixtures via `app-data.ts` e ainda não consome `platform-api.ts`.
 
 ### Exports
 
 - **Responsabilidade:** Pipeline de exportação de relatórios
 - **Principais arquivos:** `apps/api/src/platform/exports/*`, `apps/web/src/components/exports/*`
-- **Funcionalidades:** Solicitação de exportação (PDF/XLSX/CSV/JSON), fila em memória, worker, histórico, download autenticado, notificação ao concluir, auditoria, expiração automática (7 dias)
-- **Status:** Parcial — sem BullMQ/Redis, sem storage S3
+- **Funcionalidades:** Solicitação de exportação (PDF/XLSX/CSV/JSON), BullMQ/Redis worker, download autenticado, auditoria, expiração e fallback em memória. O worker grava em filesystem local; a tela de histórico Web usa fixtures.
+- **Status:** Parcial — storage S3 e integração do histórico Web à API pendentes.
 
 ### Audit
 
@@ -214,70 +217,65 @@ A API NestJS é a fonte oficial de todos os fluxos autenticados. O frontend não
 - **Responsabilidade:** Camada de acesso ao SQL Server externo (somente leitura)
 - **Principais arquivos:** `apps/api/src/sql-server/*`
 - **Funcionalidades:** Conexão via pool com `mssql`, queries parametrizadas, validação de identificadores, proteção contra SQL injection, healthcheck
-- **Status:** Parcial — cache, cron, monitoramento e observabilidade pendentes
+- **Status:** Parcial — cache LRU/TTL existe apenas em memória do processo; cron de refresh agrícola, métricas e observabilidade de produção não estão concluídos.
 
 ---
 
 ## 6. Funcionalidades Existentes
 
-| Funcionalidade               | Módulo        | Status     | Evidência no repositório                                                      |
-| ---------------------------- | ------------- | ---------- | ----------------------------------------------------------------------------- |
-| Login com JWT                | Auth          | Confirmado | `apps/api/src/auth/auth.controller.ts`                                        |
-| Refresh token                | Auth          | Confirmado | `apps/api/src/auth/auth.controller.ts`                                        |
-| Logout                       | Auth          | Confirmado | `apps/api/src/auth/auth.controller.ts`                                        |
-| Recuperação de senha         | Auth          | Confirmado | `apps/api/src/auth/services/password-reset.service.ts`                        |
-| Perfil do usuário            | Auth          | Confirmado | `apps/api/src/auth/auth.controller.ts` — `GET /auth/me`                       |
-| Alteração de senha           | Auth          | Confirmado | `apps/api/src/auth/auth.controller.ts` — `PATCH /auth/me/password`            |
-| 2FA/TOTP                     | Auth          | Confirmado | `apps/api/src/auth/services/totp.service.ts` — setup, verify, disable, login  |
-| Rate limiting no login       | Auth          | Confirmado | `apps/api/src/auth/services/login-attempts.service.ts`                        |
-| CSRF middleware              | Auth          | Confirmado | `apps/api/src/common/middleware/csrf.middleware.ts`                           |
-| Headers de segurança         | Auth          | Confirmado | CSP, HSTS, X-Frame-Options, X-Content-Type-Options, Referrer-Policy           |
-| Dashboard home com KPIs      | Dashboard     | Confirmado | `apps/api/src/platform/dashboard/*` — `GET /dashboard/home`                   |
-| Drill-down de KPI            | Dashboard     | Confirmado | `GET /dashboard/kpis/:kpiId/drilldown`                                        |
-| Histórico de KPI             | Dashboard     | Confirmado | `GET /dashboard/kpis/:kpiId/history`                                          |
-| Gráficos Recharts            | Dashboard     | Confirmado | `apps/web/src/components/charts/*`                                            |
-| Dashboards personalizados    | Dashboard     | Confirmado | `apps/api/src/platform/dashboards/*`                                          |
-| Editor visual (mínimo)       | Dashboard     | Confirmado | `apps/web/src/components/dashboard/dashboard-detail.tsx` — DnD com `@dnd-kit` |
-| Catálogo de relatórios       | Reports       | Confirmado | `apps/api/src/reports/reports.controller.ts`                                  |
-| Visualização inline          | Reports       | Confirmado | `apps/web/src/components/reports/report-detail.tsx`                           |
-| Filtros avançados            | Reports       | Confirmado | `apps/web/src/components/reports/report-advanced-filters.tsx`                 |
-| Gestão admin de relatórios   | Reports       | Confirmado | `apps/api/src/reports/report-definitions.admin.controller.ts`                 |
-| Validação de fonte SQL       | Reports       | Confirmado | `POST /admin/reports/validate`                                                |
-| Favoritos de relatórios      | Reports       | Confirmado | `apps/api/src/reports/report-favorites.service.ts`                            |
-| Exportação PDF/XLSX/CSV/JSON | Exports       | Confirmado | `apps/api/src/platform/exports/*`                                             |
-| Histórico de exportações     | Exports       | Confirmado | `apps/web/src/components/exports/exports-list.tsx`                            |
-| Download autenticado         | Exports       | Confirmado | `apps/api/src/platform/exports/*`                                             |
-| CRUD de usuários             | Admin Users   | Confirmado | `apps/api/src/admin/users/*`                                                  |
-| CRUD de grupos               | Admin Groups  | Confirmado | `apps/api/src/admin/groups/*`                                                 |
-| CRUD de permissões           | Permissions   | Confirmado | `apps/api/src/permissions/*`                                                  |
-| Auditoria com filtros        | Audit         | Confirmado | `apps/api/src/audit/*`                                                        |
-| Configurações do sistema     | Settings      | Confirmado | `apps/api/src/platform/settings/*`                                            |
-| Dashboard administrativo     | Admin         | Confirmado | `apps/api/src/admin/dashboard/*` — `GET /admin/dashboard`                     |
-| Notificações                 | Notifications | Confirmado | `apps/api/src/platform/notifications/*`                                       |
-| Healthcheck API + SQL        | SQL Server    | Confirmado | `apps/api/src/health/*`                                                       |
-| Swagger/OpenAPI              | Common        | Confirmado | `http://localhost:3001/docs`                                                  |
-| Sessão em sessionStorage     | Auth          | Confirmado | `apps/web/src/lib/auth/session.ts`                                            |
-| React Query                  | Frontend      | Confirmado | `apps/web/src/lib/react-query/*`                                              |
+| Funcionalidade               | Módulo        | Status                      | Evidência no repositório                                                      |
+| ---------------------------- | ------------- | --------------------------- | ----------------------------------------------------------------------------- |
+| Login com JWT                | Auth          | Confirmado                  | `apps/api/src/auth/auth.controller.ts`                                        |
+| Refresh token                | Auth          | Confirmado                  | `apps/api/src/auth/auth.controller.ts`                                        |
+| Logout                       | Auth          | Confirmado                  | `apps/api/src/auth/auth.controller.ts`                                        |
+| Recuperação de senha         | Auth          | Confirmado                  | `apps/api/src/auth/services/password-reset.service.ts`                        |
+| Perfil do usuário            | Auth          | Confirmado                  | `apps/api/src/auth/auth.controller.ts` — `GET /auth/me`                       |
+| Alteração de senha           | Auth          | Confirmado                  | `apps/api/src/auth/auth.controller.ts` — `PATCH /auth/me/password`            |
+| 2FA/TOTP                     | Auth          | Confirmado                  | `apps/api/src/auth/services/totp.service.ts` — setup, verify, disable, login  |
+| Rate limiting no login       | Auth          | Confirmado                  | `apps/api/src/auth/services/login-attempts.service.ts`                        |
+| CSRF middleware              | Auth          | Confirmado                  | `apps/api/src/common/middleware/csrf.middleware.ts`                           |
+| Headers de segurança         | Auth          | Confirmado                  | CSP, HSTS, X-Frame-Options, X-Content-Type-Options, Referrer-Policy           |
+| Dashboard home com KPIs      | Dashboard     | Confirmado                  | `apps/api/src/platform/dashboard/*` — `GET /dashboard/home`                   |
+| Drill-down de KPI            | Dashboard     | Confirmado                  | `GET /dashboard/kpis/:kpiId/drilldown`                                        |
+| Histórico de KPI             | Dashboard     | Confirmado                  | `GET /dashboard/kpis/:kpiId/history`                                          |
+| Gráficos Recharts            | Dashboard     | Confirmado                  | `apps/web/src/components/charts/*`                                            |
+| Dashboards personalizados    | Dashboard     | Confirmado                  | `apps/api/src/platform/dashboards/*`                                          |
+| Editor visual (mínimo)       | Dashboard     | Confirmado                  | `apps/web/src/components/dashboard/dashboard-detail.tsx` — DnD com `@dnd-kit` |
+| Catálogo de relatórios       | Reports       | Confirmado                  | `apps/api/src/reports/reports.controller.ts`                                  |
+| Visualização inline          | Reports       | Confirmado                  | `apps/web/src/components/reports/report-detail.tsx`                           |
+| Filtros avançados            | Reports       | Confirmado                  | `apps/web/src/components/reports/report-advanced-filters.tsx`                 |
+| Gestão admin de relatórios   | Reports       | Confirmado                  | `apps/api/src/reports/report-definitions.admin.controller.ts`                 |
+| Validação de fonte SQL       | Reports       | Confirmado                  | `POST /admin/reports/validate`                                                |
+| Favoritos de relatórios      | Reports       | Confirmado                  | `apps/api/src/reports/report-favorites.service.ts`                            |
+| Exportação PDF/XLSX/CSV/JSON | Exports       | Confirmado                  | `apps/api/src/platform/exports/*`                                             |
+| Histórico de exportações     | Exports       | Confirmado                  | `apps/web/src/components/exports/exports-list.tsx`                            |
+| Download autenticado         | Exports       | Confirmado                  | `apps/api/src/platform/exports/*`                                             |
+| CRUD de usuários             | Admin Users   | Confirmado                  | `apps/api/src/admin/users/*`                                                  |
+| CRUD de grupos               | Admin Groups  | Confirmado                  | `apps/api/src/admin/groups/*`                                                 |
+| CRUD de permissões           | Permissions   | Confirmado                  | `apps/api/src/permissions/*`                                                  |
+| Auditoria com filtros        | Audit         | Confirmado                  | `apps/api/src/audit/*`                                                        |
+| Configurações do sistema     | Settings      | Confirmado                  | `apps/api/src/platform/settings/*`                                            |
+| Dashboard administrativo     | Admin         | Confirmado                  | `apps/api/src/admin/dashboard/*` — `GET /admin/dashboard`                     |
+| Notificações                 | Notifications | Confirmado                  | `apps/api/src/platform/notifications/*`                                       |
+| Healthcheck API + SQL        | SQL Server    | Confirmado                  | `apps/api/src/health/*`                                                       |
+| Swagger/OpenAPI              | Common        | Confirmado                  | `http://localhost:3001/docs`                                                  |
+| Sessão em sessionStorage     | Auth          | Confirmado                  | `apps/web/src/lib/auth/session.ts`                                            |
+| React Query                  | Frontend      | Declarada, não estruturante | Dependência no manifest; não organiza os fluxos principais da Web.            |
 
 ---
 
-## 7. Funcionalidades Pendentes ou A Confirmar
+## 7. Lacunas atuais verificadas
 
-| Funcionalidade                          | Motivo da pendência                   | Próxima ação                                               |
-| --------------------------------------- | ------------------------------------- | ---------------------------------------------------------- |
-| Drill-down multi-dimensão               | Apenas sector implementado            | Adicionar dimensões de tempo, produto, região              |
-| Editor visual completo                  | Apenas reordenação implementada       | Redimensionamento, paleta de widgets, canvas livre         |
-| BullMQ + Redis                          | Implementados com fallback em memória | Storage S3 pendente                                        |
-| Prisma ORM                              | Não implementado                      | Avaliar se será adotado ou se Supabase direto é suficiente |
-| Cache de queries SQL Server             | Não implementado                      | Implementar cache com TTL configurável                     |
-| Cron de refresh                         | Não implementado                      | Agendar refresh de relatórios e KPIs                       |
-| Monitoramento de queries                | Não implementado                      | Logs estruturados de tempo de execução                     |
-| Storage S3 para exports                 | Não implementado                      | Avaliar necessidade de storage externo                     |
-| Herança de permissões via grupos        | Não implementada                      | Usuário herda permissões dos grupos                        |
-| Guard combinado JWT + role + permission | Apenas JWT + role                     | Adicionar validação de permissão granular no guard         |
-| Blacklist de tokens revogados           | Não implementado                      | Estratégia de invalidação em massa                         |
-| Hardening final de sessão               | Parcial                               | Estratégia final de invalidação e timeout                  |
-| Testes E2E (Playwright)                 | Não configurados                      | Priorizar fluxos críticos: login, relatório, exportação    |
+| Lacuna                                     | Estado atual                                                                                                                                  | Próximo passo                                                                               |
+| ------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| BI Oracle/COMPASS                          | Driver e contratos estão no código, mas não há conexão demo nem dados agrícolas configurados; refresh só faz smoke check e termina `skipped`. | Obter acesso somente leitura, mapear consultas, persistir snapshots e reconciliar KPIs.     |
+| Persistência da plataforma                 | Supabase é opcional no código e não está configurado no Compose demo; repositórios têm fallbacks em memória.                                  | Configurar banco durável, aplicar migrations e provar que alterações sobrevivem a reinício. |
+| Notificações e histórico de exports na Web | Rotas da API existem, mas as listas ainda usam `app-data.ts`/fixtures.                                                                        | Migrar as telas para `platform-api.ts` e validar reconciliação.                             |
+| Arquivos de exportação                     | BullMQ/Redis e worker existem; arquivos ficam no filesystem local.                                                                            | Adotar storage durável e política de expiração/backup.                                      |
+| Refresh BI                                 | Estado dos jobs fica em memória; ainda não há carga ou snapshot.                                                                              | Implementar pipeline idempotente e durável com watermark.                                   |
+| Cache e escala                             | Cache LRU/TTL é local ao processo; fallbacks em memória não compartilham estado entre réplicas.                                               | Definir storage distribuído se a operação exigir múltiplas instâncias.                      |
+| Produção                                   | SMTP, domínio/TLS, backup/restore, métricas e logs operacionais não estão todos validados.                                                    | Fechar checklist operacional antes de disponibilizar ao cliente.                            |
+| BI V1                                      | Dashboards e drill-down existem, mas não há fonte real reconciliada, compartilhamento ou versionamento completo.                              | Validar as regras com a área de negócio usando dados reais.                                 |
 
 ---
 
@@ -335,11 +333,12 @@ A API NestJS é a fonte oficial de todos os fluxos autenticados. O frontend não
 
 ## 9. Integrações Externas
 
-| Integração            | Finalidade                                                                                                        | Onde é usada                             | Status      | Observações                                                                          |
-| --------------------- | ----------------------------------------------------------------------------------------------------------------- | ---------------------------------------- | ----------- | ------------------------------------------------------------------------------------ |
-| SQL Server (`mssql`)  | Origem de leitura para relatórios e KPIs                                                                          | `apps/api/src/sql-server/*`              | Funcional   | Somente SELECT e EXEC de SPs; queries parametrizadas                                 |
-| Supabase (PostgreSQL) | Persistência de plataforma (usuários, grupos, permissões, auditoria, settings, dashboards, exports, notificações) | `apps/api/src/supabase/*` e repositórios | Funcional   | Service role key no backend; fallback em memória quando não configurado              |
-| SMTP                  | Envio de emails (recuperação de senha, notificações)                                                              | Configurado via settings                 | A CONFIRMAR | Configuração `smtp_host`/`smtp_port` em `system_settings`; não confirmado envio real |
+| Integração            | Finalidade                                        | Onde é usada                             | Status                  | Observações                                                                        |
+| --------------------- | ------------------------------------------------- | ---------------------------------------- | ----------------------- | ---------------------------------------------------------------------------------- |
+| SQL Server (`mssql`)  | Origem de leitura para relatórios de demonstração | `apps/api/src/sql-server/*`              | Ativo no demo           | Somente SELECT/EXEC, consultas parametrizadas; não é a origem do BI agrícola real. |
+| Supabase (PostgreSQL) | Persistência opcional da plataforma               | `apps/api/src/supabase/*` e repositórios | Não configurado no demo | Sem credenciais, há fallback em memória em diversos domínios.                      |
+| Oracle 19c/COMPASS    | Fonte alvo somente leitura para BI agrícola       | `apps/api/src/bi/*`                      | Não configurado         | Requer acesso, mapeamento de campos/consultas e reconciliação do negócio.          |
+| SMTP                  | Envio de emails de recuperação e notificações     | Serviço de email / settings              | Não validado            | Configuração e envio real ainda dependem do ambiente de produção.                  |
 
 ---
 
@@ -349,7 +348,7 @@ A API NestJS é a fonte oficial de todos os fluxos autenticados. O frontend não
 
 - JWT access token (curta duração) + refresh token (7 dias)
 - Senhas com `bcrypt` (salt rounds >= 12)
-- 2FA/TOTP opcional via `otplib` (Authenticator App)
+- 2FA/TOTP obrigatório para administradores e configurável para os demais usuários
 - Rate limiting no login (5 tentativas por 15 min por IP)
 
 ### Autorização/perfis
@@ -358,7 +357,7 @@ A API NestJS é a fonte oficial de todos os fluxos autenticados. O frontend não
 - Setores: financeiro, RH, vendas, operações, TI
 - Grupos de usuários com roles e setores agregados
 - Permissões granulares: `resource:scope:action`
-- Guards: JWT + role (guard combinado com permissão granular pendente)
+- Guards de JWT/roles e regras de permissões; grupos podem agregar permissões.
 
 ### Proteção de rotas
 
@@ -386,10 +385,9 @@ A API NestJS é a fonte oficial de todos os fluxos autenticados. O frontend não
 
 ### Riscos identificados
 
-- 2FA/TOTP não é obrigatório para admins (opcional)
-- Blacklist de tokens revogados não implementada
-- Parte do domínio ainda usa fallback em memória (sem persistência)
-- Herança de permissões via grupos não implementada
+- No demo, sem chave TOTP configurada, o fallback armazena o segredo sem criptografia e gera aviso; produção rejeita o boot sem a chave.
+- Parte do domínio usa fallback em memória e perde alterações após reinício quando Supabase não está configurado.
+- SMTP real, TLS/domínio, backup/restore e observabilidade precisam de validação operacional.
 
 ---
 
@@ -446,12 +444,15 @@ Swagger:      http://localhost:3001/docs
 ## 12. Pontos de Atenção Técnica
 
 - **Débitos técnicos:**
-  - Storage S3 para exports pendente (BullMQ/Redis já implementados com fallback em memória)
+  - BI real Oracle/COMPASS e reconciliação pendentes
+  - Persistência durável do domínio no ambiente demo/produção pendente de configuração e validação
+  - Integração das listas Web de notificações e exports à API pendente
+  - Storage durável para arquivos de exportação pendente (worker BullMQ/Redis já existe)
+  - Refresh BI permanece smoke check com estado em memória; snapshot/watermark não são gravados
   - Prisma não adotado (acesso direto ao Supabase)
-  - Cache de queries SQL Server ausente
-  - Testes E2E (Playwright) não configurados
-  - Herança de permissões via grupos pendente
-  - Editor visual de dashboards apenas com reordenação
+  - Cache LRU/TTL é local ao processo, não distribuído
+  - Integração SMTP, TLS, backup/restore, métricas e logs de produção pendentes de validação
+  - Compartilhamento/versionamento de dashboards e BI com dados reais ainda não fechados
 
 - **Partes frágeis:**
   - Fallback em memória pode perder dados ao reiniciar a API
@@ -459,20 +460,19 @@ Swagger:      http://localhost:3001/docs
   - `pnpm typecheck` pode falhar no web sem artefatos de build do Next.js (`.next/types`)
 
 - **Falta de testes:**
-  - Cobertura de novos módulos (permissions, audit) incompleta
-  - Testes E2E críticos ausentes (login, relatório, exportação)
+  - A cobertura existente não comprova fluxo completo com Supabase e Oracle/COMPASS reais
+  - Testes E2E atuais cobrem demo; faltam cenários de aceite com dados reais e topologia produtiva
 
 - **Módulos acoplados:**
   - `PlatformModule` concentra dashboard, dashboards, exports, notifications e settings
 
 - **Riscos de escala:**
   - BullMQ + Redis implementados, mas fallback em memória não suporta múltiplas instâncias
-  - Sem cache de queries, cada execução de relatório hita o SQL Server
+  - Cache em memória não compartilha entradas entre réplicas
 
 - **Riscos de segurança:**
-  - 2FA opcional (não obrigatório para admins — pendente DT-001)
-  - Sem blacklist de tokens revogados
-  - Sem estratégia de invalidação em massa de sessões
+  - Fallback TOTP sem criptografia é permitido apenas fora de produção e não deve ser exposto
+  - Fallbacks de repositório em memória não servem para dados que precisam sobreviver a reinícios
 
 ---
 

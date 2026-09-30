@@ -4,6 +4,27 @@
 **Atualizado em:** 2026-09-29
 
 > As entradas anteriores a 24/08/2026 preservam os caminhos da estrutura documental vigente na data de cada registro. A estrutura atual e mantida em `docs/INDEX.md`; referencias historicas abaixo nao representam arquivos ausentes.
+> Cada entrada abaixo é um registro datado da sessão correspondente; números e status dentro de registros antigos não descrevem o runtime atual. Consulte `docs/audits/ESTADO_REAL_PROJETO_2026-09-29.md`.
+
+## 2026-09-29 — Atualização da documentação para o runtime real
+
+### Entrega
+
+- Criada `docs/audits/ESTADO_REAL_PROJETO_2026-09-29.md` como retrato verificável de serviços Docker, runtime, telas, persistência, integrações, riscos, validações e próximas prioridades.
+- README, AGENTS, PRD, ROADMAP, escopo, índice, arquitetura, banco de dados, referências Web/API e specs alinhados ao estado atual: demo Docker funcional; dados agrícolas sintéticos; Oracle/COMPASS e Supabase sem configuração no demo; fallbacks em memória; notificações e histórico Web ainda com fixtures; arquivos de exportação locais.
+- Corrigidas classificações desatualizadas de TOTP obrigatório para admins, herança de grupos, cache local, BullMQ/Redis, drill-down, editor visual, tendências administrativas e testes E2E.
+- Auditorias, relatórios de integração e roadmaps antigos receberam notas para preservar histórico e evitar serem confundidos com status vigente.
+
+### Validações
+
+- `pnpm verify:docs`: aprovado.
+- Prettier direcionado aos documentos modificados e `git diff --check`: aprovados.
+- A suíte completa da API e os testes da aplicação não foram executados nesta alteração, que atualiza apenas documentação.
+
+### Entrega Git
+
+- Commit e push serão anotados após confirmar os resultados do GitHub.
+- Nenhum `.env` real ou diretório temporário `.playwright-cli/` foi incluído.
 
 ## 2026-09-29 — Refinamento visual da home BI
 

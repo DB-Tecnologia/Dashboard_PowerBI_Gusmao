@@ -91,11 +91,11 @@ O módulo BI é o diferencial competitivo da plataforma. Dashboard home com KPIs
 
 ## 8. Riscos
 
-| Risco                          | Impacto                                | Mitigação                   |
-| ------------------------------ | -------------------------------------- | --------------------------- |
-| Drill-down limitado a sector   | Usuários não exploram outras dimensões | Adicionar dimensões (T07b)  |
-| Editor visual incompleto       | Usuários não personalizam totalmente   | Completar editor (T16b)     |
-| Performance com muitos widgets | Dashboard lento                        | Lazy loading, virtualização |
+| Risco                           | Impacto                                 | Mitigação                                                                                         |
+| ------------------------------- | --------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| Dados agrícolas demo sintéticos | Análise não representa dados do cliente | Conectar Oracle/COMPASS e reconciliar indicadores; dimensões do drill-down já estão implementadas |
+| Editor visual incompleto        | Usuários não personalizam totalmente    | Completar editor (T16b)                                                                           |
+| Performance com muitos widgets  | Dashboard lento                         | Lazy loading, virtualização                                                                       |
 
 ## 9. Dependências
 

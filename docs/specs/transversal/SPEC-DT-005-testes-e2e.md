@@ -3,8 +3,10 @@
 **ID:** DT-005
 **Módulo:** Transversal (Qualidade)
 **Fase:** Fase 4
-**Status:** Pendente
-**Atualizado em:** 2026-06-28
+**Status:** Parcial
+**Atualizado em:** 2026-09-29
+
+> Há cenários Playwright mantidos no repositório e 8 cenários do arquivo `tests/e2e/auth-dashboard.spec.ts` foram aprovados na última validação registrada. Isso não equivale à execução ou aprovação de toda a suíte E2E nem ao aceite com integrações reais. Consulte a [auditoria atual](../../audits/ESTADO_REAL_PROJETO_2026-09-29.md).
 
 ---
 
@@ -107,7 +109,7 @@ Nenhuma RN específica. Testes devem respeitar todas as RNs existentes.
 
 ## 9. Dependências
 
-- Playwright (instalação pendente)
+- Playwright está configurado; validar a suíte completa no CI e executar cenários com integrações reais antes do aceite produtivo.
 - Seed de dados de teste
 - CI/CD configurado para E2E
 - API e Web rodando para testes

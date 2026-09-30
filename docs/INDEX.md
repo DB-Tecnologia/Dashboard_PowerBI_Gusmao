@@ -30,17 +30,18 @@ Este indice separa a documentacao vigente do historico preservado. Os quatro doc
 
 ## Auditorias
 
+- [Estado real do projeto (2026-09-29)](audits/ESTADO_REAL_PROJETO_2026-09-29.md): retrato vigente do runtime, Compose, telas, limitações, riscos e validações; usar como referência de estado.
 - [Auditoria do ambiente local Docker (2026-09-29)](audits/AUDITORIA_LOCAL_DOCKER_2026-09-29.md)
-- [Analise de aderencia V1](audits/ANALISE_ESCOPO_V1.md)
-- [Auditoria completa](audits/AUDITORIA_PROJETO.md)
-- [Falhas identificadas](audits/FALHAS.md)
-- [Matriz de requisitos](audits/MATRIZ_REQUISITOS.md)
-- [Resumo da auditoria](audits/RESUMO_AUDITORIA.md)
+- [Análise de aderência V1 (histórica)](audits/ANALISE_ESCOPO_V1.md)
+- [Auditoria completa (histórica)](audits/AUDITORIA_PROJETO.md)
+- [Falhas identificadas (snapshot histórico)](audits/FALHAS.md)
+- [Matriz de requisitos (snapshot histórico)](audits/MATRIZ_REQUISITOS.md)
+- [Resumo da auditoria (snapshot histórico)](audits/RESUMO_AUDITORIA.md)
 
 ## Operacao
 
-- [Tarefas para conclusao](operations/TAREFAS_PARA_CONCLUSAO.md)
-- [Roadmap de falhas](operations/ROADMAP_FALHAS.md)
+- [Tarefas para conclusão](operations/TAREFAS_PARA_CONCLUSAO.md): backlog detalhado preservado; status vigente na auditoria atual.
+- [Roadmap de falhas](operations/ROADMAP_FALHAS.md): snapshot histórico; status vigente na auditoria atual.
 
 ## Referencia
 

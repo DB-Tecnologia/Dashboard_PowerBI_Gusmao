@@ -4,7 +4,9 @@
 **Módulo:** Permissions
 **Fase:** Fase 4
 **Status:** Concluído
-**Atualizado em:** 2026-06-28
+**Atualizado em:** 2026-09-29
+
+> O cálculo e a associação de permissões herdadas estão implementados no runtime. Persistência efetiva depende do Supabase configurado. Consulte a [auditoria atual](../../audits/ESTADO_REAL_PROJETO_2026-09-29.md).
 
 ---
 
@@ -14,13 +16,13 @@ Implementar herança de permissões: usuários herdam automaticamente as permiss
 
 ## 2. Contexto
 
-Atualmente, grupos associam roles e setores a usuários, mas não herdam permissões granulares. Um usuário em um grupo com permissão `reports:financeiro:read` não recebe essa permissão automaticamente. Esta spec resolve essa lacuna.
+O runtime calcula permissões efetivas combinando permissões diretas e as permissões dos grupos ativos associados ao usuário. Esta spec registra esse comportamento; sua validação com armazenamento durável continua pendente.
 
 ## 3. Regras de Negócio
 
-| Código | Regra                                               | Status   |
-| ------ | --------------------------------------------------- | -------- |
-| RN-016 | Usuários herdam permissões dos grupos que pertencem | Pendente |
+| Código | Regra                                               | Status                             |
+| ------ | --------------------------------------------------- | ---------------------------------- |
+| RN-016 | Usuários herdam permissões dos grupos que pertencem | Implementado; validar persistência |
 
 ## 4. Fluxo Esperado
 

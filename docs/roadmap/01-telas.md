@@ -1,5 +1,7 @@
 # ROADMAP — Telas (Escopo V1)
 
+> **Nota de status:** esta página preserva requisitos, critérios e notas de implementação de cada tela, incluindo status históricos. O retrato vigente é [Estado real do projeto — 2026-09-29](../audits/ESTADO_REAL_PROJETO_2026-09-29.md); todas as telas devem ser consideradas parciais para V1 até os limites ali descritos serem validados.
+
 **Metodologia:** SDD + TDD aplicados em cada tela.
 
 ---
@@ -189,7 +191,7 @@ Entregáveis:
 - apps/web/src/components/dashboard/dashboard-detail.test.tsx — 4 testes
 
 Débitos:
-- Drill-down rico com múltiplas dimensões (ainda apenas sector)
+- A fonte Oracle/COMPASS e os dados reais ainda não estão conectados; o drill-down seleciona dimensões com os dados demo.
 ```
 
 ### T08 — Dashboards Personalizados e Favoritos
@@ -219,9 +221,8 @@ Entregáveis:
 - apps/api/src/platform/dashboards/*
 
 Débitos:
-- Widgets editáveis ainda não implementados
-- Editor drag-and-drop incompleto
-- Dashboard padrão por setor pendente
+- Persistência durável depende de Supabase configurado.
+- Compartilhamento e versionamento de dashboard não estão fechados.
 ```
 
 ### T09 — Exportação PDF/Excel com Histórico
@@ -253,7 +254,8 @@ Entregáveis:
 - apps/api/src/platform/exports/*
 
 Débitos:
-- Storage S3 ou equivalente para arquivos pendente (BullMQ + Redis já implementados com fallback em memória)
+- Storage durável de arquivos pendente (BullMQ/Redis e worker existem; o armazenamento atual é local).
+- A lista Web de histórico usa fixtures e ainda não reconcilia jobs da API.
 ```
 
 ---
@@ -348,7 +350,8 @@ Entregáveis:
 - apps/web/src/lib/admin-api.ts — getAdminDashboard()
 
 Débitos:
-- Gráficos de tendência (requer tracking histórico)
+- Fonte de dados durável para tendências e alertas de segurança em tempo real.
+- Top relatórios/setores mais ativos deve ser validado com dados persistidos.
 - Alertas de segurança em tempo real
 - Top relatórios/setores (requer métricas de uso)
 ```
@@ -447,15 +450,15 @@ Débitos:
 ```
 Status: ✅ Concluído (mínimo) (Fase 3 — 2026-06-10)
 
-SDD — Especificação (mínimo entregue):
+SDD — Implementação atual:
 - Modo de edição no detalhe do dashboard com toggle "Editar layout" / "Concluir"
-- Reordenação de widgets via drag-and-drop com @dnd-kit/sortable
-- Grid responsivo mantido (md:grid-cols-2)
-- Persistência da ordem via PATCH /dashboards/:id/widgets/reorder (batch)
-- Fallback em memória funcional
+- Paleta de widgets e drag-and-drop no grid responsivo
+- Redimensionamento e configuração dos widgets
+- Persistência via API; no demo pode ficar somente em memória
 
-SDD — Especificação (fora do escopo desta entrega):
-- Paleta de widgets, redimensionamento, preview em tempo real, versões de dashboard
+SDD — Ainda não fechado:
+- Canvas livre e versões/histórico de dashboard
+- Persistência durável em ambiente demo sem Supabase
 
 TDD — Testes:
 - Unit: dashboard-detail.tsx — modo edição, drag-and-drop
@@ -474,9 +477,7 @@ Entregáveis:
 - Requer: recharts ✅, @dnd-kit/core/sortable/utilities ✅
 
 Débitos:
-- Redimensionamento de widgets
-- Canvas livre / grid de 12 colunas interativo
-- Versões de dashboard
+- Canvas livre fora das restrições do grid e versões de dashboard
 ```
 
 ### T17 — Auditoria com Filtros

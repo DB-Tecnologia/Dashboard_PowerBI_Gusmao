@@ -4,7 +4,9 @@
 **Módulo:** Admin
 **Fase:** Fase 4
 **Status:** Concluído
-**Atualizado em:** 2026-06-28
+**Atualizado em:** 2026-09-29
+
+> Os gráficos T12b estão implementados. Números e tendências dependem dos registros existentes no ambiente e do armazenamento configurado; consulte a [auditoria atual](../../audits/ESTADO_REAL_PROJETO_2026-09-29.md).
 
 ---
 
@@ -14,7 +16,7 @@ Dashboard administrativo com KPIs operacionais, atividade recente e hub de naveg
 
 ## 2. Contexto
 
-Tela inicial do hub admin (`/app/admin`). Exibe métricas: total de usuários, usuários ativos, total de grupos, total de exportações. Tabela com últimos 5 logs de auditoria. Cards de navegação para gestão. Gráficos de tendência são pendência (T12b).
+Tela inicial do hub admin (`/app/admin`). Exibe métricas de usuários, grupos e exportações, atividade de auditoria, cards de navegação e gráficos de tendência T12b.
 
 ## 3. Regras de Negócio
 
@@ -47,7 +49,7 @@ Tela inicial do hub admin (`/app/admin`). Exibe métricas: total de usuários, u
 - [x] Fallback para 0 quando services retornam vazio/erro
 - [x] Cards de navegação (usuários, grupos, configurações)
 - [x] Estados: loading, erro, vazio
-- [ ] Gráficos de tendência (T12b)
+- [x] Gráficos de tendência (T12b)
 - [ ] Alertas de segurança em tempo real
 - [ ] Top relatórios/setores mais ativos
 
@@ -73,10 +75,10 @@ Tela inicial do hub admin (`/app/admin`). Exibe métricas: total de usuários, u
 
 ## 8. Riscos
 
-| Risco                  | Impacto                   | Mitigação              |
-| ---------------------- | ------------------------- | ---------------------- |
-| Métricas em tempo real | Performance               | Cache de curta duração |
-| Sem tracking histórico | Sem gráficos de tendência | T12b (pendente)        |
+| Risco                              | Impacto                                   | Mitigação                                               |
+| ---------------------------------- | ----------------------------------------- | ------------------------------------------------------- |
+| Métricas em tempo real             | Performance                               | Cache de curta duração                                  |
+| Pouco histórico persistido no demo | Tendências podem estar vazias/incompletas | Configurar armazenamento durável e validar séries reais |
 
 ## 9. Dependências
 

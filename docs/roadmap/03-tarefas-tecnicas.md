@@ -1,5 +1,7 @@
 # ROADMAP — Tarefas Técnicas e Infraestrutura
 
+> **Nota de status:** os itens abaixo guardam o plano técnico e registros de execução. A situação atual deve ser lida na [auditoria do estado real — 2026-09-29](../audits/ESTADO_REAL_PROJETO_2026-09-29.md); “implementado” não implica operação produtiva validada.
+
 **Metodologia:** SDD + TDD aplicados em cada tarefa técnica.
 
 ---
@@ -267,7 +269,7 @@ Entregáveis:
 ✅ Fluxo de login com 2FA: requiresTwoFactor + tempToken → POST /auth/totp/login
 
 Débitos:
-📋 2FA obrigatório para admins (DT-001 — pendente)
+✅ TOTP obrigatório para administradores implementado; preencher e validar a chave antes de produção.
 ```
 
 ---

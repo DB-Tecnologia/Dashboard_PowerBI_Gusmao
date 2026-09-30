@@ -3,8 +3,10 @@
 **ID:** T11
 **Módulo:** Admin
 **Fase:** Fase 1
-**Status:** Concluído
-**Atualizado em:** 2026-06-28
+**Status:** Parcial
+**Atualizado em:** 2026-09-29
+
+> A API oferece operações de notificações; a lista da Web ainda usa `app-data.ts` e fixtures no demo. Falta integrar a tela ao client autenticado da API e validar persistência. Consulte a [auditoria atual](../../audits/ESTADO_REAL_PROJETO_2026-09-29.md).
 
 ---
 

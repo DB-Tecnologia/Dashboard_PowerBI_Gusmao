@@ -1,5 +1,7 @@
 # Relatório de integração e pendências do Dashboard BI Grupo Franciosi
 
+> **Análise de referência de 2026-08-24 (`e3ca4e3`).** É um retrato histórico da integração e não confirma o estado atual do código/ambiente. Consulte [Estado real do projeto — 2026-09-29](../audits/ESTADO_REAL_PROJETO_2026-09-29.md) para a situação vigente.
+
 **Data da análise:** 24/08/2026  
 **Repositório analisado:** [DB-Tecnologia/Dashboard_PowerBI_Gusmao](https://github.com/DB-Tecnologia/Dashboard_PowerBI_Gusmao)  
 **Commit de referência analisado:** `e3ca4e3`  

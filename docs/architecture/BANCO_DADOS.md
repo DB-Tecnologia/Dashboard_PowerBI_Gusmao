@@ -1,18 +1,20 @@
 # BANCO_DADOS.md — Arquitetura de Banco de Dados
 
 **Projeto:** Dashboard Power BI
-**Atualizado em:** 2026-08-25
-**Banco identificado:** Supabase (PostgreSQL gerenciado) + Oracle 19c/COMPASS (fonte-alvo) + SQL Server legado (somente leitura)
+**Atualizado em:** 2026-09-29
+**Estado observado:** SQL Server demo ativo; Supabase ausente no Compose demo; Oracle 19c/COMPASS não configurado.
+
+> Este documento descreve o modelo do repositório e os destinos planejados. A presença de cliente, migrations ou variáveis de ambiente não prova que o banco esteja configurado, que as migrations foram aplicadas ou que os dados estejam persistidos. Para o estado verificado, consulte [auditoria atual](../audits/ESTADO_REAL_PROJETO_2026-09-29.md).
 
 ---
 
 ## 1. Visão Geral
 
-O sistema utiliza duas fontes de dados distintas:
+O código prevê três destinos/fontes, mas apenas um banco está ativo no Compose demo:
 
-1. **Supabase (PostgreSQL gerenciado)** — banco principal da plataforma, armazena usuários, grupos, permissões, auditoria, settings, dashboards, exportações, notificações, definições de relatórios e favoritos. Acessado via service role key no backend NestJS com bypass de RLS.
-2. **Oracle 19c/COMPASS** — fonte-alvo de leitura para os fatos agrícolas e KPIs do projeto. Acessado via `oracledb` com usuário somente leitura, service name e consultas versionadas.
-3. **SQL Server externo** — compatibilidade legada para relatórios e KPIs. Acessado via `mssql` com queries parametrizadas. Somente SELECT e EXEC de stored procedures permitidos.
+1. **Supabase (PostgreSQL gerenciado)** — persistência opcional da plataforma via service role no backend. Não está configurado no Compose demo; vários repositórios usam fallback em memória nesse ambiente.
+2. **Oracle 19c/COMPASS** — fonte-alvo somente leitura para fatos agrícolas e KPIs. Não está conectada nem validada; contratos BI respondem `not_configured` no demo.
+3. **SQL Server** — ativo no Compose demo para consultas de relatórios de exemplo, acessado via `mssql` e queries parametrizadas. Não representa os fatos agrícolas reais do cliente.
 
 A estratégia de persistência é híbrida: quando `SUPABASE_URL` e `SUPABASE_SERVICE_ROLE_KEY` estão configurados, a API usa Supabase; caso contrário, usa fallback em memória para parte do domínio.
 
@@ -21,28 +23,28 @@ A estratégia de persistência é híbrida: quando `SUPABASE_URL` e `SUPABASE_SE
 ## 2. Tecnologia e Ferramentas
 
 - **Banco de plataforma:** Supabase (PostgreSQL 15+)
-- **Banco de relatórios:** Oracle 19c/COMPASS como fonte-alvo; SQL Server legado como alternativa explícita
+- **Banco de relatórios:** SQL Server ativo nos relatórios demo; Oracle 19c/COMPASS como fonte-alvo ainda sem conexão
 - **ORM:** Nenhum (Prisma não implementado)
 - **Client PostgreSQL:** `@supabase/supabase-js` (service role)
 - **Client SQL Server:** `mssql` (pool de conexões)
-- **Migration tool:** Supabase CLI (`supabase/migrations/`)
+- **Migration tool:** Supabase CLI (`supabase/migrations/`, 12 arquivos não verificados como aplicados)
 - **Seeds:** Setores padrão e configurações iniciais embutidos nas migrations
-- **Ambiente local:** Docker Compose com Supabase local ou Supabase cloud
-- **Ambiente produção:** Supabase cloud + Oracle 19c/COMPASS do cliente (rede interna ou VPN); SQL Server permanece compatibilidade legada
+- **Ambiente local demo:** Docker Compose com SQL Server de exemplo e Redis; Supabase não é iniciado pelo Compose demo.
+- **Ambiente de produção planejado:** Supabase e Oracle 19c/COMPASS do cliente, dependendo de configuração e validação; SQL Server continua disponível para relatórios legados.
 - **String de conexão:** `NÃO DOCUMENTAR VALORES SENSÍVEIS` — ver `infra/env/.env.example`
 
 ---
 
 ## 3. Localização dos Arquivos de Banco
 
-| Tipo                     | Caminho                                                       | Observação                              |
-| ------------------------ | ------------------------------------------------------------- | --------------------------------------- |
-| Migrations               | `supabase/migrations/`                                        | 8 arquivos SQL                          |
-| Configuração Supabase    | `apps/api/src/supabase/supabase.service.ts`                   | Cliente service role                    |
-| Configuração SQL Server  | `apps/api/src/sql-server/sql-server.service.ts`               | Pool de conexões                        |
-| Query builder SQL Server | `apps/api/src/sql-server/sql-query-builder.ts`                | Montagem segura de queries              |
-| Repositórios (API)       | `apps/api/src/*/repositories/`                                | Padrão híbrido (memória + Supabase)     |
-| Env examples             | `infra/env/.env.example`, `infra/env/.env.production.example` | Contrato completo de conexão e operação |
+| Tipo                     | Caminho                                                       | Observação                                |
+| ------------------------ | ------------------------------------------------------------- | ----------------------------------------- |
+| Migrations               | `supabase/migrations/`                                        | 12 arquivos SQL; aplicação não confirmada |
+| Configuração Supabase    | `apps/api/src/supabase/supabase.service.ts`                   | Cliente service role                      |
+| Configuração SQL Server  | `apps/api/src/sql-server/sql-server.service.ts`               | Pool de conexões                          |
+| Query builder SQL Server | `apps/api/src/sql-server/sql-query-builder.ts`                | Montagem segura de queries                |
+| Repositórios (API)       | `apps/api/src/*/repositories/`                                | Padrão híbrido (memória + Supabase)       |
+| Env examples             | `infra/env/.env.example`, `infra/env/.env.production.example` | Contrato completo de conexão e operação   |
 
 ---
 
@@ -677,16 +679,20 @@ Estas tabelas são acessadas via service role (bypass RLS) pela API NestJS. Espe
 
 ## 6. Migrações
 
-| Ordem | Arquivo                                                          | Descrição                                                                                                            | Status   |
-| ----- | ---------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- | -------- |
-| 1     | `20260604203236_001_create_auth_and_permissions.sql`             | Cria users, sectors, user_sectors, report_permissions, access_logs, refresh_tokens + RLS + seeds de setores          | Aplicada |
-| 2     | `20260604203252_002_create_reports_dashboards.sql`               | Cria reports, report_parameters, kpis, dashboards, dashboard_widgets, report_executions, favorite_reports + RLS      | Aplicada |
-| 3     | `20260604203306_003_create_exports_settings.sql`                 | Cria export_jobs, export_history, system_settings, notification_preferences, notifications + RLS + seeds de settings | Aplicada |
-| 4     | `20260605120000_004_api_platform_tables.sql`                     | Cria api_users, api_groups, api_report_definitions, api_export_jobs, api_notifications + RLS (service role)          | Aplicada |
-| 5     | `20260605200000_005_permissions_table.sql`                       | Cria api_permissions + RLS                                                                                           | Aplicada |
-| 6     | `20260605210000_006_audit_logs_table.sql`                        | Cria api_audit_logs + RLS                                                                                            | Aplicada |
-| 7     | `20260607113000_005_report_definitions_unique_source_sector.sql` | Remove duplicatas e cria índice único em api_report_definitions(source_name, sector)                                 | Aplicada |
-| 8     | `20260607183000_006_api_favorite_reports.sql`                    | Cria api_favorite_reports + RLS                                                                                      | Aplicada |
+| Ordem | Arquivo                                                          | Descrição                                                                                        | Status         |
+| ----- | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ | -------------- |
+| 1     | `20260604203236_001_create_auth_and_permissions.sql`             | Cria users, sectors, user_sectors, report_permissions, access_logs, refresh_tokens, RLS e seeds. | Não verificada |
+| 2     | `20260604203252_002_create_reports_dashboards.sql`               | Cria reports, report_parameters, kpis, dashboards, widgets, execuções e favoritos.               | Não verificada |
+| 3     | `20260604203306_003_create_exports_settings.sql`                 | Cria exportações, settings, preferências/notificações e seeds.                                   | Não verificada |
+| 4     | `20260605120000_004_api_platform_tables.sql`                     | Cria tabelas de usuários, grupos, relatórios, exports e notificações da API.                     | Não verificada |
+| 5     | `20260605200000_005_permissions_table.sql`                       | Cria permissões da API.                                                                          | Não verificada |
+| 6     | `20260605210000_006_audit_logs_table.sql`                        | Cria auditoria da API.                                                                           | Não verificada |
+| 7     | `20260607113000_005_report_definitions_unique_source_sector.sql` | Remove duplicatas e cria índice único em api_report_definitions.                                 | Não verificada |
+| 8     | `20260607183000_006_api_favorite_reports.sql`                    | Cria favoritos de relatórios da API.                                                             | Não verificada |
+| 9     | `20260628200000_007_add_token_version_to_users.sql`              | Adiciona versão de token aos usuários.                                                           | Não verificada |
+| 10    | `20260628210000_004_widget_types_text_iframe.sql`                | Adiciona tipos de widget texto e iframe.                                                         | Não verificada |
+| 11    | `20260628210000_008_add_last_used_at_to_refresh_tokens.sql`      | Adiciona `last_used_at` a refresh tokens.                                                        | Não verificada |
+| 12    | `20260628220000_009_add_group_permissions.sql`                   | Adiciona permissões aos grupos.                                                                  | Não verificada |
 
 ### Como rodar migrations
 
@@ -911,8 +917,8 @@ A API NestJS usa o padrão de **repositórios híbridos**:
 ### LGPD
 
 - O sistema armazena dados pessoais: email, nome, IP de acesso, user agent
-- NÃO IDENTIFICADO política explícita de retenção ou anonimização
-- NÃO IDENTIFICADO processo de exportação/exclusão de dados pessoais
+- A API tem job diário e endpoints para retenção, anonimização e portabilidade; a persistência efetiva depende do repositório configurado.
+- Isso não representa certificação de conformidade: períodos, base legal, operação real e evidências precisam de validação pelo responsável de privacidade.
 
 ### Controle de acesso
 
@@ -922,19 +928,18 @@ A API NestJS usa o padrão de **repositórios híbridos**:
 
 ### Backups
 
-- Supabase cloud: backups automáticos gerenciados pelo provedor
-- NÃO IDENTIFICADO estratégia de backup do SQL Server (responsabilidade do cliente)
+- Não há estratégia de backup/restore do projeto validada nesta atualização.
+- Backup do Supabase depende do ambiente/provedor escolhido; SQL Server de demonstração e arquivos locais de exportação precisam de procedimento próprio.
 
 ---
 
 ## 12. Pendências e Riscos
 
-| Item                                         | Risco                                                  | Severidade | Ação recomendada                                                |
-| -------------------------------------------- | ------------------------------------------------------ | ---------- | --------------------------------------------------------------- |
-| Fallback em memória                          | Perda de dados ao reiniciar a API                      | Alta       | Garantir que Supabase esteja sempre configurado em produção     |
-| Tabelas duplicadas (modelo original vs API)  | Confusão sobre qual tabela usar                        | Média      | Documentar claramente e considerar descontinuar modelo original |
-| Sem foreign keys físicas nas tabelas api\_\* | Integridade referencial apenas na aplicação            | Média      | Considerar adicionar FKs físicas ou validar na aplicação        |
-| Sem política de retenção de logs             | Crescimento indefinido de access_logs e api_audit_logs | Média      | Definir retenção (ex: 90 dias) e job de limpeza                 |
-| Sem cache de queries SQL Server              | Performance degradada em relatórios pesados            | Média      | Implementar cache com TTL configurável                          |
-| LGPD não tratada explicitamente              | Risco de conformidade                                  | Alta       | Definir política de retenção, anonimização e exclusão de dados  |
-| MFA secret sem criptografia em repouso       | Exposição se banco for comprometido                    | Média      | Considerar criptografia do secret no nível da aplicação         |
+| Item                                                  | Risco                                                                                | Severidade  | Ação recomendada                                                                        |
+| ----------------------------------------------------- | ------------------------------------------------------------------------------------ | ----------- | --------------------------------------------------------------------------------------- |
+| Fallback em memória                                   | Perda de dados ao reiniciar a API quando Supabase não está configurado.              | Alta        | Configurar e validar persistência durável nos ambientes que precisem preservar estado.  |
+| Tabelas duplicadas (modelo original vs. API)          | Confusão sobre tabelas de legado e runtime.                                          | Média       | Manter o inventário do runtime e decidir migração/remoção explicitamente.               |
+| Sem foreign keys físicas em parte das tabelas `api_*` | Integridade referencial depende da aplicação.                                        | Média       | Avaliar constraints físicas compatíveis com o modelo e validar dados antes da migração. |
+| Backup e restore não validados                        | Pode haver perda de dados ou indisponibilidade prolongada.                           | Alta        | Documentar e testar restauração de cada serviço persistente.                            |
+| Cache de consultas local ao processo                  | Não é compartilhado entre réplicas e é perdido no reinício.                          | Baixa/Média | Manter simples em single-instance ou escolher cache distribuído se necessário.          |
+| Segredo TOTP no fallback sem criptografia             | Em ambiente não produtivo sem chave, o segredo pode ser armazenado sem criptografia. | Alta        | Restringir demo a ambiente local; preencher chave forte e validar antes de produção.    |

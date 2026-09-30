@@ -4,9 +4,9 @@ Este arquivo orienta agentes que atuam neste repositório.
 
 ## Objetivo real do projeto
 
-O projeto e uma plataforma web interna de relatorios e BI em estado **funcional parcial**.
+O projeto é uma plataforma Web interna de relatórios e BI em estado **funcional parcial**.
 
-Hoje ele ja entrega base real para:
+Em 2026-09-29, o runtime demo entrega uma base funcional para:
 
 - autenticacao com JWT e refresh token;
 - recuperacao e redefinicao de senha;
@@ -14,9 +14,11 @@ Hoje ele ja entrega base real para:
 - dashboard home com KPIs;
 - catalogo, filtros e visualizacao de relatorios;
 - administracao de usuarios e grupos;
-- permissoes, auditoria, notifications, exports e settings via API;
+- permissões, auditoria, notifications, exports e settings via API (as telas Web de notificações e histórico de exports ainda usam o client legado de fixtures);
 - integracao com SQL Server para relatorios;
-- integracao com Supabase no backend para partes da plataforma.
+- integração com Supabase no backend para partes da plataforma, com fallback em memória quando não configurado;
+- worker BullMQ/Redis para exportação de relatórios, com arquivo em armazenamento local;
+- home com gráficos Recharts, histórico demo sintético e drill-down selecionável.
 
 Ele **ainda nao representa o V1 completo** descrito no PDF de escopo.
 
@@ -64,20 +66,19 @@ prevalece o runtime atual, e a diferenca deve ser documentada.
 
 ## O que nao deve ser assumido como pronto
 
-Nao assuma como implementado so porque aparece em docs antigas ou em codigo parcial:
+Não assuma capacidade produtiva ou ponta a ponta só porque aparece em docs antigas ou em código:
 
 - Prisma
-- Redis funcional como dependencia principal da aplicacao
-- BullMQ operacional de ponta a ponta
+- Redis como armazenamento durável principal da plataforma; Redis é usado pela fila de exportação, mas o runtime também mantém fallbacks em memória
+- BullMQ com storage externo e ciclo de vida operacional completo; o worker existe, porém arquivos são locais e a tela de histórico não consulta a API
 - React Hook Form como padrao do frontend inteiro
 - Zod em todos os formularios
-- TanStack Query estruturando todos os fluxos
-- Recharts ou Chart.js ativos no BI
-- dashboard interativo com drill-down
-- dashboards personalizados completos
-- editor visual drag-and-drop
-- 2FA/TOTP
-  Se algum desses itens for retomado, trate como trabalho novo ou parcial, nao como algo ja entregue.
+- TanStack Query estruturando os fluxos principais; está declarada, mas não é a arquitetura geral de busca de dados da Web
+- dados de BI reais/reconciliados; Recharts, histórico e drill-down estão ativos, mas a home demo usa valores sintéticos e os contratos Oracle retornam `not_configured`
+- dashboards personalizados completos para produção; CRUD e editor estão presentes, mas a persistência depende do Supabase e não há compartilhamento/versionamento completo
+- 2FA/TOTP inexistente; ele está implementado e é obrigatório para admin, mas a chave de produção é obrigatória e o fallback sem criptografia só pode ser usado em ambiente local controlado
+
+Use `docs/audits/ESTADO_REAL_PROJETO_2026-09-29.md` para a classificação vigente. Trate dados demo, fallback em memória e integrações não configuradas como lacunas explícitas, não como entregas produtivas.
 
 ## Topologia atual
 
@@ -288,10 +289,11 @@ Prefira mensagens objetivas em portugues brasileiro, como:
 
 As proximas ondas de trabalho devem seguir esta ordem:
 
-1. entregar BI interativo e dashboards personalizados;
-2. fechar lacunas remanescentes de persistencia e governanca;
-3. revisar hardening final de sessao, 2FA/TOTP e seguranca operacional;
-4. revalidar aderencia completa das 18 telas e 6 modulos.
+1. ligar as telas de notificações e histórico de exportações aos clients autenticados da API;
+2. configurar persistência durável para todos os domínios necessários e eliminar perda de estado por reinício;
+3. integrar Oracle/COMPASS, implementar refresh/snapshot durável e reconciliar KPIs com o negócio;
+4. fechar storage de arquivos, TLS, SMTP, backup/restore e observabilidade de produção;
+5. revalidar as 18 telas e os 6 módulos com dados reais e papéis de usuário aprovados.
 
 ## Como lidar com ambiguidade
 

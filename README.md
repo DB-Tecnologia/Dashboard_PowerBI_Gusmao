@@ -4,7 +4,7 @@
 
 O Dashboard Gusmão é uma plataforma de BI e relatórios criada para dar à gestão uma visão clara da operação do Grupo Franciosi, conectando produção, colheita, grãos, algodão, algodoeira e romaneios em uma experiência web segura e rastreável.
 
-> **Status do produto:** ambiente demo reproduzível em Docker, primeira fatia de BI em validação local e integração Oracle 19c/COMPASS preparada para a próxima etapa.
+> **Estado em 2026-09-29:** plataforma demo funcional em Docker; BI agrícola real ainda não conectado. A home usa dados sintéticos identificados, o SQL Server local atende relatórios de exemplo e Oracle/COMPASS aguarda acesso, mapeamento e reconciliação. O projeto não está liberado para produção.
 
 ## Por que este produto existe
 
@@ -77,17 +77,19 @@ Nenhuma credencial real é criada, exposta ou versionada neste repositório.
 
 ## O que já está disponível
 
-- Autenticação, sessão e autorização por perfil, setor e permissão.
+- Autenticação, sessão e autorização por perfil, setor e permissão; no demo, parte dos repositórios usa memória e perde alterações quando a API reinicia.
 - Home executiva de BI responsiva com KPIs sem repetição, séries históricas, destaque do período e identificação explícita dos dados de demonstração.
 - Catálogo, filtros, visualização e execução de relatórios.
-- Exportações controladas e auditadas.
-- Administração de usuários, grupos, permissões e configurações.
-- Auditoria administrativa.
+- Exportações PDF, XLSX, CSV e JSON pela API com worker BullMQ/Redis; os arquivos ficam em storage local, sem S3.
+- Administração de usuários, grupos, permissões, relatórios e configurações; a durabilidade depende da configuração do Supabase.
+- API de auditoria e notificações; a tela Web de notificações e o histórico Web de exportações ainda usam fixtures em `app-data.ts` no modo demo.
 - API versionada para a primeira fatia de BI.
-- Ambiente Docker com SQL Server, API NestJS, Web Next.js e Redis.
+- Ambiente demo Docker com SQL Server, API NestJS, Web Next.js e Redis; não representa a topologia validada de produção.
 - Healthchecks, Swagger e validações automatizadas do workspace.
 
 O produto ainda está em evolução e não representa toda a plataforma V1 descrita no escopo original. O estado real, os limites e as próximas entregas estão registrados no [PRD](PRD.md) e no [ROADMAP](ROADMAP.md).
+
+Para uma avaliação por área, telas, dados e lacunas de produção, consulte a [auditoria do estado real em 2026-09-29](docs/audits/ESTADO_REAL_PROJETO_2026-09-29.md). Ela diferencia telas existentes, fluxos conectados à API, persistência durável e dados reais reconciliados.
 
 ## Desenvolvimento com Docker
 

@@ -1,5 +1,7 @@
 # FALHAS.md — Auditoria local do projeto Dashboard Power BI
 
+> **Snapshot histórico (2026-07-02; notas até 2026-08-25).** Diagnósticos e pendências abaixo foram mantidos para preservar o histórico e podem estar resolvidos ou superados. Consulte [Estado real do projeto — 2026-09-29](ESTADO_REAL_PROJETO_2026-09-29.md) para a situação vigente.
+
 Data: 2026-07-02
 
 > **Atualização em 2026-08-25:** F-10 foi resolvido com zero erros e zero avisos no `pnpm lint`. F-11 foi resolvido anteriormente com a normalização de 387 arquivos e `pnpm format:check` aprovado. Os números abaixo preservam o diagnóstico original da auditoria.

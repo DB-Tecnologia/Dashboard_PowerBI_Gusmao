@@ -4,7 +4,9 @@
 **Módulo:** BI
 **Fase:** Fase 3
 **Status:** Concluído
-**Atualizado em:** 2026-06-29
+**Atualizado em:** 2026-09-29
+
+> Seed automático por setor está implementado na API; no Compose demo a persistência continua em memória quando Supabase não está configurado. Consulte a [auditoria atual](../../audits/ESTADO_REAL_PROJETO_2026-09-29.md).
 
 ---
 
@@ -14,7 +16,7 @@ Implementar dashboards pré-configurados por setor (produção, comercial, algod
 
 ## 2. Contexto
 
-Hoje o usuário encontra a tela `/app/dashboards` vazia quando não criou dashboards manualmente. O objetivo é que, ao listar dashboards e encontrar vazio, o sistema crie automaticamente um dashboard padrão baseado no setor do usuário, já populado com widgets de KPIs relevantes àquela área.
+Quando o usuário não tem dashboard, a API semeia um dashboard padrão baseado no setor, com widgets de KPIs relevantes àquela área. A gravação durável depende de Supabase configurado.
 
 **Mapeamento setor → business area → KPIs:**
 
@@ -27,13 +29,13 @@ Hoje o usuário encontra a tela `/app/dashboards` vazia quando não criou dashbo
 
 ## 3. Regras de Negócio
 
-| Código | Regra                                                                                | Status           |
-| ------ | ------------------------------------------------------------------------------------ | ---------------- |
-| RN-019 | Dashboard padrão é criado apenas quando o usuário não possui nenhum dashboard        | Em implementação |
-| RN-020 | O template é determinado pelo setor do usuário autenticado                           | Em implementação |
-| RN-021 | Usuários da diretoria recebem dashboard executivo com KPIs de todas as áreas         | Em implementação |
-| RN-022 | Dashboard padrão é privativo do usuário (mesmas regras de dashboards personalizados) | Em implementação |
-| RN-023 | Widgets KPI são pré-populados com position e displayOrder pré-definidos              | Em implementação |
+| Código | Regra                                                                                | Status                                         |
+| ------ | ------------------------------------------------------------------------------------ | ---------------------------------------------- |
+| RN-019 | Dashboard padrão é criado apenas quando o usuário não possui nenhum dashboard        | Implementado; persistência depende do Supabase |
+| RN-020 | O template é determinado pelo setor do usuário autenticado                           | Implementado                                   |
+| RN-021 | Usuários da diretoria recebem dashboard executivo com KPIs de todas as áreas         | Implementado                                   |
+| RN-022 | Dashboard padrão é privativo do usuário (mesmas regras de dashboards personalizados) | Implementado                                   |
+| RN-023 | Widgets KPI são pré-populados com position e displayOrder pré-definidos              | Implementado                                   |
 
 ## 4. Fluxo Esperado
 

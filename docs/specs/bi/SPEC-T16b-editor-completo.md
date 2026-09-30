@@ -3,8 +3,10 @@
 **ID:** T16b
 **Módulo:** BI
 **Fase:** Fase 3
-**Status:** Pendente
-**Atualizado em:** 2026-06-28
+**Status:** Parcial
+**Atualizado em:** 2026-09-29
+
+> O runtime já tem paleta de widgets, grid responsivo, drag-and-drop, redimensionamento e configuração. Esta spec permanece parcial para o V1 por depender de persistência durável e por compartilhar, versionar e exportar dashboards ainda não estarem fechados. Consulte a [auditoria atual](../../audits/ESTADO_REAL_PROJETO_2026-09-29.md).
 
 ---
 
@@ -14,7 +16,7 @@ Completar o editor visual com paleta de widgets, redimensionamento, canvas livre
 
 ## 2. Contexto
 
-O editor mínimo (T16) permite apenas reordenação. Esta spec expande para um editor completo: adicionar novos widgets via paleta, redimensionar (altura/largura), canvas livre, preview em tempo real e versionamento de layouts.
+O editor existente permite adicionar widgets pela paleta, reordenar, redimensionar e configurar em grid responsivo. Esta spec mantém como requisitos futuros o canvas livre e o versionamento de layouts; validação completa depende de persistência durável.
 
 ## 3. Regras de Negócio
 
@@ -48,15 +50,15 @@ O editor mínimo (T16) permite apenas reordenação. Esta spec expande para um e
 
 ## 5. Critérios de Aceite
 
-- [ ] Paleta de widgets (KPI, gráfico, tabela, texto, iframe)
-- [ ] Arrastar widget da paleta para o canvas
-- [ ] Redimensionamento de widgets (largura/altura)
-- [ ] Grid de 12 colunas interativo
+- [x] Paleta de widgets (KPI, gráfico, tabela, texto, iframe)
+- [x] Arrastar widget da paleta para o canvas
+- [x] Redimensionamento de widgets (largura/altura)
+- [x] Grid responsivo interativo
 - [ ] Canvas livre (posição arbitrária)
-- [ ] Preview em tempo real durante edição
-- [ ] Configuração de widget (dados, título, estilo)
+- [x] Preview durante edição
+- [x] Configuração de widget (dados, título, estilo)
 - [ ] Versões de dashboard (histórico e restauração)
-- [ ] Responsivo
+- [x] Grid responsivo; persistência durável depende do Supabase configurado
 
 ## 6. Impacto Técnico
 
@@ -92,7 +94,6 @@ O editor mínimo (T16) permite apenas reordenação. Esta spec expande para um e
 ## 9. Dependências
 
 - T16 (editor mínimo) — concluído
-- `@dnd-kit` (instalado)
-- Biblioteca de resize (pendente, ex. react-resizable)
-- Modificação em api_widgets (dimensões)
-- Tabela de versões (pendente)
+- `react-grid-layout` e os componentes de paleta/configuração existentes
+- Persistência durável de dimensões do widget
+- Tabela/API de versões ainda pendentes

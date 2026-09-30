@@ -1,5 +1,7 @@
 # Analise de Aderencia ao Escopo V1
 
+> **Snapshot histórico (2026-06-07), substituído para status vigente.** Este documento preserva a auditoria feita naquela data e contém conclusões que já não correspondem ao runtime atual. Consulte [Estado real do projeto — 2026-09-29](ESTADO_REAL_PROJETO_2026-09-29.md) para capacidades, lacunas e evidências atuais.
+
 **Data da analise:** 7 de junho de 2026  
 **Projeto:** Dashboard Power BI  
 **Objetivo deste documento:** comparar o PDF `ESCOPO_DASHBOARD_Plataforma_BI_V1.pdf` com o estado real atual do repositorio, incluindo o runtime depois das Fases 0 e 1 e as orientacoes do `AGENTS.md`.

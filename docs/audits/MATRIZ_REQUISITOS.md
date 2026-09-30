@@ -1,5 +1,7 @@
 # MATRIZ_REQUISITOS.md — Matriz Oficial de Requisitos
 
+> **Snapshot histórico (2026-07-20).** A matriz registra a avaliação daquela data. Os requisitos ainda são referência, mas os estados não são atuais; consulte [Estado real do projeto — 2026-09-29](ESTADO_REAL_PROJETO_2026-09-29.md).
+
 **Projeto:** Dashboard Power BI
 **Data da auditoria:** 2026-07-20
 **Metodologia:** Análise baseada em evidências de código, documentação e runtime real.
